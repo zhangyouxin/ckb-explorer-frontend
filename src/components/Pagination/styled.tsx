@@ -2,7 +2,6 @@ import styled from 'styled-components'
 
 export const PaginationPanel = styled.div`
   display: flex;
-  flex: 1 0.8 auto;
   width: 100%;
   height: 50px;
   background: white;

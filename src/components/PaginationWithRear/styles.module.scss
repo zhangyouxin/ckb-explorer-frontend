@@ -11,6 +11,7 @@
   .pagination {
     width: fit-content;
     box-shadow: none;
+    flex: 1 0.8 auto;
 
     @media (max-width: 750px) {
       border-radius: 0;

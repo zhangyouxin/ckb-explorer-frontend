@@ -1,11 +1,11 @@
-import { DatePicker, InputNumber, Tabs } from 'antd'
+import { InputNumber, Tabs } from 'antd'
+import DatePicker from 'antd/lib/date-picker'
 import * as cnLocale from 'antd/es/date-picker/locale/zh_CN'
 import * as enLocale from 'antd/es/date-picker/locale/en_US'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
-import type { RangePickerProps } from 'antd/es/date-picker'
 import { useSearchParams, useUpdateSearchParams } from '../../utils/hook'
 import Content from '../../components/Content'
 import styles from './styles.module.scss'
@@ -70,13 +70,13 @@ const ExportTransactions = () => {
     setHint({ type: undefined })
   }
 
-  const disabledStartDate: RangePickerProps['disabledDate'] = current => {
+  const disabledStartDate = (current: Dayjs) => {
     return (
       (current && current > dayjs().endOf('day')) || (current && endDate && current >= endDate.endOf('day')) || false
     )
   }
 
-  const disabledEndDate: RangePickerProps['disabledDate'] = current => {
+  const disabledEndDate = (current: Dayjs) => {
     return (
       (current && current > dayjs().endOf('day')) ||
       (current && startDate && current <= startDate.endOf('day')) ||

@@ -1,6 +1,7 @@
 .paginationWithRear {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: flex-end;
   width: 100%;
   margin-top: 4px;
@@ -12,8 +13,9 @@
     width: fit-content;
     box-shadow: none;
     flex: 1 0.8 auto;
-
+    min-width: 650px;
     @media (max-width: 750px) {
+    min-width: auto;
       border-radius: 0;
     }
 
@@ -22,6 +24,9 @@
       width: 60px;
       max-width: 120px;
     }
+  }
+  :global(.pagination__goto__page) {
+    min-width: 42px;
   }
 
   .rear {
@@ -37,12 +42,8 @@
   }
 
   @media (max-width: 750px) {
-    flex-direction: column;
     justify-content: flex-end;
     margin-top: 5px;
-    &.withPagination {
-      height: 96px;
-    }
 
     > .pagination {
       margin-bottom: 0;

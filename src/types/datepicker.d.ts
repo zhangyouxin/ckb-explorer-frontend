@@ -1,3 +1,10 @@
+/**
+ * We use Ant design's date picker component, but it's use moment.js as default,
+ * which will has enormous size in bundle.
+ * So we use dayjs instead of moment.js, and use dayjs plugin to make it work.
+ * This file aims to override the type definition of Ant design's date picker component.
+ */
+
 declare module 'antd/lib/date-picker' {
   import type { Dayjs } from 'dayjs'
   import type {

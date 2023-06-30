@@ -33,7 +33,7 @@ const ExportTransactions = () => {
   } = useSearchParams('type', 'id', 'tab', 'start-date', 'end-date', 'from-height', 'to-height')
 
   function isTransactionCsvExportType(s?: string): s is State.TransactionCsvExportType {
-    return s ? ['address_transactions', 'blocks', 'udts', 'nft'].includes(s) : false
+    return !!s && ['address_transactions', 'blocks', 'udts', 'nft'].includes(s)
   }
 
   const type = isTransactionCsvExportType(typeStr) ? typeStr : 'blocks'

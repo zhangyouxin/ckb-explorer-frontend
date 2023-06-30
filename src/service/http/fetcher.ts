@@ -448,10 +448,10 @@ export const exportTransactions = ({
     .get(`/${type}/download_csv`, {
       params: {
         id,
-        start_date: date ? date.start?.format('YYYY-MM-DD') : undefined,
-        end_date: date ? date.end?.format('YYYY-MM-DD') : undefined,
-        from_number: block ? block.from : undefined,
-        to_number: block ? block.to : undefined,
+        start_date: date?.start?.format('YYYY-MM-DD'),
+        end_date: date?.end?.format('YYYY-MM-DD'),
+        from_number: block?.from,
+        to_number: block?.to,
       },
     })
     .then(res => toCamelcase<Response.Response<string>>(res.data))

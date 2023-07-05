@@ -56,7 +56,7 @@
   justify-content: center;
   margin-top: 24px;
   @media screen and (max-width: 750px) {
-    margin-top: 0;
+    margin-top: 12px;
   }
   margin-bottom: 80px;
   width: 70%;
@@ -144,23 +144,27 @@
       @media screen and (max-width: 750px) {
         margin-left: 16px;
         margin-right: 16px;
-
       }
       display: flex;
       flex-direction: column;
       width: 40%;
       max-width: 256px;
       :global(.ant-picker:hover) {
-        border-color: var(--primary-color) !important;
+        border-radius: 4px;
+        &:hover {
+          border-color: var(--primary-color) !important;
+        }
       }
-      :global(.ant-input-number-affix-wrapper:hover) {
-        border-color: var(--primary-color) !important;
+      :global(.ant-input-number-affix-wrapper) {
+        &:hover {
+          border-color: var(--primary-color) !important;
+        }
+        border-radius: 4px;
       }
 
       :global(.ant-input-number-handler-wrap) {
         display: none !important;
       }
-
 
       @media (max-width: 750px) {
         width: 80%;
@@ -222,24 +226,28 @@
       &.noHint {
         display: none;
       }
+
+      &.successHint,
+      &.errorHint {
+        width: 100%;
+        max-width: 560px;
+        border-radius: 8px;
+      }
       &.successHint {
         border: 1px solid rgba(0, 204, 155, 1);
         background: rgba(230, 252, 247, 1);
         color: rgba(0, 204, 155, 1);
         path {
-          fill:rgba(0, 204, 155, 1);
+          fill: rgba(0, 204, 155, 1);
         }
-
-        margin:0 16px;
-
       }
       .hintText {
         flex: 1;
       }
       &.errorHint {
-        border: 1px solid #FFA6A6;
-        background: #FFF2F2;
-        color: #FA504F;
+        border: 1px solid #ffa6a6;
+        background: #fff2f2;
+        color: #fa504f;
       }
     }
   }
@@ -264,7 +272,7 @@
 
 .calendar {
   :global(.ant-picker-cell-selected .ant-picker-cell-inner) {
-      background-color: var(--primary-color) !important;
+    background-color: var(--primary-color) !important;
   }
 
   :global(.ant-picker-cell-today .ant-picker-cell-inner) {

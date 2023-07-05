@@ -273,7 +273,7 @@ const ExportTransactions = () => {
             >
               {hint.type === 'error' && <ErrorIcon />}
               {hint.type === 'success' && <SuccessIcon />}
-              <div>
+              <div className={styles.hintText}>
                 {t(`export_transactions.${hint.msg}`)}
                 {hint.extraMsg}
               </div>

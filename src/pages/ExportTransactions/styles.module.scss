@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  @media screen and (max-width: 750px) {
+    margin: 0;
+  }
 }
 
 .title {
@@ -13,6 +17,11 @@
     font-weight: 500;
     font-size: 24px;
     line-height: 28px;
+
+    @media screen and (max-width: 750px) {
+      font-size: 20px;
+      line-height: normal;
+    }
   }
   > span:first-child {
     color: #333333;
@@ -46,7 +55,12 @@
   flex-direction: column;
   justify-content: center;
   margin-top: 24px;
+  @media screen and (max-width: 750px) {
+    margin-top: 0;
+  }
+  margin-bottom: 80px;
   width: 70%;
+  min-width: 342px;
   border-radius: 4px;
   background: white;
 
@@ -113,6 +127,7 @@
     justify-content: center;
     align-items: center;
     margin-top: 16px;
+    color: #666;
 
     @media (max-width: 750px) {
       flex-direction: column;
@@ -126,9 +141,26 @@
     .heightInputPanel {
       margin-left: 24px;
       margin-right: 24px;
+      @media screen and (max-width: 750px) {
+        margin-left: 16px;
+        margin-right: 16px;
+
+      }
       display: flex;
       flex-direction: column;
       width: 40%;
+      max-width: 256px;
+      :global(.ant-picker:hover) {
+        border-color: var(--primary-color) !important;
+      }
+      :global(.ant-input-number-affix-wrapper:hover) {
+        border-color: var(--primary-color) !important;
+      }
+
+      :global(.ant-input-number-handler-wrap) {
+        display: none !important;
+      }
+
 
       @media (max-width: 750px) {
         width: 80%;
@@ -159,6 +191,7 @@
   .note {
     display: flex;
     justify-content: center;
+    color: #666;
 
     > div {
       background: white;
@@ -178,8 +211,11 @@
       display: flex;
       flex-direction: row;
       justify-content: center;
+      align-items: center;
 
       > svg {
+        width: 14px;
+        height: 14px;
         margin-right: 8px;
       }
 
@@ -187,12 +223,18 @@
         display: none;
       }
       &.successHint {
-        border: 1px solid var(--primary-color);
-        background: var(--primary-chiffon-color);
-        color: var(--primary-color);
+        border: 1px solid rgba(0, 204, 155, 1);
+        background: rgba(230, 252, 247, 1);
+        color: rgba(0, 204, 155, 1);
         path {
-          fill: var(--primary-color);
+          fill:rgba(0, 204, 155, 1);
         }
+
+        margin:0 16px;
+
+      }
+      .hintText {
+        flex: 1;
       }
       &.errorHint {
         border: 1px solid #FFA6A6;
@@ -221,6 +263,16 @@
 }
 
 .calendar {
+  :global(.ant-picker-cell-selected .ant-picker-cell-inner) {
+      background-color: var(--primary-color) !important;
+  }
+
+  :global(.ant-picker-cell-today .ant-picker-cell-inner) {
+    &::before {
+      border: 1px solid var(--primary-color);
+    }
+  }
+
   :global(.ant-picker-today-btn) {
     color: var(--primary-color);
     &:hover {
@@ -230,4 +282,8 @@
       color: var(--primary-color);
     }
   }
+}
+
+:global(.ant-picker-focused) {
+  border-color: var(--primary-color) !important;
 }

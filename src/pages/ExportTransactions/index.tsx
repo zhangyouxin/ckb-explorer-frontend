@@ -153,6 +153,10 @@ const ExportTransactions = () => {
     return res < 0 ? 0 : res
   }
 
+  const disableDownload =
+    (tab === 'date' && (!startDate || !endDate)) ||
+    (tab === 'height' && (fromHeight === undefined || toHeight === undefined))
+
   return (
     <Content>
       <div className={classNames('container', styles.containerPanel)}>
@@ -280,7 +284,7 @@ const ExportTransactions = () => {
             </div>
           </div>
           <div className={styles.downloadButton}>
-            <button type="button" onClick={handleDownload}>
+            <button type="button" disabled={disableDownload} onClick={handleDownload}>
               {t('export_transactions.download')}
             </button>
           </div>

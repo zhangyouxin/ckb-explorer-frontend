@@ -228,7 +228,7 @@
 
   .hint {
     > div {
-      padding: 12px 32px;
+      padding: 12px;
       font-weight: 400;
       font-size: 16px;
       line-height: 16px;
@@ -241,7 +241,7 @@
         min-width: 14px;
         min-height: 14px;
         margin-right: 8px;
-        margin-top: 2px;
+        margin-top: 3px;
       }
 
       &.noHint {

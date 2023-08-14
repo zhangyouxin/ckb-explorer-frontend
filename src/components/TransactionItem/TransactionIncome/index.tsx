@@ -14,9 +14,10 @@ export default ({ income }: { income: string }) => {
   if (bigIncome.isNaN()) {
     bigIncome = new BigNumber(0)
   }
+  const isIncome = bigIncome.isGreaterThanOrEqualTo(0)
   return (
     <TransactionIncomePanel>
-      <TransactionCapacityValuePanel increased={bigIncome.isGreaterThanOrEqualTo(0)}>
+      <TransactionCapacityValuePanel increased={isIncome}>
         {isMobile && (
           <Tooltip placement="top" title={`${i18n.t('address.currentAddress')} `}>
             <img src={CurrentAddressIcon} alt="current Address" />
@@ -24,7 +25,7 @@ export default ({ income }: { income: string }) => {
         )}
         <DecimalCapacity
           value={`${bigIncome.isPositive() ? '+' : ''}${localeNumberString(shannonToCkb(bigIncome))}`}
-          color="inherit"
+          balanceChangeType={isIncome ? 'income' : 'payment'}
         />
         {!isMobile && (
           <Tooltip placement="top" title={`${i18n.t('address.currentAddress')} `}>

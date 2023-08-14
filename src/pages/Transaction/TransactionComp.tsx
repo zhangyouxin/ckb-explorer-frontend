@@ -413,7 +413,7 @@ export const TransactionCompLite: FC<{ transaction: State.Transaction }> = ({ tr
                                 {items.capacity > 0 ? '+' : ''}
                               </span>
                               <DecimalCapacity
-                                color={items.capacity > 0 ? '#00CC9B' : '#FA504F'}
+                                balanceChangeType={items.capacity > 0 ? 'income' : 'payment'}
                                 value={localeNumberString(shannonToCkb(items.capacity))}
                               />
                             </>

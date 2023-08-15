@@ -95,7 +95,7 @@ const TransactionInfoItemWrapper = ({
   </TransactionInfoContentPanel>
 )
 
-export const TransactionOverview: FC<{ transaction: State.Transaction; layout: string }> = ({
+export const TransactionOverview: FC<{ transaction: State.Transaction; layout: LayoutLiteProfessional }> = ({
   transaction,
   layout,
 }) => {

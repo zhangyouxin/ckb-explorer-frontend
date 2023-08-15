@@ -8,7 +8,8 @@ export const DecimalPanel = styled.div`
   .subtraction {
     color: var(--accent-color);
   }
-  .increase {
+
+  .addition {
     color: var(--primary-color);
   }
 

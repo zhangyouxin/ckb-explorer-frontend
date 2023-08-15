@@ -18,7 +18,7 @@ export default ({
 }) => {
   const integer = value.split('.')[0] || '0'
   const isPayment = balanceChangeType === 'payment'
-  const balanceChangeTypeClass = isPayment ? 'subtraction' : 'increase'
+  const balanceChangeTypeClass = isPayment ? 'subtraction' : 'addition'
   let decimal = value.split('.')[1] || ''
   let zeros = ''
 

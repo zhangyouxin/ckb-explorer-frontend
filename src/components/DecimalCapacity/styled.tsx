@@ -5,15 +5,14 @@ export const DecimalPanel = styled.div`
   justify-content: flex-end;
   align-items: flex-end;
 
-  .decimal__zeros {
-    margin-bottom: 1px;
-  }
-
   .subtraction {
-    color: #fa504f !important;
+    color: var(--emphasis-color);
+  }
+  .increase {
+    color: var(--primary-color);
   }
 
-  .decimal__unit {
+  .decimal-unit {
     margin-left: 5px;
 
     @media (max-width: 750px) {

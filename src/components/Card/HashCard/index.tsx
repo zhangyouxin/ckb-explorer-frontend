@@ -133,7 +133,7 @@ export default ({
             >
               {!loading && <img src={CopyIcon} alt="copy" />}
             </SimpleButton>
-            {counterpartAddr && (
+            {counterpartAddr ? (
               <Tooltip
                 placement="top"
                 title={i18n.t(`address.${newAddr === hash ? 'visit-deprecated-address' : 'view-new-address'}`)}
@@ -147,14 +147,14 @@ export default ({
                   <OpenInNew />
                 </a>
               </Tooltip>
-            )}
-            {isTx && !loading && (
+            ) : null}
+            {isTx && !loading ? (
               <Tooltip placement="top" title={i18n.t(`transaction.export-transaction`)}>
                 <button className={styles.exportTx} onClick={handleExportTxClick} type="button">
                   <DownloadIcon />
                 </button>
               </Tooltip>
-            )}
+            ) : null}
           </div>
 
           {!isMobile && isTx && !loading ? (

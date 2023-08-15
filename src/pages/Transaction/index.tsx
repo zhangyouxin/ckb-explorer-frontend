@@ -31,8 +31,7 @@ export default () => {
   const transaction = query.data ?? defaultTransactionInfo
   const { blockTimestamp, txStatus } = transaction
   const searchParams = useSearchParams('layout')
-  const defaultLayout = Professional
-  const layout: string = searchParams.layout === Lite ? Lite : defaultLayout
+  const layout: string = searchParams.layout === Lite ? Lite : Professional
 
   useEffect(() => getTipBlockNumber(dispatch), [dispatch])
 
@@ -44,7 +43,7 @@ export default () => {
             <TransactionOverview transaction={transaction} layout={layout} />
           ) : null}
         </TransactionHashCard>
-        {layout === defaultLayout ? (
+        {layout === Professional ? (
           <QueryResult query={query} delayLoading>
             {data => <TransactionComp transaction={data} />}
           </QueryResult>

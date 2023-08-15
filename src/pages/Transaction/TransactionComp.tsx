@@ -121,144 +121,118 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: s
   } = transaction
 
   let confirmation = 0
-  const isLite: boolean = layout === LayoutLiteProfessional.Professional
+  const isProfessional = layout === LayoutLiteProfessional.Professional
 
   if (tipBlockNumber && blockNumber) {
     confirmation = tipBlockNumber - blockNumber
   }
 
-  const OverviewItems: Array<OverviewItemData> = [
-    {
-      title: i18n.t('block.block_height'),
-      content: <TransactionBlockHeight blockNumber={blockNumber} txStatus={txStatus} />,
-    },
-  ]
+  const blockHeightData: OverviewItemData = {
+    title: i18n.t('block.block_height'),
+    content: <TransactionBlockHeight blockNumber={blockNumber} txStatus={txStatus} />,
+  }
+  const timestampData: OverviewItemData = {
+    title: i18n.t('block.timestamp'),
+    content: parseSimpleDate(blockTimestamp),
+  }
+  const feeWithFeeRateData: OverviewItemData = {
+    title: `${i18n.t('transaction.transaction_fee')} | ${i18n.t('transaction.fee_rate')}`,
+    content: (
+      <div
+        style={{
+          display: 'flex',
+        }}
+      >
+        <DecimalCapacity value={localeNumberString(shannonToCkb(transactionFee))} />
+        <span
+          style={{
+            whiteSpace: 'pre',
+          }}
+        >{` | ${new BigNumber(transactionFee).multipliedBy(1000).dividedToIntegerBy(bytes).toFormat({
+          groupSeparator: ',',
+          groupSize: 3,
+        })} shannons/kB`}</span>
+      </div>
+    ),
+  }
+  const txFeeData: OverviewItemData = {
+    title: i18n.t('transaction.transaction_fee'),
+    content: <DecimalCapacity value={localeNumberString(shannonToCkb(transactionFee))} />,
+  }
+  const txStatusData: OverviewItemData = {
+    title: i18n.t('transaction.status'),
+    content: formatConfirmation(confirmation),
+  }
+
+  const liteTxSizeDataContent = bytes ? (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      {`${(bytes - 4).toLocaleString('en')} Bytes`}
+      <ComparedToMaxTooltip
+        numerator={bytes}
+        maxInEpoch={largestTxInEpoch}
+        maxInChain={largestTx}
+        titleInEpoch={i18n.t('transaction.compared_to_the_max_size_in_epoch')}
+        titleInChain={i18n.t('transaction.compared_to_the_max_size_in_chain')}
+        unit="Bytes"
+      >
+        {i18n.t('transaction.size_in_block', {
+          bytes: bytes.toLocaleString('en'),
+        })}
+      </ComparedToMaxTooltip>
+    </div>
+  ) : (
+    ''
+  )
+  const liteTxSizeData: OverviewItemData = {
+    title: i18n.t('transaction.size'),
+    content: liteTxSizeDataContent,
+  }
+  const liteTxCyclesDataContent = cycles ? (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      {`${cycles.toLocaleString('en')}`}
+      <ComparedToMaxTooltip
+        numerator={cycles}
+        maxInEpoch={maxCyclesInEpoch}
+        maxInChain={maxCycles}
+        titleInEpoch={i18n.t('transaction.compared_to_the_max_cycles_in_epoch')}
+        titleInChain={i18n.t('transaction.compared_to_the_max_cycles_in_chain')}
+      />
+    </div>
+  ) : (
+    '-'
+  )
+  const liteTxCyclesData: OverviewItemData = {
+    title: i18n.t('transaction.cycles'),
+    content: liteTxCyclesDataContent,
+  }
+  const overviewItems: Array<OverviewItemData> = [blockHeightData]
   if (txStatus === 'committed') {
     if (confirmation >= 0) {
-      if (isLite) {
-        // TODO: many similar code, refactor this
-        OverviewItems.push(
-          {
-            title: i18n.t('block.timestamp'),
-            content: parseSimpleDate(blockTimestamp),
-          },
-          bytes
-            ? {
-                title: `${i18n.t('transaction.transaction_fee')} | ${i18n.t('transaction.fee_rate')}`,
-                content: (
-                  <div
-                    style={{
-                      display: 'flex',
-                    }}
-                  >
-                    <DecimalCapacity value={localeNumberString(shannonToCkb(transactionFee))} />
-                    <span
-                      style={{
-                        whiteSpace: 'pre',
-                      }}
-                    >{` | ${new BigNumber(transactionFee).multipliedBy(1000).dividedToIntegerBy(bytes).toFormat({
-                      groupSeparator: ',',
-                      groupSize: 3,
-                    })} shannons/kB`}</span>
-                  </div>
-                ),
-              }
-            : {
-                title: i18n.t('transaction.transaction_fee'),
-                content: <DecimalCapacity value={localeNumberString(shannonToCkb(transactionFee))} />,
-              },
-
-          {
-            title: i18n.t('transaction.status'),
-            content: formatConfirmation(confirmation),
-          },
-        )
+      if (isProfessional) {
+        overviewItems.push(timestampData, bytes ? feeWithFeeRateData : txFeeData, txStatusData)
       } else {
-        OverviewItems.push(
-          {
-            title: i18n.t('block.timestamp'),
-            content: parseSimpleDate(blockTimestamp),
-          },
-          {
-            title: i18n.t('transaction.status'),
-            content: formatConfirmation(confirmation),
-          },
-        )
+        overviewItems.push(timestampData, txStatusData)
       }
     }
   } else {
-    OverviewItems.push(
-      {
-        title: i18n.t('block.timestamp'),
-        content: showTxStatus(txStatus),
-      },
-      {
-        title: i18n.t('transaction.transaction_fee'),
-        content: <DecimalCapacity value={localeNumberString(shannonToCkb(transactionFee))} />,
-      },
-      {
-        title: i18n.t('transaction.status'),
-        content: showTxStatus(txStatus),
-        valueTooltip: txStatus === 'rejected' ? detailedMessage : undefined,
-      },
-    )
+    overviewItems.push(timestampData, txFeeData, {
+      ...txStatusData,
+      valueTooltip: txStatus === 'rejected' ? detailedMessage : undefined,
+    })
   }
-
-  if (isLite) {
-    OverviewItems.push(
-      {
-        title: i18n.t('transaction.size'),
-        content: bytes ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {`${(bytes - 4).toLocaleString('en')} Bytes`}
-            <ComparedToMaxTooltip
-              numerator={bytes}
-              maxInEpoch={largestTxInEpoch}
-              maxInChain={largestTx}
-              titleInEpoch={i18n.t('transaction.compared_to_the_max_size_in_epoch')}
-              titleInChain={i18n.t('transaction.compared_to_the_max_size_in_chain')}
-              unit="Bytes"
-            >
-              {i18n.t('transaction.size_in_block', {
-                bytes: bytes.toLocaleString('en'),
-              })}
-            </ComparedToMaxTooltip>
-          </div>
-        ) : (
-          ''
-        ),
-      },
-      null,
-      {
-        title: i18n.t('transaction.cycles'),
-        content: cycles ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            {`${cycles.toLocaleString('en')}`}
-            <ComparedToMaxTooltip
-              numerator={cycles}
-              maxInEpoch={maxCyclesInEpoch}
-              maxInChain={maxCycles}
-              titleInEpoch={i18n.t('transaction.compared_to_the_max_cycles_in_epoch')}
-              titleInChain={i18n.t('transaction.compared_to_the_max_cycles_in_chain')}
-            />
-          </div>
-        ) : (
-          '-'
-        ),
-      },
-    )
+  if (isProfessional) {
+    overviewItems.push(liteTxSizeData, liteTxCyclesData)
   }
-
   const TransactionParams = [
     {
       title: i18n.t('transaction.cell_deps'),
@@ -318,8 +292,8 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: s
 
   return (
     <TransactionOverviewPanel>
-      <OverviewCard items={OverviewItems} hideShadow>
-        {isLite && (
+      <OverviewCard items={overviewItems} hideShadow>
+        {isProfessional && (
           <div className="transaction__overview_info">
             <SimpleButton className="transaction__overview_parameters" onClick={() => setShowParams(!showParams)}>
               <div>{i18n.t('transaction.transaction_parameters')}</div>
@@ -371,62 +345,60 @@ export const TransactionCompLite: FC<{ transaction: State.Transaction }> = ({ tr
   return (
     <>
       {transactionLiteDetails &&
-        transactionLiteDetails.map((item, index) => {
-          return (
-            <div className="transaction_lite" key={index}>
-              <div className={styles.transactionLiteBox}>
-                <div className={styles.transactionLiteBoxHeader}>
-                  <div className={styles.transactionLiteBoxHeaderAddr}>
-                    <Addr address={item.address} isCellBase={isCellbase} />
-                  </div>
-                </div>
-                <div className={styles.transactionLiteBoxContent}>
-                  {item.transfers.map((items, innerIndex) => {
-                    return (
-                      <div key={innerIndex}>
-                        <div>{items.tokenName}</div>
-                        <div>
-                          {(items.transferType && items.transferType === 'nervos_dao_deposit') ||
-                          items.transferType === 'nervos_dao_withdrawing' ? (
-                            <Tooltip
-                              placement="top"
-                              title={
-                                <div>
-                                  {items.transferType === 'nervos_dao_deposit'
-                                    ? i18n.t('transaction.nervos_dao_deposit')
-                                    : i18n.t('transaction.nervos_dao_withdraw')}
-                                </div>
-                              }
-                            >
-                              <span className={styles.tag}>
-                                {isDaoWithdrawCell(items.transferType)
-                                  ? i18n.t('nervos_dao.withdraw_tooltip')
-                                  : i18n.t('nervos_dao.withdraw_request_tooltip')}
-                              </span>
-                            </Tooltip>
-                          ) : null}
-                          {items.transferType === 'nft_transfer' ? (
-                            <span className={styles.nftId}>-ID : {items.nftId}</span>
-                          ) : (
-                            <>
-                              <span className={items.capacity > 0 ? styles.add : styles.subtraction}>
-                                {items.capacity > 0 ? '+' : ''}
-                              </span>
-                              <DecimalCapacity
-                                balanceChangeType={items.capacity > 0 ? 'income' : 'payment'}
-                                value={localeNumberString(shannonToCkb(items.capacity))}
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
+        transactionLiteDetails.map(item => (
+          <div className="transaction_lite" key={item.address}>
+            <div className={styles.transactionLiteBox}>
+              <div className={styles.transactionLiteBoxHeader}>
+                <div className={styles.transactionLiteBoxHeaderAddr}>
+                  <Addr address={item.address} isCellBase={isCellbase} />
                 </div>
               </div>
+              <div className={styles.transactionLiteBoxContent}>
+                {item.transfers.map((transfer, index) => {
+                  return (
+                    <div key={`transfer-${index}`}>
+                      <div>{transfer.tokenName}</div>
+                      <div className={styles.addressDetailLite}>
+                        {(transfer.transferType && transfer.transferType === 'nervos_dao_deposit') ||
+                        transfer.transferType === 'nervos_dao_withdrawing' ? (
+                          <Tooltip
+                            placement="top"
+                            title={
+                              <div>
+                                {transfer.transferType === 'nervos_dao_deposit'
+                                  ? i18n.t('transaction.nervos_dao_deposit')
+                                  : i18n.t('transaction.nervos_dao_withdraw')}
+                              </div>
+                            }
+                          >
+                            <span className={styles.tag}>
+                              {isDaoWithdrawCell(transfer.transferType)
+                                ? i18n.t('nervos_dao.withdraw_tooltip')
+                                : i18n.t('nervos_dao.withdraw_request_tooltip')}
+                            </span>
+                          </Tooltip>
+                        ) : null}
+                        {transfer.transferType === 'nft_transfer' ? (
+                          <span className={styles.nftId}>-ID : {transfer.nftId}</span>
+                        ) : (
+                          <div>
+                            <span className={transfer.capacity > 0 ? styles.add : styles.subtraction}>
+                              {transfer.capacity > 0 ? '+' : ''}
+                            </span>
+                            <DecimalCapacity
+                              balanceChangeType={transfer.capacity > 0 ? 'income' : 'payment'}
+                              value={localeNumberString(shannonToCkb(transfer.capacity))}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          )
-        })}
+          </div>
+        ))}
     </>
   )
 }

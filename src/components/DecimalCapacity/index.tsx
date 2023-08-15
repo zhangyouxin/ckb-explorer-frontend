@@ -4,13 +4,13 @@ import { DecimalPanel, DecimalPartPanel, DecimalZerosPanel } from './styled'
 export default ({
   value,
   fontSize,
-  balanceChangeType = 'income',
+  balanceChangeType = 'none',
   hideUnit,
   hideZero,
   marginBottom = '1px',
 }: {
   value: string
-  balanceChangeType?: 'payment' | 'income'
+  balanceChangeType?: 'payment' | 'income' | 'none'
   fontSize?: string
   hideUnit?: boolean
   hideZero?: boolean
@@ -18,10 +18,7 @@ export default ({
 }) => {
   const integer = value.split('.')[0] || '0'
   const isPayment = balanceChangeType === 'payment'
-  // red color for payment, green color for income
-  const paymentColor = '#FA504F'
-  const incomeColor = '#00CC9B'
-  const color = isPayment ? paymentColor : incomeColor
+  const balanceChangeTypeClass = isPayment ? 'subtraction' : 'increase'
   let decimal = value.split('.')[1] || ''
   let zeros = ''
 
@@ -37,19 +34,25 @@ export default ({
 
   return (
     <DecimalPanel>
-      <span className={isPayment ? 'subtraction' : ''}>{integer}</span>
-      <DecimalPartPanel className="monospace" fontSize={fontSize} color={color} marginBottom={marginBottom}>
+      <span className={balanceChangeTypeClass}>{integer}</span>
+      <DecimalPartPanel
+        className={`monospace ${balanceChangeTypeClass}`}
+        fontSize={fontSize}
+        marginBottom={marginBottom}
+      >
         {decimal}
       </DecimalPartPanel>
       {!hideZero && (
-        <DecimalZerosPanel className="monospace" fontSize={fontSize} color={color} marginBottom={marginBottom}>
+        <DecimalZerosPanel
+          className={`monospace ${balanceChangeTypeClass}`}
+          fontSize={fontSize}
+          marginBottom={marginBottom}
+        >
           {zeros}
         </DecimalZerosPanel>
       )}
       {!hideUnit && (
-        <div className={isPayment ? 'decimal__unit monospace subtraction' : 'decimal__unit monospace'}>
-          {i18n.t('common.ckb_unit')}
-        </div>
+        <div className={`decimal-unit monospace ${balanceChangeTypeClass}`}>{i18n.t('common.ckb_unit')}</div>
       )}
     </DecimalPanel>
   )

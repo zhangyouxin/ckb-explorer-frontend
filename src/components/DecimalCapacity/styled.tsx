@@ -6,7 +6,7 @@ export const DecimalPanel = styled.div`
   align-items: flex-end;
 
   .subtraction {
-    color: var(--emphasis-color);
+    color: var(--accent-color);
   }
   .increase {
     color: var(--primary-color);

@@ -63,7 +63,7 @@ export default ({
   const updateSearchParams = useUpdateSearchParams<'layout'>()
   const layout = searchParams.layout === Lite ? Lite : defaultLayout
 
-  const onChangeLayout = (layoutType: LayoutLiteProfessional.Professional | LayoutLiteProfessional.Lite) => {
+  const onChangeLayout = (layoutType: LayoutLiteProfessional) => {
     updateSearchParams(params =>
       layoutType === defaultLayout
         ? Object.fromEntries(Object.entries(params).filter(entry => entry[0] !== 'layout'))

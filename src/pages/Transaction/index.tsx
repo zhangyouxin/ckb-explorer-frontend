@@ -31,7 +31,7 @@ export default () => {
   const transaction = query.data ?? defaultTransactionInfo
   const { blockTimestamp, txStatus } = transaction
   const searchParams = useSearchParams('layout')
-  const layout: string = searchParams.layout === Lite ? Lite : Professional
+  const layout = searchParams.layout === Lite ? Lite : Professional
 
   useEffect(() => getTipBlockNumber(dispatch), [dispatch])
 

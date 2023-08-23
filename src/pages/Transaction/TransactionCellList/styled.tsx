@@ -4,6 +4,10 @@ export const TransactionCellListTitlePanel = styled.div`
   display: flex;
   flex-direction: column;
 
+  @media (width <= 750px) {
+    display: none;
+  }
+
   .transaction__cell_list_titles {
     display: flex;
     flex-direction: row;
@@ -80,5 +84,9 @@ export const TransactionCellsPanel = styled.div`
     font-weight: 600;
     font-size: 20px;
     margin-left: 10px;
+
+    @media (width >= 750px) {
+      display: none;
+    }
   }
 `

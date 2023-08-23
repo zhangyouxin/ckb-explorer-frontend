@@ -9,6 +9,7 @@ import { ReactComponent as DeprecatedAddrOn } from '../../../assets/deprecated_a
 import { ReactComponent as DeprecatedAddrOff } from '../../../assets/deprecated_addr_off.svg'
 import { ReactComponent as Warning } from '../../../assets/warning.svg'
 import styles from './styles.module.scss'
+import { useIsMobile } from '../../../utils/hook'
 
 const SCROLL_BOTTOM_OFFSET = 5
 const SCROLL_LOADING_TIME = 400
@@ -29,6 +30,8 @@ export default ({
     setIsAddrNew: (is: boolean) => void
   }
 }) => {
+  const isMobile = useIsMobile()
+  const isDesktop = !isMobile
   const [offset, setOffset] = useState(PAGE_CELL_COUNT)
   const [isEnd, setIsEnd] = useState(false)
   const cells = inputs || outputs || []
@@ -85,14 +88,16 @@ export default ({
   return (
     <TransactionCellListPanel>
       <TransactionCellListTitlePanel>
-        <div className="transaction__cell_list_titles">
-          <div>{cellTitle()}</div>
-          <div>{isCellbaseInput ? i18n.t('transaction.reward_info') : i18n.t('transaction.detail')}</div>
-          <div>{isCellbaseInput ? '' : i18n.t('transaction.capacity_amount')}</div>
-        </div>
+        {isDesktop && (
+          <div className="transaction__cell_list_titles">
+            <div>{cellTitle()}</div>
+            <div>{isCellbaseInput ? i18n.t('transaction.reward_info') : i18n.t('transaction.detail')}</div>
+            <div>{isCellbaseInput ? '' : i18n.t('transaction.capacity_amount')}</div>
+          </div>
+        )}
       </TransactionCellListTitlePanel>
       <TransactionCellsPanel isScroll={isScroll}>
-        <div className="transaction__cell__title">{cellTitle()}</div>
+        {isMobile && <div className="transaction__cell__title">{cellTitle()}</div>}
         <div className="transaction__cell_list_container" onScroll={(event: any) => handleScroll(event)}>
           {cells &&
             cells

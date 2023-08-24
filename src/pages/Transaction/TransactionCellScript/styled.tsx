@@ -41,7 +41,7 @@ export const TransactionDetailType = styled(TransactionDetailItem)`
     margin-left: 12px;
   }
 
-  @media screen and (width >= 751px) and (max-width: 1300px) {
+  @media screen and (min-width: 751px) and (max-width: 1300px) {
     margin-left: 50px;
   }
 `
@@ -53,7 +53,7 @@ export const TransactionDetailData = styled(TransactionDetailItem)`
     margin-left: 12px;
   }
 
-  @media screen and (width >= 751px) and (max-width: 1300px) {
+  @media screen and (min-width: 751px) and (max-width: 1300px) {
     margin-left: 50px;
   }
 `
@@ -65,7 +65,7 @@ export const TransactionDetailCapacityUsage = styled(TransactionDetailItem)`
     margin-left: 12px;
   }
 
-  @media screen and (width >= 751px) and (max-width: 1300px) {
+  @media screen and (min-width: 751px) and (max-width: 1300px) {
     margin-left: 50px;
   }
 `

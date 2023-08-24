@@ -4,7 +4,7 @@ export const TokensPanel = styled.div`
   margin-top: 40px;
   margin-bottom: 60px;
 
-  @media (width <= 750px) {
+  @media (max-width: 750px) {
     margin-top: 20px;
     margin-bottom: 30px;
   }
@@ -15,7 +15,7 @@ export const TokensPanel = styled.div`
     align-items: center;
     margin-bottom: 20px;
 
-    @media (width <= 750px) {
+    @media (max-width: 750px) {
       margin-bottom: 10px;
     }
 
@@ -72,7 +72,7 @@ export const TokensTableContent = styled.div`
   color: #000;
   margin-top: 4px;
 
-  @media (width <= 750px) {
+  @media (max-width: 750px) {
     border-radius: 6px;
     padding: 5px 0;
   }
@@ -91,7 +91,7 @@ export const TokensTableItem = styled.div`
     width: 100%;
     padding: 15px 25px;
 
-    @media (width <= 750px) {
+    @media (max-width: 750px) {
       flex-direction: column;
       align-items: flex-start;
       padding: 10px 20px;
@@ -107,7 +107,7 @@ export const TokensTableItem = styled.div`
       width: 30px;
       height: 30px;
 
-      @media (width <= 750px) {
+      @media (max-width: 750px) {
         width: 20px;
         height: 20px;
       }
@@ -132,7 +132,7 @@ export const TokensTableItem = styled.div`
     text-align: right;
     color: #000;
 
-    @media (width <= 750px) {
+    @media (max-width: 750px) {
       margin-left: 30px;
       margin-top: 3px;
     }
@@ -144,7 +144,7 @@ export const TokensTableItem = styled.div`
     text-align: right;
     color: #000;
 
-    @media (width <= 750px) {
+    @media (max-width: 750px) {
       margin-left: 30px;
       margin-top: 3px;
     }
@@ -202,7 +202,7 @@ export const TokensContentEmpty = styled.div`
   margin-top: 4px;
   margin-bottom: 180px;
 
-  @media (width <= 750px) {
+  @media (max-width: 750px) {
     font-size: 14px;
     border-radius: 6px;
     margin-bottom: 160px;
@@ -213,7 +213,7 @@ export const TokensLoadingPanel = styled.div`
   width: 100%;
   text-align: center;
 
-  @media (width <= 750px) {
+  @media (max-width: 750px) {
     height: 100px;
     line-height: 100px;
     margin-bottom: 160px;

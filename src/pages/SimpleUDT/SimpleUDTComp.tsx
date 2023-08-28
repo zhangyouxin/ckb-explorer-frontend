@@ -121,7 +121,7 @@ export const SimpleUDTComp = ({
             ),
         )}
       </SimpleUDTTransactionsPanel>
-      {totalPages > 1 && (
+      {totalPages > 0 && (
         <SimpleUDTTransactionsPagination>
           <PaginationWithRear
             currentPage={currentPage}

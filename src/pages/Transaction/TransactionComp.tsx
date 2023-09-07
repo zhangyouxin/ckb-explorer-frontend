@@ -4,6 +4,7 @@ import { useQuery } from 'react-query'
 import { Tooltip } from 'antd'
 import { Link, useParams } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
+import { Trans } from 'react-i18next'
 import OverviewCard, { OverviewItemData } from '../../components/Card/OverviewCard'
 import { useAppState } from '../../contexts/providers/index'
 import { parseSimpleDate } from '../../utils/date'
@@ -33,6 +34,7 @@ import styles from './styles.module.scss'
 import { defaultTransactionLiteDetails } from './state'
 import { fetchTransactionLiteDetailsByHash } from '../../service/http/fetcher'
 import { LayoutLiteProfessional } from '../../constants/common'
+import { HelpTip } from '../../components/HelpTip'
 
 const showTxStatus = (txStatus: string) => txStatus?.replace(/^\S/, s => s.toUpperCase()) ?? '-'
 
@@ -55,17 +57,31 @@ const transactionParamsIcon = (show: boolean) => {
 
 const TransactionInfoItem = ({
   title,
+  tooltip,
   value,
+  valueTooltip,
   linkUrl,
   tag,
 }: {
   title?: string
+  tooltip?: string
   value: string | ReactNode
+  valueTooltip?: string
   linkUrl?: string
   tag?: ReactNode
 }) => (
   <TransactionInfoContentItem>
-    <div className="transaction__info__content_title">{title ? `${title}: ` : ''}</div>
+    <div className="transaction__info__content_title">
+      {title ? (
+        <>
+          <span>{title}</span>
+          {tooltip && <HelpTip title={tooltip} />}
+          <span>:</span>
+        </>
+      ) : (
+        ''
+      )}
+    </div>
     <div className="transaction__info__content_container monospace">
       <div className="transaction__info__content_value">
         {linkUrl ? (
@@ -75,6 +91,7 @@ const TransactionInfoItem = ({
         ) : (
           value
         )}
+        {valueTooltip && <HelpTip title={valueTooltip} />}
       </div>
       {tag && <div className="transaction__info__content__tag">{tag}</div>}
     </div>
@@ -83,15 +100,17 @@ const TransactionInfoItem = ({
 
 const TransactionInfoItemWrapper = ({
   title,
+  tooltip,
   value,
   linkUrl,
 }: {
   title?: string
+  tooltip?: string
   value: string | ReactNode
   linkUrl?: string
 }) => (
   <TransactionInfoContentPanel>
-    <TransactionInfoItem title={title} value={value} linkUrl={linkUrl} />
+    <TransactionInfoItem title={title} tooltip={tooltip} value={value} linkUrl={linkUrl} />
   </TransactionInfoContentPanel>
 )
 
@@ -129,10 +148,12 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
 
   const blockHeightData: OverviewItemData = {
     title: i18n.t('block.block_height'),
+    tooltip: i18n.t('glossary.block_height'),
     content: <TransactionBlockHeight blockNumber={blockNumber} txStatus={txStatus} />,
   }
   const timestampData: OverviewItemData = {
     title: i18n.t('block.timestamp'),
+    tooltip: i18n.t('glossary.timestamp'),
     content: parseSimpleDate(blockTimestamp),
   }
   const feeWithFeeRateData: OverviewItemData = {
@@ -161,6 +182,7 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
   }
   const txStatusData: OverviewItemData = {
     title: i18n.t('transaction.status'),
+    tooltip: i18n.t('glossary.transaction_status'),
     content: formatConfirmation(confirmation),
   }
 
@@ -236,6 +258,21 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
   const TransactionParams = [
     {
       title: i18n.t('transaction.cell_deps'),
+      tooltip: (
+        <Trans
+          i18nKey="glossary.cell_deps"
+          components={{
+            link1: (
+              // eslint-disable-next-line jsx-a11y/control-has-associated-label, jsx-a11y/anchor-has-content
+              <a
+                href="https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0022-transaction-structure/0022-transaction-structure.md#code-locating"
+                target="_blank"
+                rel="noreferrer"
+              />
+            ),
+          }}
+        />
+      ),
       content:
         cellDeps && cellDeps.length > 0 ? (
           cellDeps.map(cellDep => {
@@ -248,12 +285,22 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
               <TransactionInfoContentPanel key={`${txHash}${index}`}>
                 <TransactionInfoItem
                   title={i18n.t('transaction.out_point_tx_hash')}
+                  tooltip={i18n.t('glossary.out_point_tx_hash')}
                   value={txHash}
                   linkUrl={`/transaction/${txHash}`}
                   tag={hashTag && <HashTag content={hashTag.tag} category={hashTag.category} />}
                 />
-                <TransactionInfoItem title={i18n.t('transaction.out_point_index')} value={index} />
-                <TransactionInfoItem title={i18n.t('transaction.dep_type')} value={depType} />
+                <TransactionInfoItem
+                  title={i18n.t('transaction.out_point_index')}
+                  tooltip={i18n.t('glossary.out_point_index')}
+                  value={index}
+                />
+                <TransactionInfoItem
+                  title={i18n.t('transaction.dep_type')}
+                  tooltip={i18n.t('glossary.dep_type')}
+                  value={depType}
+                  valueTooltip={depType === 'dep_group' ? i18n.t('glossary.dep_group') : undefined}
+                />
               </TransactionInfoContentPanel>
             )
           })
@@ -263,6 +310,7 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
     },
     {
       title: i18n.t('transaction.header_deps'),
+      tooltip: i18n.t('glossary.header_deps'),
       content:
         headerDeps && headerDeps.length > 0 ? (
           headerDeps.map(headerDep => (
@@ -279,13 +327,19 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
     },
     {
       title: i18n.t('transaction.witnesses'),
+      tooltip: i18n.t('glossary.witnesses'),
       content:
         witnesses && witnesses.length > 0 ? (
           witnesses.map((witness, index) => (
-            <TransactionInfoItemWrapper key={`${witness}-${index}`} title="Witness" value={witness} />
+            <TransactionInfoItemWrapper
+              key={`${witness}-${index}`}
+              title="Witness"
+              tooltip={i18n.t('glossary.witness')}
+              value={witness}
+            />
           ))
         ) : (
-          <TransactionInfoItemWrapper title="Witness" value="[ ]" />
+          <TransactionInfoItemWrapper title="Witness" tooltip={i18n.t('glossary.witness')} value="[ ]" />
         ),
     },
   ]
@@ -303,7 +357,10 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
               <div className="transaction__overview_params">
                 {TransactionParams.map(item => (
                   <TransactionInfoItemPanel key={item.title}>
-                    <div className="transaction__info_title">{item.title}</div>
+                    <div className="transaction__info_title">
+                      <span>{item.title}</span>
+                      {item.tooltip && <HelpTip title={item.tooltip} />}
+                    </div>
                     <div className="transaction__info_value">{item.content}</div>
                   </TransactionInfoItemPanel>
                 ))}
@@ -404,7 +461,7 @@ export const TransactionCompLite: FC<{ transaction: State.Transaction }> = ({ tr
 }
 
 export default ({ transaction }: { transaction: State.Transaction }) => {
-  const { transactionHash, displayInputs, displayOutputs, blockNumber, isCellbase, txStatus } = transaction
+  const { transactionHash, displayInputs, displayOutputs, blockNumber, isCellbase } = transaction
 
   const { isNew: isAddrNew, setIsNew: setIsAddrNew } = useAddrFormatToggle()
   const inputs = handleCellbaseInputs(displayInputs, displayOutputs)
@@ -417,7 +474,6 @@ export default ({ transaction }: { transaction: State.Transaction }) => {
           <TransactionCellList
             inputs={inputs}
             showReward={blockNumber > 0 && isCellbase}
-            txStatus={txStatus}
             addrToggle={{
               isAddrNew,
               setIsAddrNew,
@@ -430,7 +486,6 @@ export default ({ transaction }: { transaction: State.Transaction }) => {
           <TransactionCellList
             outputs={displayOutputs}
             txHash={transactionHash}
-            txStatus={txStatus}
             addrToggle={{
               isAddrNew,
               setIsAddrNew,

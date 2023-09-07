@@ -29,6 +29,7 @@ import NFTClassIcon from '../../../assets/m_nft_class.svg'
 import NFTTokenIcon from '../../../assets/m_nft.svg'
 import CoTACellIcon from '../../../assets/cota_cell.svg'
 import CoTARegCellIcon from '../../../assets/cota_reg_cell.svg'
+import SporeCellIcon from '../../../assets/spore.svg'
 import { ReactComponent as LockTimeIcon } from '../../../assets/clock.svg'
 import { ReactComponent as BitAccountIcon } from '../../../assets/bit_account.svg'
 import TransactionCellScript from '../TransactionCellScript'
@@ -218,6 +219,18 @@ const TransactionCellDetail = ({ cell }: { cell: State.Cell }) => {
       tooltip = detailTitle
       break
     }
+    case 'spore_cluster': {
+      detailTitle = i18n.t('transaction.spore_cluster')
+      detailIcon = SporeCellIcon
+      tooltip = detailTitle
+      break
+    }
+    case 'spore_cell': {
+      detailTitle = i18n.t('transaction.spore')
+      detailIcon = SporeCellIcon
+      tooltip = detailTitle
+      break
+    }
     default:
       break
   }
@@ -237,15 +250,7 @@ const TransactionCellDetail = ({ cell }: { cell: State.Cell }) => {
   )
 }
 
-const TransactionCellInfo = ({
-  cell,
-  children,
-  txStatus,
-}: {
-  cell: State.Cell
-  children: string | ReactNode
-  txStatus: string
-}) => {
+const TransactionCellInfo = ({ cell, children }: { cell: State.Cell; children: string | ReactNode }) => {
   const [showModal, setShowModal] = useState(false)
   return (
     <TransactionCellInfoPanel>
@@ -260,7 +265,7 @@ const TransactionCellInfo = ({
       </SimpleButton>
       <SimpleModal isShow={showModal} setIsShow={setShowModal}>
         <TransactionCellDetailModal>
-          <TransactionCellScript cell={cell} onClose={() => setShowModal(false)} txStatus={txStatus} />
+          <TransactionCellScript cell={cell} onClose={() => setShowModal(false)} />
         </TransactionCellDetailModal>
       </SimpleModal>
     </TransactionCellInfoPanel>
@@ -291,7 +296,6 @@ export default ({
   index,
   txHash,
   showReward,
-  txStatus,
   isAddrNew,
 }: {
   cell: State.Cell
@@ -299,7 +303,6 @@ export default ({
   index: number
   txHash?: string
   showReward?: boolean
-  txStatus: string
   isAddrNew: boolean
 }) => {
   const isMobile = useIsMobile()
@@ -323,7 +326,7 @@ export default ({
             <TransactionCellMobileItem
               title={i18n.t('transaction.detail')}
               value={
-                <TransactionCellInfo cell={cell} txStatus={txStatus}>
+                <TransactionCellInfo cell={cell}>
                   {!cell.fromCellbase && <TransactionCellDetail cell={cell} />}
                 </TransactionCellInfo>
               }
@@ -362,9 +365,7 @@ export default ({
         </div>
 
         <div className="transaction__detail__cell_info">
-          <TransactionCellInfo cell={cell} txStatus={txStatus}>
-            Cell Info
-          </TransactionCellInfo>
+          <TransactionCellInfo cell={cell}>Cell Info</TransactionCellInfo>
         </div>
       </TransactionCellContentPanel>
     </TransactionCellPanel>

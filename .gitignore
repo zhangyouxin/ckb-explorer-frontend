@@ -5,6 +5,7 @@
 
 node_modules/
 build/
+dist/
 npm-debug.log
 *.log
 coverage/
@@ -20,3 +21,4 @@ dist/
 !/.env.*.example
 .secrets
 !.secrets.example
+.eslintcache

@@ -19,7 +19,7 @@ export default ({ income }: { income: string }) => {
     <TransactionIncomePanel>
       <TransactionCapacityValuePanel increased={isIncome}>
         {isMobile && (
-          <Tooltip placement="top" title={`${i18n.t('address.currentAddress')} `}>
+          <Tooltip placement="top" title={`${i18n.t('address.current-address')} `}>
             <img src={CurrentAddressIcon} alt="current Address" />
           </Tooltip>
         )}
@@ -28,7 +28,7 @@ export default ({ income }: { income: string }) => {
           balanceChangeType={isIncome ? 'income' : 'payment'}
         />
         {!isMobile && (
-          <Tooltip placement="top" title={`${i18n.t('address.currentAddress')} `}>
+          <Tooltip placement="top" title={`${i18n.t('address.current-address')} `}>
             <img src={CurrentAddressIcon} alt="current Address" />
           </Tooltip>
         )}

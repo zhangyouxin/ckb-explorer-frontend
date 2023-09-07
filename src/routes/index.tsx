@@ -24,6 +24,7 @@ const NftCollectionInfo = lazy(() => import('../pages/NftCollectionInfo'))
 const NftInfo = lazy(() => import('../pages/NftInfo'))
 const NervosDao = lazy(() => import('../pages/NervosDao'))
 const NotFoundPage = lazy(() => import('../pages/404'))
+const ErrorPage = lazy(() => import('../pages/Error'))
 const SearchFail = lazy(() => import('../pages/SearchFail'))
 const StatisticsChart = lazy(() => import('../pages/StatisticsChart'))
 const Tokens = lazy(() => import('../pages/Tokens'))
@@ -55,6 +56,7 @@ const InflationRateChart = lazy(() => import('../pages/StatisticsChart/monetary/
 const LiquidityChart = lazy(() => import('../pages/StatisticsChart/monetary/Liquidity'))
 const ScriptList = lazy(() => import('../pages/ScriptList'))
 const FeeRateTracker = lazy(() => import('../pages/FeeRateTracker'))
+const ExportTransactions = lazy(() => import('../pages/ExportTransactions'))
 
 const Containers: CustomRouter.Route[] = [
   {
@@ -292,12 +294,6 @@ const Containers: CustomRouter.Route[] = [
     comp: SearchFail,
   },
   {
-    name: '404',
-    path: '/404',
-    exact: true,
-    comp: NotFoundPage,
-  },
-  {
     name: 'ScriptList',
     path: '/scripts',
     exact: true,
@@ -308,6 +304,24 @@ const Containers: CustomRouter.Route[] = [
     path: '/fee-rate-tracker',
     exact: true,
     comp: FeeRateTracker,
+  },
+  {
+    name: '404',
+    path: '/404',
+    exact: true,
+    comp: NotFoundPage,
+  },
+  {
+    name: 'Error',
+    path: '/error',
+    exact: true,
+    comp: ErrorPage,
+  },
+  {
+    name: 'ExportTransactions',
+    path: '/export-transactions',
+    exact: true,
+    comp: ExportTransactions,
   },
 ]
 
@@ -354,36 +368,51 @@ const RouterComp = ({ container, routeProps }: { container: CustomRouter.Route; 
   return <container.comp {...routeProps} />
 }
 
-class PageErrorBoundary extends Component<
-  {},
-  {
-    error?: Error | null
-    info: {
-      componentStack?: string
-    }
+type PageErrorBoundaryState = {
+  error?: Error | null
+  info: {
+    componentStack?: string
   }
-> {
-  constructor(props: {}) {
+}
+
+type PageErrorBoundaryProps = {}
+
+class PageErrorBoundary extends Component<PageErrorBoundaryProps, PageErrorBoundaryState> {
+  constructor(props: PageErrorBoundaryProps) {
     super(props)
 
     this.state = {
-      error: undefined,
+      error: null,
       info: {
         componentStack: '',
       },
     }
   }
 
-  componentDidCatch(error: Error | null, info: object) {
+  static getDerivedStateFromError(error: Error) {
+    return { error }
+  }
+
+  // TODO Take note that it is possible for components outside the PageErrorBoundary to trigger a change in children, resulting in unknown issues.
+  componentDidUpdate(prevProps: PageErrorBoundaryProps) {
+    if (prevProps !== this.props) {
+      this.setState({ error: null, info: { componentStack: '' } })
+    }
+  }
+
+  componentDidCatch(error: Error | null, info: React.ErrorInfo) {
     this.setState({ error, info })
   }
 
   render() {
-    const { children } = this.props
     const { error, info } = this.state
-    if (!error) return children
+    const { children } = this.props
 
-    return <NotFoundPage errorMessage={error.toString()} errorDescription={info.componentStack} />
+    if (error) {
+      return <ErrorPage errorMessage={error.toString()} errorDescription={info.componentStack} />
+    }
+
+    return children
   }
 }
 

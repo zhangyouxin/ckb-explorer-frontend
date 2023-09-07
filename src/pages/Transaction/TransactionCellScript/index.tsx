@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import { useEffect, useState, ReactNode } from 'react'
+import { useEffect, useState, ReactNode, useRef } from 'react'
 import BigNumber from 'bignumber.js'
 import { fetchCellData, fetchScript } from '../../../service/http/fetcher'
 import { CellState } from '../../../constants/common'
@@ -27,6 +27,7 @@ import { localeNumberString } from '../../../utils/number'
 import HashTag from '../../../components/HashTag'
 import { ReactComponent as CopyIcon } from '../../../assets/copy_icon.svg'
 import { ReactComponent as OuterLinkIcon } from '../../../assets/outer_link_icon.svg'
+import { HelpTip } from '../../../components/HelpTip'
 
 const initScriptContent = {
   lock: 'null',
@@ -60,12 +61,11 @@ const handleFetchCellInfo = async (
   setScriptFetchStatus: (val: boolean) => void,
   setContent: Function,
   dispatch: AppDispatch,
-  txStatus: string,
 ) => {
   setScriptFetchStatus(false)
 
   const fetchLock = async () => {
-    if (txStatus === 'committed') {
+    if (cell.id) {
       const wrapper: Response.Wrapper<State.Script> | null = await fetchScript('lock_scripts', `${cell.id}`)
       return wrapper ? wrapper.attributes : initScriptContent.lock
     }
@@ -73,7 +73,7 @@ const handleFetchCellInfo = async (
   }
 
   const fetchType = async () => {
-    if (txStatus === 'committed') {
+    if (cell.id) {
       const wrapper: Response.Wrapper<State.Script> | null = await fetchScript('type_scripts', `${cell.id}`)
       return wrapper ? wrapper.attributes : initScriptContent.type
     }
@@ -81,7 +81,7 @@ const handleFetchCellInfo = async (
   }
 
   const fetchData = async () => {
-    if (txStatus === 'committed') {
+    if (cell.id) {
       return fetchCellData(`${cell.id}`)
         .then((wrapper: Response.Wrapper<State.Data> | null) => {
           const dataValue: State.Data = wrapper ? wrapper.attributes : initScriptContent.data
@@ -243,19 +243,20 @@ const ScriptContentJson = ({
   </TransactionCellScriptContentPanel>
 )
 
-export default ({ cell, onClose, txStatus }: { cell: State.Cell; onClose: Function; txStatus: string }) => {
+export default ({ cell, onClose }: { cell: State.Cell; onClose: Function }) => {
   const dispatch = useDispatch()
   const [scriptFetched, setScriptFetched] = useState(false)
   const [content, setContent] = useState(null as State.Script | State.Data | CapacityUsage | null)
   const [state, setState] = useState(CellState.LOCK as CellState)
+  const ref = useRef<HTMLDivElement>(null)
 
   const changeType = (newState: CellState) => {
     setState(state !== newState ? newState : state)
   }
 
   useEffect(() => {
-    handleFetchCellInfo(cell, state, setScriptFetched, setContent, dispatch, txStatus)
-  }, [cell, state, dispatch, txStatus])
+    handleFetchCellInfo(cell, state, setScriptFetched, setContent, dispatch)
+  }, [cell, state, dispatch])
 
   const onClickCopy = () => {
     navigator.clipboard.writeText(updateJsonFormat(content)).then(
@@ -274,13 +275,15 @@ export default ({ cell, onClose, txStatus }: { cell: State.Cell; onClose: Functi
   }
 
   return (
-    <TransactionDetailContainer>
+    <TransactionDetailContainer ref={ref}>
       <TransactionCellDetailPanel>
         <TransactionDetailLock selected={state === CellState.LOCK} onClick={() => changeType(CellState.LOCK)}>
           {i18n.t('transaction.lock_script')}
+          <HelpTip title={i18n.t('glossary.lock_script')} placement="bottom" containerRef={ref} />
         </TransactionDetailLock>
         <TransactionDetailType selected={state === CellState.TYPE} onClick={() => changeType(CellState.TYPE)}>
           {i18n.t('transaction.type_script')}
+          <HelpTip title={i18n.t('glossary.type_script')} placement="bottom" containerRef={ref} />
         </TransactionDetailType>
         <TransactionDetailData selected={state === CellState.DATA} onClick={() => changeType(CellState.DATA)}>
           {i18n.t('transaction.data')}
@@ -290,6 +293,7 @@ export default ({ cell, onClose, txStatus }: { cell: State.Cell; onClose: Functi
           onClick={() => changeType(CellState.CAPACITY)}
         >
           {i18n.t('transaction.capacity_usage')}
+          <HelpTip title={i18n.t('glossary.capacity_usage')} placement="bottom" containerRef={ref} />
         </TransactionDetailCapacityUsage>
         <div className="transaction__detail__modal__close">
           <img src={CloseIcon} alt="close icon" tabIndex={-1} onKeyDown={() => {}} onClick={() => onClose()} />

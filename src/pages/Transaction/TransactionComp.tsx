@@ -412,42 +412,39 @@ export const TransactionCompLite: FC<{ transaction: State.Transaction }> = ({ tr
               </div>
               <div className={styles.transactionLiteBoxContent}>
                 {item.transfers.map((transfer, index) => {
+                  const transferCapacity = new BigNumber(transfer.capacity)
+                  const isIncome = transferCapacity.isPositive()
                   return (
                     <div key={`transfer-${index}`}>
-                      <div>{transfer.tokenName}</div>
+                      {/* only show token info on first line of transfer details */}
+                      {index === 0 ? <div>CKB</div> : <div />}
                       <div className={styles.addressDetailLite}>
-                        {(transfer.transferType && transfer.transferType === 'nervos_dao_deposit') ||
-                        transfer.transferType === 'nervos_dao_withdrawing' ? (
+                        {transfer.cellType === 'nervos_dao_deposit' ||
+                        transfer.cellType === 'nervos_dao_withdrawing' ? (
                           <Tooltip
                             placement="top"
                             title={
                               <div>
-                                {transfer.transferType === 'nervos_dao_deposit'
+                                {transfer.cellType === 'nervos_dao_deposit'
                                   ? i18n.t('transaction.nervos_dao_deposit')
                                   : i18n.t('transaction.nervos_dao_withdraw')}
                               </div>
                             }
                           >
                             <span className={styles.tag}>
-                              {isDaoWithdrawCell(transfer.transferType)
+                              {isDaoWithdrawCell(transfer.cellType)
                                 ? i18n.t('nervos_dao.withdraw_tooltip')
                                 : i18n.t('nervos_dao.withdraw_request_tooltip')}
                             </span>
                           </Tooltip>
                         ) : null}
-                        {transfer.transferType === 'nft_transfer' ? (
-                          <span className={styles.nftId}>-ID : {transfer.nftId}</span>
-                        ) : (
-                          <div>
-                            <span className={transfer.capacity > 0 ? styles.add : styles.subtraction}>
-                              {transfer.capacity > 0 ? '+' : ''}
-                            </span>
-                            <DecimalCapacity
-                              balanceChangeType={transfer.capacity > 0 ? 'income' : 'payment'}
-                              value={localeNumberString(shannonToCkb(transfer.capacity))}
-                            />
-                          </div>
-                        )}
+                        <div>
+                          <span className={isIncome ? styles.add : styles.subtraction}>{isIncome ? '+' : ''}</span>
+                          <DecimalCapacity
+                            balanceChangeType={isIncome ? 'income' : 'payment'}
+                            value={localeNumberString(shannonToCkb(transfer.capacity))}
+                          />
+                        </div>
                       </div>
                     </div>
                   )

@@ -136,21 +136,36 @@ declare namespace State {
 
   export interface TransactionLiteDetails {
     address: string
-    transfers: Transfer[]
+    transfers: LiteTransfer[]
   }
 
-  interface Transfer {
-    tokenName: string
-    capacity: number
-    transferType: CellTypes
-    compensationStartedBlockNumber: number
-    compensationEndedBlockNumber: number
-    compensationStartedTimestamp: number
-    compensationEndedTimestamp: number
-    interest: number
-    lockedUntilBlockNumber: number
-    lockedUntilBlockTimestamp: number
-    nftId: number | string
+  interface LiteTransfer {
+    capacity: string
+    // cell_type comes from: https://github.com/nervosnetwork/ckb-explorer/blob/develop/app/utils/ckb_utils.rb#L380
+    cellType:
+      | 'normal'
+      | 'udt'
+      | 'nervos_dao_deposit'
+      | 'nervos_dao_withdrawing'
+      | 'spore_cell'
+      | 'spore_cluster'
+      | 'cota_regular'
+      | 'cota_registry'
+      | 'm_nft_issuer'
+      | 'm_nft_class'
+      | 'm_nft_token'
+      | 'nrc_721_token'
+      | 'nrc_721_factory'
+
+    udtInfo?: {
+      symbol: string
+      amount: string
+      decimal: string
+      typeHash: string
+      published: boolean
+      displayName: string
+      uan: string
+    }
   }
 
   export interface LockInfo {

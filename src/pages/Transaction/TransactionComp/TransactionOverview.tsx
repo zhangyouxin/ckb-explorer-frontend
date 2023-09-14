@@ -1,43 +1,34 @@
 /* eslint-disable react/no-array-index-key */
 import { useState, ReactNode, FC } from 'react'
-import { useQuery } from 'react-query'
-import { Tooltip } from 'antd'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import { Trans } from 'react-i18next'
-import OverviewCard, { OverviewItemData } from '../../components/Card/OverviewCard'
-import { useAppState } from '../../contexts/providers/index'
-import { parseSimpleDate } from '../../utils/date'
-import i18n from '../../utils/i18n'
-import { localeNumberString } from '../../utils/number'
-import { formatConfirmation, shannonToCkb, matchTxHash, isDaoWithdrawCell } from '../../utils/util'
-import { Addr } from './TransactionCell'
+import OverviewCard, { OverviewItemData } from '../../../components/Card/OverviewCard'
+import DecimalCapacity from '../../../components/DecimalCapacity'
+import HashTag from '../../../components/HashTag'
+import { HelpTip } from '../../../components/HelpTip'
+import SimpleButton from '../../../components/SimpleButton'
+import ComparedToMaxTooltip from '../../../components/Tooltip/ComparedToMaxTooltip'
+import { LayoutLiteProfessional } from '../../../constants/common'
+import { useAppState } from '../../../contexts/providers'
+import { isMainnet } from '../../../utils/chain'
+import { parseSimpleDate } from '../../../utils/date'
+import i18n from '../../../utils/i18n'
+import ArrowUpIcon from '../../../assets/arrow_up.png'
+import ArrowDownIcon from '../../../assets/arrow_down.png'
+import ArrowUpBlueIcon from '../../../assets/arrow_up_blue.png'
+import ArrowDownBlueIcon from '../../../assets/arrow_down_blue.png'
+import { localeNumberString } from '../../../utils/number'
+import { shannonToCkb, formatConfirmation, matchTxHash } from '../../../utils/util'
 import {
   TransactionBlockHeightPanel,
+  TransactionInfoContentItem,
   TransactionInfoContentPanel,
   TransactionOverviewPanel,
-  TransactionInfoContentItem,
   TransactionInfoItemPanel,
 } from './styled'
-import TransactionCellList from './TransactionCellList'
-import DecimalCapacity from '../../components/DecimalCapacity'
-import ArrowUpIcon from '../../assets/arrow_up.png'
-import ArrowDownIcon from '../../assets/arrow_down.png'
-import ArrowUpBlueIcon from '../../assets/arrow_up_blue.png'
-import ArrowDownBlueIcon from '../../assets/arrow_down_blue.png'
-import { isMainnet } from '../../utils/chain'
-import SimpleButton from '../../components/SimpleButton'
-import HashTag from '../../components/HashTag'
-import { useAddrFormatToggle } from '../../utils/hook'
-import ComparedToMaxTooltip from '../../components/Tooltip/ComparedToMaxTooltip'
-import styles from './styles.module.scss'
-import { defaultTransactionLiteDetails } from './state'
-import { fetchTransactionLiteDetailsByHash } from '../../service/http/fetcher'
-import { LayoutLiteProfessional } from '../../constants/common'
-import { HelpTip } from '../../components/HelpTip'
 
 const showTxStatus = (txStatus: string) => txStatus?.replace(/^\S/, s => s.toUpperCase()) ?? '-'
-
 const TransactionBlockHeight = ({ blockNumber, txStatus }: { blockNumber: number; txStatus: string }) => (
   <TransactionBlockHeightPanel>
     {txStatus === 'committed' ? (
@@ -370,126 +361,5 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
         )}
       </OverviewCard>
     </TransactionOverviewPanel>
-  )
-}
-
-const handleCellbaseInputs = (inputs: State.Cell[], outputs: State.Cell[]) => {
-  if (inputs[0] && inputs[0].fromCellbase && outputs[0] && outputs[0].baseReward) {
-    const resultInputs = inputs
-    resultInputs[0] = {
-      ...resultInputs[0],
-      baseReward: outputs[0].baseReward,
-      secondaryReward: outputs[0].secondaryReward,
-      commitReward: outputs[0].commitReward,
-      proposalReward: outputs[0].proposalReward,
-    }
-    return resultInputs
-  }
-  return inputs
-}
-
-export const TransactionCompLite: FC<{ transaction: State.Transaction }> = ({ transaction }) => {
-  const { hash: txHash } = useParams<{ hash: string }>()
-  const { isCellbase } = transaction
-
-  const query = useQuery(['ckb_transaction_details', txHash], async () => {
-    const ckbTransactionDetails = await fetchTransactionLiteDetailsByHash(txHash)
-    return ckbTransactionDetails.data
-  })
-
-  const transactionLiteDetails: State.TransactionLiteDetails[] = query.data ?? defaultTransactionLiteDetails
-
-  return (
-    <>
-      {transactionLiteDetails &&
-        transactionLiteDetails.map(item => (
-          <div className="transaction_lite" key={item.address}>
-            <div className={styles.transactionLiteBox}>
-              <div className={styles.transactionLiteBoxHeader}>
-                <div className={styles.transactionLiteBoxHeaderAddr}>
-                  <Addr address={item.address} isCellBase={isCellbase} />
-                </div>
-              </div>
-              <div className={styles.transactionLiteBoxContent}>
-                {item.transfers.map((transfer, index) => {
-                  const transferCapacity = new BigNumber(transfer.capacity)
-                  const isIncome = transferCapacity.isPositive()
-                  return (
-                    <div key={`transfer-${index}`}>
-                      {/* only show token info on first line of transfer details */}
-                      {index === 0 ? <div>CKB</div> : <div />}
-                      <div className={styles.addressDetailLite}>
-                        {transfer.cellType === 'nervos_dao_deposit' ||
-                        transfer.cellType === 'nervos_dao_withdrawing' ? (
-                          <Tooltip
-                            placement="top"
-                            title={
-                              <div>
-                                {transfer.cellType === 'nervos_dao_deposit'
-                                  ? i18n.t('transaction.nervos_dao_deposit')
-                                  : i18n.t('transaction.nervos_dao_withdraw')}
-                              </div>
-                            }
-                          >
-                            <span className={styles.tag}>
-                              {isDaoWithdrawCell(transfer.cellType)
-                                ? i18n.t('nervos_dao.withdraw_tooltip')
-                                : i18n.t('nervos_dao.withdraw_request_tooltip')}
-                            </span>
-                          </Tooltip>
-                        ) : null}
-                        <div>
-                          <span className={isIncome ? styles.add : styles.subtraction}>{isIncome ? '+' : ''}</span>
-                          <DecimalCapacity
-                            balanceChangeType={isIncome ? 'income' : 'payment'}
-                            value={localeNumberString(shannonToCkb(transfer.capacity))}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-        ))}
-    </>
-  )
-}
-
-export default ({ transaction }: { transaction: State.Transaction }) => {
-  const { transactionHash, displayInputs, displayOutputs, blockNumber, isCellbase } = transaction
-
-  const { isNew: isAddrNew, setIsNew: setIsAddrNew } = useAddrFormatToggle()
-  const inputs = handleCellbaseInputs(displayInputs, displayOutputs)
-
-  /// [0, 11] block doesn't show block reward and only cellbase show block reward
-  return (
-    <>
-      <div className="transaction__inputs">
-        {inputs && (
-          <TransactionCellList
-            inputs={inputs}
-            showReward={blockNumber > 0 && isCellbase}
-            addrToggle={{
-              isAddrNew,
-              setIsAddrNew,
-            }}
-          />
-        )}
-      </div>
-      <div className="transaction__outputs">
-        {displayOutputs && (
-          <TransactionCellList
-            outputs={displayOutputs}
-            txHash={transactionHash}
-            addrToggle={{
-              isAddrNew,
-              setIsAddrNew,
-            }}
-          />
-        )}
-      </div>
-    </>
   )
 }

@@ -5,14 +5,16 @@ import TransactionHashCard from '../../components/Card/HashCard'
 import Content from '../../components/Content'
 import { getTipBlockNumber } from '../../service/app/address'
 import i18n from '../../utils/i18n'
-import { TransactionDiv as TransactionPanel } from './styled'
-import TransactionComp, { TransactionOverview, TransactionCompLite } from './TransactionComp'
+import { TransactionDiv as TransactionPanel } from './TransactionComp/styled'
+import { TransactionOverview } from './TransactionComp/TransactionOverview'
 import { useDispatch } from '../../contexts/providers'
 import { fetchTransactionByHash } from '../../service/http/fetcher'
 import { QueryResult } from '../../components/QueryResult'
 import { defaultTransactionInfo } from './state'
 import { useSearchParams } from '../../utils/hook'
 import { LayoutLiteProfessional } from '../../constants/common'
+import { TransactionCompLite } from './TransactionComp/TransactionLite'
+import { TransactionComp } from './TransactionComp/TransactionComp'
 
 export default () => {
   const dispatch = useDispatch()
@@ -45,11 +47,11 @@ export default () => {
         </TransactionHashCard>
         {layout === Professional ? (
           <QueryResult query={query} delayLoading>
-            {data => <TransactionComp transaction={data} />}
+            {transaction => <TransactionComp transaction={transaction} />}
           </QueryResult>
         ) : (
           <QueryResult query={query} delayLoading>
-            {data => <TransactionCompLite transaction={data} />}
+            {transaction => <TransactionCompLite isCellbase={transaction.isCellbase} />}
           </QueryResult>
         )}
       </TransactionPanel>

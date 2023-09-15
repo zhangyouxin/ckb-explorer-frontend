@@ -13,7 +13,7 @@ import { QueryResult } from '../../components/QueryResult'
 import { defaultTransactionInfo } from './state'
 import { useSearchParams } from '../../utils/hook'
 import { LayoutLiteProfessional } from '../../constants/common'
-import { TransactionCompLite } from './TransactionComp/TransactionLite'
+import { TransactionCompLite } from './TransactionComp/TransactionLite/TransactionLite'
 import { TransactionComp } from './TransactionComp/TransactionComp'
 
 export default () => {

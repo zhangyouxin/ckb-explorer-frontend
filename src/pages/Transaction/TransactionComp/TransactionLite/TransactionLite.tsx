@@ -1,17 +1,16 @@
 /* eslint-disable react/no-array-index-key */
 import { FC } from 'react'
 import { useQuery } from 'react-query'
-import { Tooltip } from 'antd'
 import { useParams } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
-import styles from './transactionComp.module.scss'
-import DecimalCapacity from '../../../components/DecimalCapacity'
-import { fetchTransactionLiteDetailsByHash } from '../../../service/http/fetcher'
-import i18n from '../../../utils/i18n'
-import { localeNumberString } from '../../../utils/number'
-import { isDaoWithdrawCell, shannonToCkb } from '../../../utils/util'
-import { Addr } from '../TransactionCell'
-import { defaultTransactionLiteDetails } from '../state'
+import styles from './TransactionLite.module.scss'
+import DecimalCapacity from '../../../../components/DecimalCapacity'
+import { fetchTransactionLiteDetailsByHash } from '../../../../service/http/fetcher'
+import { parseCKBAmount, localeNumberString } from '../../../../utils/number'
+import { shannonToCkb } from '../../../../utils/util'
+import { Addr } from '../../TransactionCell'
+import { defaultTransactionLiteDetails } from '../../state'
+import { TransactionBadge } from './TransactionBadge'
 
 export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase }) => {
   const { hash: txHash } = useParams<{ hash: string }>()
@@ -41,26 +40,8 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
                       {/* only show token info on first line of transfer details */}
                       {index === 0 ? <div>CKB</div> : <div />}
                       <div className={styles.addressDetailLite}>
-                        {transfer.cellType === 'nervos_dao_deposit' ||
-                        transfer.cellType === 'nervos_dao_withdrawing' ? (
-                          <Tooltip
-                            placement="top"
-                            title={
-                              <div>
-                                {transfer.cellType === 'nervos_dao_deposit'
-                                  ? i18n.t('transaction.nervos_dao_deposit')
-                                  : i18n.t('transaction.nervos_dao_withdraw')}
-                              </div>
-                            }
-                          >
-                            <span className={styles.tag}>
-                              {isDaoWithdrawCell(transfer.cellType)
-                                ? i18n.t('nervos_dao.withdraw_tooltip')
-                                : i18n.t('nervos_dao.withdraw_request_tooltip')}
-                            </span>
-                          </Tooltip>
-                        ) : null}
-                        <div>
+                        <TransactionBadge cellType={transfer.cellType} capacity={parseCKBAmount(transfer.capacity)} />
+                        <div className={styles.capacityChange}>
                           <span className={isIncome ? styles.add : styles.subtraction}>{isIncome ? '+' : ''}</span>
                           <DecimalCapacity
                             balanceChangeType={isIncome ? 'income' : 'payment'}

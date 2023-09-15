@@ -139,23 +139,24 @@ declare namespace State {
     transfers: LiteTransfer[]
   }
 
+  // cell_type comes from: https://github.com/nervosnetwork/ckb-explorer/blob/develop/app/utils/ckb_utils.rb#L380
+  type CellType =
+    | 'normal'
+    | 'udt'
+    | 'nervos_dao_deposit'
+    | 'nervos_dao_withdrawing'
+    | 'spore_cell'
+    | 'spore_cluster'
+    | 'cota_regular'
+    | 'cota_registry'
+    | 'm_nft_issuer'
+    | 'm_nft_class'
+    | 'm_nft_token'
+    | 'nrc_721_token'
+    | 'nrc_721_factory'
   interface LiteTransfer {
     capacity: string
-    // cell_type comes from: https://github.com/nervosnetwork/ckb-explorer/blob/develop/app/utils/ckb_utils.rb#L380
-    cellType:
-      | 'normal'
-      | 'udt'
-      | 'nervos_dao_deposit'
-      | 'nervos_dao_withdrawing'
-      | 'spore_cell'
-      | 'spore_cluster'
-      | 'cota_regular'
-      | 'cota_registry'
-      | 'm_nft_issuer'
-      | 'm_nft_class'
-      | 'm_nft_token'
-      | 'nrc_721_token'
-      | 'nrc_721_factory'
+    cellType: CellType
 
     udtInfo?: {
       symbol: string

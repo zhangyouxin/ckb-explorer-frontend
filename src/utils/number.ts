@@ -68,7 +68,7 @@ export const handleHashRate = (value: BigNumber | string | number) => {
 }
 
 export const parseCKBAmount = (capacity: string) => {
-  return parseUDTAmount(capacity, 9)
+  return parseUDTAmount(capacity, 8)
 }
 
 export const parseUDTAmount = (amount: string, decimal: string | number) => {

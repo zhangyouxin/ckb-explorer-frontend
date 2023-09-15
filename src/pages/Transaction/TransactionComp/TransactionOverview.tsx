@@ -228,20 +228,45 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
     title: i18n.t('transaction.cycles'),
     content: liteTxCyclesDataContent,
   }
-  const overviewItems: Array<OverviewItemData> = [blockHeightData]
+  const overviewItems: Array<OverviewItemData> = []
   if (txStatus === 'committed') {
+    overviewItems.push(blockHeightData, timestampData)
     if (confirmation >= 0) {
       if (isProfessional) {
-        overviewItems.push(timestampData, bytes ? feeWithFeeRateData : txFeeData, txStatusData)
+        overviewItems.push(bytes ? feeWithFeeRateData : txFeeData, txStatusData)
       } else {
-        overviewItems.push(timestampData, txStatusData)
+        overviewItems.push(txStatusData)
       }
     }
+  } else if (txStatus === 'rejected') {
+    overviewItems.push(
+      blockHeightData,
+      {
+        ...timestampData,
+        content: 'Rejected',
+      },
+      {
+        ...txStatusData,
+        content: 'Rejected',
+        valueTooltip: detailedMessage,
+      },
+    )
   } else {
-    overviewItems.push(timestampData, txFeeData, {
-      ...txStatusData,
-      valueTooltip: txStatus === 'rejected' ? detailedMessage : undefined,
-    })
+    // pending
+    overviewItems.push(
+      {
+        ...blockHeightData,
+        content: '···',
+      },
+      {
+        ...timestampData,
+        content: '···',
+      },
+      {
+        ...txStatusData,
+        content: 'Pending',
+      },
+    )
   }
   if (isProfessional) {
     overviewItems.push(liteTxSizeData, liteTxCyclesData)

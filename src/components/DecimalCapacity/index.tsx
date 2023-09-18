@@ -1,5 +1,7 @@
+import classNames from 'classnames'
 import i18n from '../../utils/i18n'
 import { DecimalPanel, DecimalPartPanel, DecimalZerosPanel } from './styled'
+import styles from './styles.module.scss'
 
 export default ({
   value,
@@ -34,7 +36,7 @@ export default ({
 
   return (
     <DecimalPanel>
-      <span className={balanceChangeTypeClass}>{integer}</span>
+      <span className={classNames(balanceChangeTypeClass, styles.intergerPart)}>{integer}</span>
       <DecimalPartPanel
         className={`monospace ${balanceChangeTypeClass}`}
         fontSize={fontSize}

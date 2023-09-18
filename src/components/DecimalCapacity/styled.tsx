@@ -25,7 +25,7 @@ export const DecimalPanel = styled.div`
 export const DecimalPartPanel = styled.div`
   margin-bottom: ${(props: { marginBottom: string }) => (props.marginBottom ? props.marginBottom : '1px')};
   font-size: ${(props: { fontSize?: string; color?: string; marginBottom: string }) =>
-    props.fontSize ? props.fontSize : '12px'};
+    props.fontSize ? props.fontSize : '14px'};
   color: ${(props: { color?: string }) => (props.color ? props.color : '#999999')};
 
   @media (max-width: 1000px) {
@@ -40,7 +40,7 @@ export const DecimalPartPanel = styled.div`
 export const DecimalZerosPanel = styled.div`
   margin-bottom: ${(props: { marginBottom: string }) => (props.marginBottom ? props.marginBottom : '1px')};
   font-size: ${(props: { fontSize?: string; color?: string; marginBottom: string }) =>
-    props.fontSize ? props.fontSize : '12px'};
+    props.fontSize ? props.fontSize : '14px'};
   color: ${(props: { color?: string }) => (props.color ? props.color : '#999999')};
 
   @media (max-width: 1000px) {

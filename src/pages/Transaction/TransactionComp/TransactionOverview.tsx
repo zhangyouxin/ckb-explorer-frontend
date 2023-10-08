@@ -10,7 +10,6 @@ import { HelpTip } from '../../../components/HelpTip'
 import SimpleButton from '../../../components/SimpleButton'
 import ComparedToMaxTooltip from '../../../components/Tooltip/ComparedToMaxTooltip'
 import { LayoutLiteProfessional } from '../../../constants/common'
-import { useAppState } from '../../../contexts/providers'
 import { isMainnet } from '../../../utils/chain'
 import { parseSimpleDate } from '../../../utils/date'
 import i18n from '../../../utils/i18n'
@@ -27,6 +26,7 @@ import {
   TransactionOverviewPanel,
   TransactionInfoItemPanel,
 } from './styled'
+import { useLatestBlockNumber } from '../../../services/ExplorerService'
 
 const showTxStatus = (txStatus: string) => txStatus?.replace(/^\S/, s => s.toUpperCase()) ?? '-'
 const TransactionBlockHeight = ({ blockNumber, txStatus }: { blockNumber: number; txStatus: string }) => (
@@ -110,9 +110,7 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
   layout,
 }) => {
   const [showParams, setShowParams] = useState<boolean>(false)
-  const {
-    app: { tipBlockNumber },
-  } = useAppState()
+  const tipBlockNumber = useLatestBlockNumber()
   const {
     blockNumber,
     cellDeps,

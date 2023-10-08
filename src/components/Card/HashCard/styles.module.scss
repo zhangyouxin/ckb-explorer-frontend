@@ -15,7 +15,7 @@
     }
   }
 
-  @media screen and (max-width: 750px) {
+  @media screen and (width <= 750px) {
     height: 22px;
     margin-left: 2px;
 
@@ -67,7 +67,7 @@
   font-size: 16px;
   font-weight: 500;
 
-  @media (max-width: 750px) {
+  @media (width <= 750px) {
     max-width: 90px;
     font-size: 13px;
   }
@@ -90,15 +90,14 @@
   margin-left: 10px;
 
   .layoutButtons {
-
-    >label {
+    > label {
       height: 40px;
       width: 120px;
       text-align: center;
       font-weight: 400;
       font-size: 16px;
       line-height: 38px;
-      color: #333333;
+      color: #333;
       border: 1px solid #e5e5e5;
       box-shadow: none !important;
 
@@ -107,8 +106,8 @@
       }
 
       &:hover {
-        color: #333333;
-        background: #ffffff;
+        color: #333;
+        background: #fff;
       }
 
       &:first-child {
@@ -120,20 +119,20 @@
       }
 
       &:global(.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)) {
-        background: #333333;
-        border-color: #333333 !important;
+        background: #333;
+        border-color: #333 !important;
 
         &:hover {
-          background: #333333;
+          background: #333;
         }
       }
     }
 
-    @media screen and (max-width: 750px) {
+    @media screen and (width <= 750px) {
       width: 100%;
-      margin: 6px 0 20px 0;
+      margin: 6px 0 20px;
 
-      >label {
+      > label {
         height: 40px;
         width: 50%;
       }

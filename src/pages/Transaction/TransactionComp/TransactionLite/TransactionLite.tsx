@@ -5,12 +5,12 @@ import { useParams } from 'react-router-dom'
 import BigNumber from 'bignumber.js'
 import styles from './TransactionLite.module.scss'
 import DecimalCapacity from '../../../../components/DecimalCapacity'
-import { fetchTransactionLiteDetailsByHash } from '../../../../service/http/fetcher'
 import { parseCKBAmount, localeNumberString } from '../../../../utils/number'
 import { shannonToCkb } from '../../../../utils/util'
 import { Addr } from '../../TransactionCell'
 import { defaultTransactionLiteDetails } from '../../state'
 import { TransactionBadge } from './TransactionBadge'
+import { fetchTransactionLiteDetailsByHash } from '../../../../services/ExplorerService/fetcher'
 
 export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase }) => {
   const { hash: txHash } = useParams<{ hash: string }>()

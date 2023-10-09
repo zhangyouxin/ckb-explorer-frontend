@@ -15,7 +15,7 @@
       }
     }
 
-    @media (max-width: 750px) {
+    @media (width <= 750px) {
       .transactionLiteBoxHeaderAddr {
         width: 200px;
         display: inline-block;
@@ -27,7 +27,7 @@
       color: var(--primary-color);
       font-size: 12px;
       padding: 2px 6px;
-      box-shadow: 0px 4px 4px rgba(16, 16, 16, 0.05);
+      box-shadow: 0 4px 4px rgb(16 16 16 / 5%);
       border: 1px solid #caffdf;
       border-radius: 4px;
       display: inline-block;
@@ -90,7 +90,7 @@
       }
     }
 
-    @media (max-width: 750px) {
+    @media (width <= 750px) {
       & > div {
         display: inline-block;
 
@@ -108,7 +108,7 @@
           }
 
           .tag {
-            padding: 2px 2px;
+            padding: 2px;
             margin-right: 2px;
           }
         }

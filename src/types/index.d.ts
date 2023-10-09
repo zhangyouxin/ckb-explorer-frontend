@@ -167,6 +167,12 @@ declare namespace State {
       displayName: string
       uan: string
     }
+
+    mNftInfo?: {
+      className: string
+      tokenId: string // none 0x prefix hex number
+      total: string // decimal string
+    }
   }
 
   export interface LockInfo {

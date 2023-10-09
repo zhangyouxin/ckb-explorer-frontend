@@ -12,6 +12,17 @@ import { defaultTransactionLiteDetails } from '../../state'
 import { TransactionBadge } from './TransactionBadge'
 import { fetchTransactionLiteDetailsByHash } from '../../../../services/ExplorerService/fetcher'
 
+const getTransferItemTag = (transfer: State.LiteTransfer) => {
+  const { cellType, udtInfo, mNftInfo } = transfer
+  if (cellType === 'm_nft_token') {
+    return `NFT-${mNftInfo?.className ?? 'Unknown'}`
+  }
+  if (cellType === 'udt') {
+    return udtInfo?.displayName || `Uknown Asset #${udtInfo?.typeHash.substring(udtInfo.typeHash.length - 4)}`
+  }
+  return 'CKB'
+}
+
 export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase }) => {
   const { hash: txHash } = useParams<{ hash: string }>()
 
@@ -33,21 +44,12 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
               </div>
               <div className={styles.transactionLiteBoxContent}>
                 {item.transfers.map((transfer, index) => {
-                  const transferCapacity = new BigNumber(transfer.capacity)
-                  const isIncome = transferCapacity.isPositive()
                   return (
                     <div key={`transfer-${index}`}>
-                      {/* only show token info on first line of transfer details */}
-                      {index === 0 ? <div>CKB</div> : <div />}
+                      <div>{getTransferItemTag(transfer)}</div>
                       <div className={styles.addressDetailLite}>
                         <TransactionBadge cellType={transfer.cellType} capacity={parseCKBAmount(transfer.capacity)} />
-                        <div className={styles.capacityChange}>
-                          <span className={isIncome ? styles.add : styles.subtraction}>{isIncome ? '+' : ''}</span>
-                          <DecimalCapacity
-                            balanceChangeType={isIncome ? 'income' : 'payment'}
-                            value={localeNumberString(shannonToCkb(transfer.capacity))}
-                          />
-                        </div>
+                        <TransferAmount transfer={transfer} />
                       </div>
                     </div>
                   )
@@ -57,5 +59,45 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
           </div>
         ))}
     </>
+  )
+}
+
+const TransferAmount: FC<{ transfer: State.LiteTransfer }> = ({ transfer }) => {
+  const transferCapacity = new BigNumber(transfer.capacity)
+  const transferAmount = new BigNumber(transfer.udtInfo?.amount ?? 0)
+  const isIncome = transferCapacity.isPositive()
+  const decimalPanelType = isIncome ? 'income' : 'payment'
+  const isUdt = transfer.cellType === 'udt'
+  const isNft = transfer.cellType === 'm_nft_token'
+
+  const amountChange = localeNumberString(shannonToCkb(transferAmount))
+  const capacityChange = localeNumberString(shannonToCkb(transferCapacity))
+  const isIncomeColor = isIncome ? styles.add : styles.subtraction
+
+  const getUdtComponent = () => {
+    if (isUdt) {
+      return (
+        <>
+          <DecimalCapacity balanceChangeType={decimalPanelType} value={amountChange} hideUnit hideZero />
+          <div className={isIncomeColor}>{`(${Math.abs(Number(capacityChange))} CKB)`}</div>
+        </>
+      )
+    }
+    if (isNft) {
+      return (
+        <div className={isIncomeColor}>
+          {isIncome ? '' : '-'}
+          ID: {transfer.mNftInfo?.tokenId ?? 'Unknown'}
+          {` (${Math.abs(Number(capacityChange))} CKB)`}
+        </div>
+      )
+    }
+    return <DecimalCapacity balanceChangeType={decimalPanelType} value={capacityChange} />
+  }
+  return (
+    <div className={styles.capacityChange}>
+      <span className={isIncomeColor}>{isIncome ? '+' : ''}</span>
+      {getUdtComponent()}
+    </div>
   )
 }

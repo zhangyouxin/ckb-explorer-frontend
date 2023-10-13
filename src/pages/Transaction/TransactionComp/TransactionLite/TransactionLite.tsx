@@ -18,7 +18,7 @@ const getTransferItemTag = (transfer: State.LiteTransfer) => {
     return `NFT-${mNftInfo?.className ?? 'Unknown'}`
   }
   if (cellType === 'udt') {
-    return udtInfo?.displayName || `Uknown Asset #${udtInfo?.typeHash.substring(udtInfo.typeHash.length - 4)}`
+    return udtInfo?.symbol || `Uknown Asset #${udtInfo?.typeHash.substring(udtInfo.typeHash.length - 4)}`
   }
   return 'CKB'
 }
@@ -63,12 +63,13 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
 }
 
 const TransferAmount: FC<{ transfer: State.LiteTransfer }> = ({ transfer }) => {
-  const transferCapacity = new BigNumber(transfer.capacity)
-  const transferAmount = new BigNumber(transfer.udtInfo?.amount ?? 0)
-  const isIncome = transferCapacity.isPositive()
-  const decimalPanelType = isIncome ? 'income' : 'payment'
   const isUdt = transfer.cellType === 'udt'
   const isNft = transfer.cellType === 'm_nft_token'
+
+  const transferCapacity = new BigNumber(transfer.capacity)
+  const transferAmount = new BigNumber(transfer.udtInfo?.amount ?? 0)
+  const isIncome = isUdt ? transferAmount.isPositive() : transferCapacity.isPositive()
+  const decimalPanelType = isIncome ? 'income' : 'payment'
 
   const amountChange = localeNumberString(shannonToCkb(transferAmount))
   const capacityChange = localeNumberString(shannonToCkb(transferCapacity))

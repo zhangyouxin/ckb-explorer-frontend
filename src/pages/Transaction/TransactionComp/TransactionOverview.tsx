@@ -362,20 +362,20 @@ export const TransactionOverview: FC<{ transaction: State.Transaction; layout: L
     <TransactionOverviewPanel>
       <OverviewCard items={overviewItems} hideShadow>
         {isProfessional && (
-          <div className="transaction__overview_info">
-            <SimpleButton className="transaction__overview_parameters" onClick={() => setShowParams(!showParams)}>
+          <div className="transactionOverviewInfo">
+            <SimpleButton className="transactionOverviewParameters" onClick={() => setShowParams(!showParams)}>
               <div>{i18n.t('transaction.transaction_parameters')}</div>
               <img alt="transaction parameters" src={transactionParamsIcon(showParams)} />
             </SimpleButton>
             {showParams && (
-              <div className="transaction__overview_params">
+              <div className="transactionOverviewParams">
                 {TransactionParams.map(item => (
                   <TransactionInfoItemPanel key={item.title}>
-                    <div className="transaction__info_title">
+                    <div className="transactionInfoTitle">
                       <span>{item.title}</span>
                       {item.tooltip && <HelpTip title={item.tooltip} />}
                     </div>
-                    <div className="transaction__info_value">{item.content}</div>
+                    <div className="transactionInfoValue">{item.content}</div>
                   </TransactionInfoItemPanel>
                 ))}
               </div>

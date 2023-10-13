@@ -25,7 +25,7 @@ export const TransactionComp = ({ transaction }: { transaction: State.Transactio
   /// [0, 11] block doesn't show block reward and only cellbase show block reward
   return (
     <>
-      <div className="transaction__inputs">
+      <div className="transactionInputs">
         {inputs && (
           <TransactionCellList
             inputs={inputs}
@@ -37,7 +37,7 @@ export const TransactionComp = ({ transaction }: { transaction: State.Transactio
           />
         )}
       </div>
-      <div className="transaction__outputs">
+      <div className="transactionOutputs">
         {displayOutputs && (
           <TransactionCellList
             outputs={displayOutputs}

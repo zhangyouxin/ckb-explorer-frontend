@@ -95,7 +95,7 @@ export const CellInfo = ({ cell }: { cell: State.Cell }) => {
   return (
     <TransactionCellInfoPanel>
       <SimpleButton
-        className="transaction__cell__info__content"
+        className="transactionCellInfoContent"
         onClick={() => {
           setShowModal(true)
         }}
@@ -177,7 +177,7 @@ export const ScriptCells = ({
                       <td align="left">
                         <AddressText
                           disableTooltip
-                          className="transaction_item__hash"
+                          className="transactionItemHash"
                           linkProps={{
                             to: `/transaction/${record.txHash}`,
                           }}
@@ -215,7 +215,9 @@ export const CodeHashMessage = ({ codeHash }: { codeHash: string }) => {
   const setToast = useSetToast()
   return (
     <div className={styles.codeHashMessagePanel}>
-      <AddressText className={styles.codeHash}>{codeHash}</AddressText>
+      <div className={styles.codeHash}>
+        <AddressText>{codeHash}</AddressText>
+      </div>
 
       <CopyIcon
         onClick={() => {

@@ -35,7 +35,7 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
     <>
       {transactionLiteDetails &&
         transactionLiteDetails.map(item => (
-          <div className="transaction_lite" key={item.address}>
+          <div className="transactionLite" key={item.address}>
             <div className={styles.transactionLiteBox}>
               <div className={styles.transactionLiteBoxHeader}>
                 <div className={styles.transactionLiteBoxHeaderAddr}>

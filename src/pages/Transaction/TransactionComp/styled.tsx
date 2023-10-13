@@ -14,22 +14,22 @@ export const TransactionDiv = styled.div.attrs({
     padding: 20px;
   }
 
-  .transaction__inputs {
+  .transactionInputs {
     width: 100%;
   }
 
-  .transaction__outputs {
+  .transactionOutputs {
     width: 100%;
     margin-top: 20px;
   }
 
-  .transaction_lite {
+  .transactionLite {
     width: 100%;
     border-radius: 6px;
     box-shadow: 2px 2px 6px 0 #dfdfdf;
-    background-color: #ffffff;
+    background-color: #fff;
     margin-bottom: 10px;
-    padding: 16px 36px 12px 36px;
+    padding: 16px 36px 12px;
 
     @media (max-width: 750px) {
       padding: 16px 18px;
@@ -40,12 +40,12 @@ export const TransactionDiv = styled.div.attrs({
 export const TransactionOverviewPanel = styled.div`
   width: 100%;
 
-  .transaction__overview_info {
+  .transactionOverviewInfo {
     margin-bottom: 12px;
     display: flex;
     flex-direction: column;
 
-    .transaction__overview_parameters {
+    .transactionOverviewParameters {
       font-size: 16px;
       font-weight: 600;
       margin: 8px 0;
@@ -71,7 +71,7 @@ export const TransactionOverviewPanel = styled.div`
     }
   }
 
-  .transaction__overview_params {
+  .transactionOverviewParams {
     background: #f1f1f1;
     padding: 0 12px;
   }
@@ -92,7 +92,7 @@ export const TransactionInfoItemPanel = styled.div`
     margin-top: 3px;
   }
 
-  .transaction__info_title {
+  .transactionInfoTitle {
     display: flex;
     align-items: center;
     margin-top: 10px;
@@ -103,7 +103,7 @@ export const TransactionInfoItemPanel = styled.div`
     }
   }
 
-  .transaction__info_value {
+  .transactionInfoValue {
     margin-left: 10px;
     margin-top: 5px;
     max-height: 250px;
@@ -135,7 +135,7 @@ export const TransactionInfoContentItem = styled.div`
     color: ${props => props.theme.primary};
   }
 
-  .transaction__info__content_title {
+  .transactionInfoContentTitle {
     display: flex;
     align-items: center;
     width: 160px;
@@ -147,7 +147,7 @@ export const TransactionInfoContentItem = styled.div`
     }
   }
 
-  .transaction__info__content_container {
+  .transactionInfoContentContainer {
     color: #333;
     font-size: 14px;
     width: 100%;
@@ -162,13 +162,13 @@ export const TransactionInfoContentItem = styled.div`
       font-size: 12px;
     }
 
-    .transaction__info__content_value {
+    .transactionInfoContentValue {
       display: flex;
       align-items: center;
       flex-shrink: 0;
     }
 
-    .transaction__info__content__tag {
+    .transactionInfoContentTag {
       width: 400px;
       max-width: 100%;
     }

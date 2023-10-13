@@ -13,7 +13,7 @@ export const DecimalPanel = styled.div`
     color: var(--primary-color);
   }
 
-  .decimal-unit {
+  .decimalUnit {
     margin-left: 5px;
 
     @media (max-width: 750px) {

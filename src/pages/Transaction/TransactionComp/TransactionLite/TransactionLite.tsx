@@ -11,6 +11,7 @@ import { Addr } from '../../TransactionCell'
 import { defaultTransactionLiteDetails } from '../../state'
 import { TransactionBadge } from './TransactionBadge'
 import { fetchTransactionLiteDetailsByHash } from '../../../../services/ExplorerService/fetcher'
+import { useIsMobile } from '../../../../utils/hook'
 
 const getTransferItemTag = (transfer: State.LiteTransfer) => {
   const { cellType, udtInfo, mNftInfo } = transfer
@@ -25,6 +26,7 @@ const getTransferItemTag = (transfer: State.LiteTransfer) => {
 
 export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase }) => {
   const { hash: txHash } = useParams<{ hash: string }>()
+  const isMobile = useIsMobile()
 
   const query = useQuery(['ckb_transaction_details', txHash], async () => {
     const ckbTransactionDetails = await fetchTransactionLiteDetailsByHash(txHash)
@@ -42,23 +44,57 @@ export const TransactionCompLite: FC<{ isCellbase: boolean }> = ({ isCellbase })
                   <Addr address={item.address} isCellBase={isCellbase} />
                 </div>
               </div>
-              <div className={styles.transactionLiteBoxContent}>
-                {item.transfers.map((transfer, index) => {
-                  return (
-                    <div key={`transfer-${index}`}>
-                      <div>{getTransferItemTag(transfer)}</div>
-                      <div className={styles.addressDetailLite}>
-                        <TransactionBadge cellType={transfer.cellType} capacity={parseCKBAmount(transfer.capacity)} />
-                        <TransferAmount transfer={transfer} />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+              {isMobile ? <MobileTransferItems details={item} /> : <DesktopTransferItems details={item} />}
             </div>
           </div>
         ))}
     </>
+  )
+}
+
+export const DesktopTransferItems = (props: { details: State.TransactionLiteDetails }) => {
+  const { details } = props
+  const { transfers } = details
+  return (
+    <div className={styles.transactionLiteBoxContent}>
+      {transfers.map((transfer, index) => {
+        return (
+          <div key={`transfer-${index}`}>
+            <div>{getTransferItemTag(transfer)}</div>
+            <div className={styles.addressDetailLite}>
+              <TransactionBadge cellType={transfer.cellType} capacity={parseCKBAmount(transfer.capacity)} />
+              <TransferAmount transfer={transfer} />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+export const MobileTransferItems = (props: { details: State.TransactionLiteDetails }) => {
+  const { details } = props
+  const { transfers } = details
+  return (
+    <div className={styles.transactionLiteBoxContent}>
+      {transfers.map((transfer, index) => {
+        return (
+          <div key={`transfer-tag-${index}`}>
+            <div>{getTransferItemTag(transfer)}</div>
+          </div>
+        )
+      })}
+      {transfers.map((transfer, index) => {
+        return (
+          <div key={`transfer-detail-${index}`}>
+            <div className={styles.addressDetailLite}>
+              <TransferAmount transfer={transfer} />
+              <TransactionBadge cellType={transfer.cellType} capacity={parseCKBAmount(transfer.capacity)} />
+            </div>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 

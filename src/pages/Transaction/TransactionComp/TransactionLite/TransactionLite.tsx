@@ -116,7 +116,7 @@ const TransferAmount: FC<{ transfer: State.LiteTransfer }> = ({ transfer }) => {
       return (
         <>
           <DecimalCapacity balanceChangeType={decimalPanelType} value={amountChange} hideUnit hideZero />
-          <div className={isIncomeColor}>{`(${Math.abs(Number(capacityChange))} CKB)`}</div>
+          <div className={isIncomeColor}>{`(${capacityChange} CKB)`}</div>
         </>
       )
     }
@@ -125,7 +125,7 @@ const TransferAmount: FC<{ transfer: State.LiteTransfer }> = ({ transfer }) => {
         <div className={isIncomeColor}>
           {isIncome ? '' : '-'}
           ID: {transfer.mNftInfo?.tokenId ?? 'Unknown'}
-          {` (${Math.abs(Number(capacityChange))} CKB)`}
+          {`(${capacityChange} CKB)`}
         </div>
       )
     }

@@ -8,8 +8,8 @@ type Props = {
 const cellTypeDisplayMap: Record<State.CellType, string> = {
   nervos_dao_deposit: 'Nervos DAO Deposit',
   nervos_dao_withdrawing: 'Nervos DAO Withdraw',
-  spore_cell: 'Spore',
-  nrc_721_token: 'Mint',
+  spore_cell: '',
+  nrc_721_token: '',
   normal: '',
   udt: '',
   spore_cluster: '',

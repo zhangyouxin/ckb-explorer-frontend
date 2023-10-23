@@ -15,11 +15,23 @@ import { useIsMobile } from '../../../../utils/hook'
 
 const getTransferItemTag = (transfer: State.LiteTransfer) => {
   const { cellType, udtInfo, mNftInfo } = transfer
-  if (cellType === 'm_nft_token') {
+  if (cellType === 'm_nft_token' || cellType === 'm_nft_class' || cellType === 'm_nft_issuer') {
     return `NFT-${mNftInfo?.className ?? 'Unknown'}`
   }
   if (cellType === 'udt') {
     return udtInfo?.symbol || `Uknown Asset #${udtInfo?.typeHash.substring(udtInfo.typeHash.length - 4)}`
+  }
+  if (cellType === 'spore_cell' || cellType === 'spore_cluster') {
+    return 'Spore'
+  }
+  if (cellType === 'cota_regular' || cellType === 'cota_registry') {
+    return 'Cota'
+  }
+  if (cellType === 'nervos_dao_deposit' || cellType === 'nervos_dao_withdrawing') {
+    return 'Nervos DAO'
+  }
+  if (cellType === 'nrc_721_token' || cellType === 'nrc_721_factory') {
+    return 'NRC'
   }
   return 'CKB'
 }

@@ -31,7 +31,7 @@ const getTransferItemTag = (transfer: State.LiteTransfer) => {
     return 'Nervos DAO'
   }
   if (cellType === 'nrc_721_token' || cellType === 'nrc_721_factory') {
-    return 'NRC'
+    return 'NRC-721'
   }
   return 'CKB'
 }

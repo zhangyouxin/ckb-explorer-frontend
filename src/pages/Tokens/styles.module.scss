@@ -25,3 +25,11 @@
     fill: var(--primary-color);
   }
 }
+
+.submitTokenInfoBtn {
+  color: var(--primary-color);
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}

@@ -934,3 +934,23 @@ export type UDTQueryResult = {
   typeHash: string
   iconFile: string | null
 }
+
+type SubmitTokenInfoParams = {
+  typeHash: string
+  symbol: string
+  email: string
+  operator_website: string
+
+  full_name?: string
+  decimal?: number
+  total_amount?: number
+  description?: string
+  icon_file?: string
+  display_name?: string
+  uan?: string
+  token?: string
+}
+
+export const submitTokenInfo = (typeHash: string, params: SubmitTokenInfoParams) => {
+  requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
+}

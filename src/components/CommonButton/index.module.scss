@@ -1,0 +1,19 @@
+.container {
+  background-color: var(--primary-color);
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+  padding: 14px 40px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.container:hover {
+  background-color: var(--primary-color);
+}
+
+.isDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

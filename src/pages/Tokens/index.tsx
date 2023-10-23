@@ -2,6 +2,7 @@ import { Tooltip } from 'antd'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import Content from '../../components/Content'
 import Pagination from '../../components/Pagination'
 import SortButton from '../../components/SortButton'
@@ -20,12 +21,12 @@ import { parseDateNoTime } from '../../utils/date'
 import { localeNumberString } from '../../utils/number'
 import SUDTTokenIcon from '../../assets/sudt_token.png'
 import Loading from '../../components/Loading'
-import { udtSubmitEmail } from '../../utils/util'
 import SmallLoading from '../../components/Loading/SmallLoading'
 import styles from './styles.module.scss'
 import { useIsMobile, usePaginationParamsInPage, useSortParam } from '../../hooks'
 import { explorerService } from '../../services/ExplorerService'
 import { QueryResult } from '../../components/QueryResult'
+import { SubmitTokenInfo } from '../../components/SubmitTokenInfo'
 import { UDT } from '../../models/UDT'
 
 const TokenItem = ({ token, isLast }: { token: UDT; isLast?: boolean }) => {
@@ -97,6 +98,7 @@ const TokenItem = ({ token, isLast }: { token: UDT; isLast?: boolean }) => {
 export default () => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
+  const [isSubmitTokenInfoModalOpen, setIsSubmitTokenInfoModalOpen] = useState<boolean>(false)
   const { currentPage, pageSize: _pageSize, setPage } = usePaginationParamsInPage()
   const sortParam = useSortParam(undefined, 'transactions.desc')
   const { sort } = sortParam
@@ -121,48 +123,56 @@ export default () => {
   const totalPages = Math.ceil(total / pageSize)
 
   return (
-    <Content>
-      <TokensPanel className="container">
-        <div className="tokensTitlePanel">
-          <span>{t('udt.tokens')}</span>
-          <a rel="noopener noreferrer" target="_blank" href={udtSubmitEmail()}>
-            {t('udt.submit_token_info')}
-          </a>
-        </div>
-        <TokensTableTitle>
-          {!isMobile && <span>{t('udt.uan_name')}</span>}
-          <span>
-            {t('udt.transactions')}
-            <SortButton field="transactions" sortParam={sortParam} />
-          </span>
-          <span>
-            {t('udt.address_count')}
-            <SortButton field="addresses_count" sortParam={sortParam} />
-          </span>
-          <span>
-            {t('udt.created_time')}
-            <SortButton field="created_time" sortParam={sortParam} />
-          </span>
-        </TokensTableTitle>
+    <>
+      <Content>
+        <TokensPanel className="container">
+          <div className="tokensTitlePanel">
+            <span>{t('udt.tokens')}</span>
+            <button
+              type="button"
+              className={styles.submitTokenInfoBtn}
+              onClick={() => setIsSubmitTokenInfoModalOpen(true)}
+            >
+              {t('udt.submit_token_info')}
+            </button>
+          </div>
+          <TokensTableTitle>
+            {!isMobile && <span>{t('udt.uan_name')}</span>}
+            <span>
+              {t('udt.transactions')}
+              <SortButton field="transactions" />
+            </span>
+            <span>
+              {t('udt.address_count')}
+              <SortButton field="addresses_count" />
+            </span>
+            <span>
+              {t('udt.created_time')}
+              <SortButton field="created_time" />
+            </span>
+          </TokensTableTitle>
 
-        <QueryResult
-          query={query}
-          errorRender={() => <TokensContentEmpty>{t('udt.tokens_empty')}</TokensContentEmpty>}
-          loadingRender={() => (
-            <TokensLoadingPanel>{isMobile ? <SmallLoading /> : <Loading show />}</TokensLoadingPanel>
-          )}
-        >
-          {data => (
-            <TokensTableContent>
-              {data?.tokens.map((token, index) => (
-                <TokenItem key={token.typeHash} token={token} isLast={index === data.tokens.length - 1} />
-              ))}
-            </TokensTableContent>
-          )}
-        </QueryResult>
+          <QueryResult
+            query={query}
+            errorRender={() => <TokensContentEmpty>{t('udt.tokens_empty')}</TokensContentEmpty>}
+            loadingRender={() => (
+              <TokensLoadingPanel>{isMobile ? <SmallLoading /> : <Loading show />}</TokensLoadingPanel>
+            )}
+          >
+            {data => (
+              <TokensTableContent>
+                {data &&
+                  data.tokens.map((token, index) => (
+                    <TokenItem key={token.typeHash} token={token} isLast={index === data.tokens.length - 1} />
+                  ))}
+              </TokensTableContent>
+            )}
+          </QueryResult>
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
-      </TokensPanel>
-    </Content>
+          <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
+        </TokensPanel>
+      </Content>
+      <SubmitTokenInfo isOpen={isSubmitTokenInfoModalOpen} onClose={() => setIsSubmitTokenInfoModalOpen(false)} />
+    </>
   )
 }

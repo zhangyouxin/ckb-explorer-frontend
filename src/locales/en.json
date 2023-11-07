@@ -328,6 +328,7 @@
     },
     "search": {
       "loading": "Loading...",
+      "no_search_result": "Opps! Your search did not match any record.",
       "empty_result": "Opps! Your search did not match any record. \n\nPlease make sure input contains only one of the following items:\n",
       "empty_result_items": "Block Number/ Block Hash/ Transaction Hash/ Address/ Lock Hash/ Type Hash",
       "address_type_testnet_error": "Testnet address detected，please goto",

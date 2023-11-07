@@ -327,6 +327,7 @@
     },
     "search": {
       "loading": "加载中...",
+      "no_search_result": "哎呀！搜索失败。",
       "empty_result": "哎呀！搜索失败。\n\n请确保输入内容仅包含以下选项中的一个：\n",
       "empty_result_items": "区块高度/ 区块哈希/ 交易哈希/ 地址/ 锁定脚本哈希/ Type 脚本哈希",
       "address_type_testnet_error": "检测到测试链地址，请跳转",

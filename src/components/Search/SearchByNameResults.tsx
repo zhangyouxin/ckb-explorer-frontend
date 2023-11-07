@@ -12,11 +12,20 @@ export const SearchByNameResults = (props: Props) => {
   const { udtQueryResults, truncateTypeHash } = props
   return (
     <div className={styles.searchResultsPanelWrapper}>
-      {udtQueryResults.map(item => {
-        return <SearchByNameResult key={item.typeHash} item={item} truncateTypeHash={truncateTypeHash} />
-      })}
+      {udtQueryResults.length === 0 ? (
+        <EmptySearchByNameResult />
+      ) : (
+        udtQueryResults.map(item => {
+          return <SearchByNameResult key={item.typeHash} item={item} truncateTypeHash={truncateTypeHash} />
+        })
+      )}
     </div>
   )
+}
+
+const EmptySearchByNameResult = () => {
+  const { t } = useTranslation()
+  return <>{t('search.no_search_result')}</>
 }
 
 const SearchByNameResult = (props: { item: UdtQueryResult; truncateTypeHash?: boolean }) => {

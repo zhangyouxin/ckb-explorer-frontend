@@ -1,6 +1,7 @@
 .searchResultsPanelWrapper {
   position: absolute;
   width: 100%;
+  z-index: 2;
   padding: 12px 8px;
   max-height: 200px;
   overflow-y: auto;

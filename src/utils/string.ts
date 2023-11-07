@@ -145,3 +145,7 @@ export const handleBigNumberFloor = (value: BigNumber | string | number, decimal
 }
 
 export const sliceNftName = (name?: string) => (name && name.length > 32 ? `${name.slice(0, 32)}...` : name)
+
+export const truncateHash = (hash: string, remainLenth = 6) => {
+  return hash.length > 20 ? `${hash.slice(0, remainLenth + 2)}...${hash.slice(-remainLenth)}` : hash
+}

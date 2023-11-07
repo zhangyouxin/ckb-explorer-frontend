@@ -10,8 +10,8 @@ const targetUrl = isMainnet() ? TESTNET_URL : MAINNET_URL
 
 export default ({ address }: { address?: string }) => {
   const { t } = useTranslation()
-  const params = useSearchParams('q', 'type', 'by')
-  const { q, type, by } = params
+  const params = useSearchParams('q', 'type')
+  const { q, type } = params
   const query = address || q
 
   const chainErrorMessage = () =>
@@ -24,7 +24,7 @@ export default ({ address }: { address?: string }) => {
     <Content>
       <SearchPanel className="container">
         <div className="searchFailBar">
-          <Search content={query as string} by={by} hasButton />
+          <Search content={query as string} hasButton />
         </div>
         <SearchContent>
           {type === SearchFailType.CHAIN_ERROR || address ? (

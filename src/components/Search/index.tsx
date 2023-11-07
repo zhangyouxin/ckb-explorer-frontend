@@ -15,6 +15,9 @@ import { isAxiosError } from '../../utils/error'
 import { SearchResultType, UdtQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './index.module.scss'
 import { SearchByNameResults } from './SearchByNameResults'
+import { fetchCachedData, storeCachedData } from '../../utils/cache'
+
+const SEARCH_TYPE_KEY = '__CKB_EXPLORER_SEARCH_TYPE__'
 
 const clearSearchInput = (inputElement: RefObject<HTMLInputElement>) => {
   const input = inputElement.current
@@ -106,14 +109,15 @@ const handleSearchResult = async (
 }
 
 const Search: FC<{
-  by?: string
   content?: string
   hasButton?: boolean
+  truncateTypeHash?: boolean
   onEditEnd?: () => void
-}> = memo(({ by, content, hasButton, onEditEnd }) => {
+}> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
-  const [isSearchByNames, setIsSearchByNames] = useState(by === 'name')
+  const searchByType = fetchCachedData(SEARCH_TYPE_KEY) || 'id'
+  const [isSearchByNames, setIsSearchByNames] = useState(searchByType === 'name')
   const [searchByNameResults, setSearchByNameResults] = useState<UdtQueryResult[] | null>(null)
   const history = useHistory()
   const [searchValue, setSearchValue] = useState(content || '')
@@ -121,7 +125,10 @@ const Search: FC<{
   const inputElement = useRef<HTMLInputElement>(null)
 
   const toggleSearchType = () => {
-    setIsSearchByNames(!isSearchByNames)
+    const newIsSearchByNames = !isSearchByNames
+    const searchTypePersistValue = newIsSearchByNames ? 'name' : 'id'
+    storeCachedData(SEARCH_TYPE_KEY, searchTypePersistValue)
+    setIsSearchByNames(newIsSearchByNames)
     setSearchByNameResults(null)
   }
 
@@ -131,8 +138,7 @@ const Search: FC<{
         (queryString: string) => {
           explorerService.api.fetchSearchByNameResult(queryString).then(searchResult => {
             const data = searchResult?.data
-            // show only 3 results
-            setSearchByNameResults(data ? data.map(item => item.attributes).slice(0, 3) : [])
+            setSearchByNameResults(data ? data.map(item => item.attributes) : [])
           })
         },
         1000,
@@ -204,7 +210,9 @@ const Search: FC<{
           {isSearchByNames ? t('search.by_name') : t('search.by_id')}
         </button>
         {searchValue && <ImageIcon isClear />}
-        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults} />}
+        {searchByNameResults && (
+          <SearchByNameResults truncateTypeHash={truncateTypeHash} udtQueryResults={searchByNameResults} />
+        )}
       </SearchPanel>
       {hasButton && <SearchButton onClick={handleSearch}>{t('search.search')}</SearchButton>}
     </SearchContainer>

@@ -15,7 +15,7 @@ import { isAxiosError } from '../../utils/error'
 import { SearchResultType, UdtQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './index.module.scss'
 import { SearchByNameResults } from './SearchByNameResults'
-import { fetchCachedData, storeCachedData } from '../../utils/cache'
+import { cacheService } from '../../services/CacheService'
 
 const SEARCH_TYPE_KEY = '__CKB_EXPLORER_SEARCH_TYPE__'
 
@@ -116,7 +116,7 @@ const Search: FC<{
 }> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
-  const searchByType = fetchCachedData(SEARCH_TYPE_KEY) || 'id'
+  const searchByType = cacheService.get(SEARCH_TYPE_KEY) || 'id'
   const [isSearchByNames, setIsSearchByNames] = useState(searchByType === 'name')
   const [searchByNameResults, setSearchByNameResults] = useState<UdtQueryResult[] | null>(null)
   const history = useHistory()
@@ -127,7 +127,7 @@ const Search: FC<{
   const toggleSearchType = () => {
     const newIsSearchByNames = !isSearchByNames
     const searchTypePersistValue = newIsSearchByNames ? 'name' : 'id'
-    storeCachedData(SEARCH_TYPE_KEY, searchTypePersistValue)
+    cacheService.set(SEARCH_TYPE_KEY, searchTypePersistValue)
     setIsSearchByNames(newIsSearchByNames)
     setSearchByNameResults(null)
   }

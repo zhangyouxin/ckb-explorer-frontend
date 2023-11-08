@@ -2,13 +2,15 @@ import i18n from 'i18next'
 import { initReactI18next, useTranslation } from 'react-i18next'
 import en from '../locales/en.json'
 import zh from '../locales/zh.json'
-import { storeCachedData, fetchCachedData } from './cache'
-import { AppCachedKeys } from '../constants/cache'
+import { appSettings } from '../services/AppSettings'
+import { includes } from './array'
 
-export type LanuageType = 'en' | 'zh'
+export const SupportedLngs = ['en', 'zh'] as const
+export type SupportedLng = (typeof SupportedLngs)[number]
+export const isSupportedLng = (value: unknown): value is SupportedLng => includes(SupportedLngs, value)
 
-const getDefaultLanguage = () => fetchCachedData<LanuageType>(AppCachedKeys.AppLanguage) ?? 'en'
-const setDefaultLanguage = (lng: LanuageType) => storeCachedData(AppCachedKeys.AppLanguage, lng)
+const getDefaultLanguage = () => appSettings.defaultLanguage$.value
+const setDefaultLanguage = appSettings.defaultLanguage$.next.bind(appSettings.defaultLanguage$)
 
 // export this method for testing
 export const initI18n = async () => {
@@ -17,6 +19,8 @@ export const initI18n = async () => {
       en,
       zh,
     },
+    supportedLngs: SupportedLngs,
+    // Here, `fallbackLng` is used instead of `lng`, perhaps to continue using the results of automatic region checking?
     fallbackLng: getDefaultLanguage(),
     interpolation: {
       escapeValue: false,
@@ -26,11 +30,11 @@ export const initI18n = async () => {
 
 initI18n()
 
-i18n.on('languageChanged', (lng: LanuageType) => {
-  setDefaultLanguage(lng)
+i18n.on('languageChanged', lng => {
+  setDefaultLanguage(isSupportedLng(lng) ? lng : 'en')
 })
 
-export const useCurrentLanguage = (): LanuageType => {
+export const useCurrentLanguage = (): SupportedLng => {
   const { i18n } = useTranslation()
   const currentLanguage = i18n.language
   if (currentLanguage !== 'en' && currentLanguage !== 'zh') {

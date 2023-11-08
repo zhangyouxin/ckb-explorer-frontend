@@ -1,25 +1,26 @@
 import { FC } from 'react'
 import BigNumber from 'bignumber.js'
 import { useTranslation } from 'react-i18next'
-import { assertSerialsDataIsString, assertIsArray, assertSerialsItem, handleAxis } from '../../../utils/chart'
+import { assertIsArray, assertSerialsItem, handleAxis } from '../../../utils/chart'
 import { tooltipColor, tooltipWidth, SeriesItem, SmartChartPage } from '../common'
 import { parseHourFromMillisecond } from '../../../utils/date'
-import { ChartCachedKeys } from '../../../constants/cache'
 import { ChartItem, explorerService } from '../../../services/ExplorerService'
-import { LanuageType, useCurrentLanguage } from '../../../utils/i18n'
+import { SupportedLng, useCurrentLanguage } from '../../../utils/i18n'
 import { ChartColorConfig } from '../../../constants/common'
 
-const widthSpan = (value: string, currentLanguage: LanuageType) =>
+const widthSpan = (value: string, currentLanguage: SupportedLng) =>
   tooltipWidth(value, currentLanguage === 'en' ? 90 : 80)
 
 const useTooltip = () => {
   const { t } = useTranslation()
   const currentLanguage = useCurrentLanguage()
-  return ({ seriesName, data, color }: SeriesItem & { data: string }) => {
-    if (seriesName === t('block.epoch_time')) {
+  return ({ seriesName, data, color }: SeriesItem & { data?: unknown }) => {
+    // empty epoch time is invalid and could be hidden, epoch time is expected to be around 4 hours
+    if (seriesName === t('block.epoch_time') && data) {
       return `<div>${tooltipColor(color)}${widthSpan(t('block.epoch_time'), currentLanguage)} ${data} h</div>`
     }
-    if (seriesName === t('block.epoch_length')) {
+    // empty epoch length is invalid and could be hidden, epoch length is determined by avg block time, it's expected to be 4h / avg_block_time
+    if (seriesName === t('block.epoch_length') && data) {
       return `<div>${tooltipColor(color)}${widthSpan(t('block.epoch_length'), currentLanguage)} ${data}</div>`
     }
     return ''
@@ -71,7 +72,6 @@ const useOption = (
             }</div>`
             dataList.forEach(data => {
               assertSerialsItem(data)
-              assertSerialsDataIsString(data)
               result += parseTooltip(data)
             })
             return result
@@ -217,7 +217,7 @@ export const DifficultyUncleRateEpochChart: FC<{ isThumbnail?: boolean }> = ({ i
       fetchData={explorerService.api.fetchStatisticDifficultyUncleRateEpoch}
       getEChartOption={useOption}
       toCSV={toCSV}
-      cacheKey={ChartCachedKeys.DifficultyUncleRateEpoch}
+      cacheKey="DifficultyUncleRateEpoch"
       cacheMode="epoch"
     />
   )

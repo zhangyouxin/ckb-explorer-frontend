@@ -10,16 +10,21 @@ export type LanuageType = 'en' | 'zh'
 const getDefaultLanguage = () => fetchCachedData<LanuageType>(AppCachedKeys.AppLanguage) ?? 'en'
 const setDefaultLanguage = (lng: LanuageType) => storeCachedData(AppCachedKeys.AppLanguage, lng)
 
-i18n.use(initReactI18next).init({
-  resources: {
-    en,
-    zh,
-  },
-  fallbackLng: getDefaultLanguage(),
-  interpolation: {
-    escapeValue: false,
-  },
-})
+// export this method for testing
+export const initI18n = async () => {
+  i18n.use(initReactI18next).init({
+    resources: {
+      en,
+      zh,
+    },
+    fallbackLng: getDefaultLanguage(),
+    interpolation: {
+      escapeValue: false,
+    },
+  })
+}
+
+initI18n()
 
 i18n.on('languageChanged', (lng: LanuageType) => {
   setDefaultLanguage(lng)

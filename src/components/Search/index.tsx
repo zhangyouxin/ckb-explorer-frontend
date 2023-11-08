@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent } from 'react'
+import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent, useMemo } from 'react'
 import { useHistory } from 'react-router'
 import { TFunction, useTranslation } from 'react-i18next'
+import debounce from 'lodash.debounce'
 import { SearchImage, SearchInputPanel, SearchPanel, SearchButton, SearchContainer } from './styled'
 import { explorerService, Response } from '../../services/ExplorerService'
 import SearchLogo from '../../assets/search_black.png'
@@ -11,7 +12,9 @@ import { useIsMobile } from '../../utils/hook'
 import { isChainTypeError } from '../../utils/chain'
 import { isAxiosError } from '../../utils/error'
 // TODO: Refactor is needed. Should not directly import anything from the descendants of ExplorerService.
-import { SearchResultType } from '../../services/ExplorerService/fetcher'
+import { SearchResultType, UdtQueryResult } from '../../services/ExplorerService/fetcher'
+import styles from './index.module.scss'
+import { SearchByNameResults } from './SearchByNameResults'
 
 const clearSearchInput = (inputElement: RefObject<HTMLInputElement>) => {
   const input = inputElement.current
@@ -55,7 +58,7 @@ const handleSearchResult = async (
   setSearchLoading(inputElement, t)
 
   try {
-    const { data } = await explorerService.api.fetchSearchResult(addPrefixForHash(query))
+    const { data } = await explorerService.api.fetchSearchByIdResult(addPrefixForHash(query))
     clearSearchInput(inputElement)
     setSearchValue('')
 
@@ -103,22 +106,40 @@ const handleSearchResult = async (
 }
 
 const Search: FC<{
+  by?: string
   content?: string
   hasButton?: boolean
   onEditEnd?: () => void
-}> = memo(({ content, hasButton, onEditEnd }) => {
+}> = memo(({ by, content, hasButton, onEditEnd }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
+  const [isSearchByNames, setIsSearchByNames] = useState(by === 'name')
+  const [searchByNameResults, setSearchByNameResults] = useState<UdtQueryResult[] | null>(null)
   const history = useHistory()
-  const SearchPlaceholder = t('navbar.search_placeholder')
   const [searchValue, setSearchValue] = useState(content || '')
-  const [placeholder, setPlaceholder] = useState(SearchPlaceholder)
+  const placeholder = isSearchByNames ? t('navbar.search_by_name_placeholder') : t('navbar.search_placeholder')
   const inputElement = useRef<HTMLInputElement>(null)
 
-  // update input placeholder when language change
-  useEffect(() => {
-    setPlaceholder(SearchPlaceholder)
-  }, [SearchPlaceholder])
+  const toggleSearchType = () => {
+    setIsSearchByNames(!isSearchByNames)
+    setSearchByNameResults(null)
+  }
+
+  const debouncedSearchByName = useMemo(
+    () =>
+      debounce(
+        (queryString: string) => {
+          explorerService.api.fetchSearchByNameResult(queryString).then(searchResult => {
+            const data = searchResult?.data
+            // show only 3 results
+            setSearchByNameResults(data ? data.map(item => item.attributes).slice(0, 3) : [])
+          })
+        },
+        1000,
+        { trailing: true },
+      ),
+    [],
+  )
 
   useEffect(() => {
     if (inputElement.current && !isMobile) {
@@ -132,20 +153,34 @@ const Search: FC<{
     if (isClear) {
       setSearchValue('')
       clearSearchInput(inputElement)
+      setSearchByNameResults(null)
       onEditEnd?.()
     }
   }
 
-  const inputChangeAction = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value)
-    if (!event.target.value) onEditEnd?.()
+  const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value
+    setSearchValue(inputValue)
+
+    if (isSearchByNames && inputValue) {
+      debouncedSearchByName(inputValue)
+    }
+
+    if (!inputValue) onEditEnd?.()
   }
 
   const searchKeyAction = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
-      handleSearchResult(searchValue, inputElement, setSearchValue, history, t)
-      onEditEnd?.()
+      handleSearch()
     }
+  }
+  const handleSearch = () => {
+    if (!isSearchByNames) {
+      handleSearchResult(searchValue, inputElement, setSearchValue, history, t)
+    } else {
+      debouncedSearchByName(searchValue)
+    }
+    onEditEnd?.()
   }
 
   const ImageIcon = ({ isClear }: { isClear?: boolean }) => (
@@ -165,18 +200,13 @@ const Search: FC<{
           onChange={event => inputChangeAction(event)}
           onKeyUp={event => searchKeyAction(event)}
         />
+        <button type="button" className={styles.byNameOrId} onClick={toggleSearchType}>
+          {isSearchByNames ? t('search.by_name') : t('search.by_id')}
+        </button>
         {searchValue && <ImageIcon isClear />}
+        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults} />}
       </SearchPanel>
-      {hasButton && (
-        <SearchButton
-          onClick={() => {
-            handleSearchResult(searchValue, inputElement, setSearchValue, history, t)
-            onEditEnd?.()
-          }}
-        >
-          {t('search.search')}
-        </SearchButton>
-      )}
+      {hasButton && <SearchButton onClick={handleSearch}>{t('search.search')}</SearchButton>}
     </SearchContainer>
   )
 })

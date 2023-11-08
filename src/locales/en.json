@@ -168,6 +168,7 @@
       "tokens": "Tokens",
       "docs": "Docs",
       "search_placeholder": "Block/Transaction/Address/Lock Hash/Type Hash",
+      "search_by_name_placeholder": "Token Name",
       "mainnet": "LINA",
       "testnet": "TESTNET",
       "language_en": "EN",
@@ -338,7 +339,9 @@
       "udt_filter_no_result": "Filter result not found.\nPlease enter only complete Address",
       "tx": "Transaction",
       "addr": "Address",
-      "reset": "Reset"
+      "reset": "Reset",
+      "by_name": "by name",
+      "by_id": "by ID"
     },
     "address": {
       "address": "Address",

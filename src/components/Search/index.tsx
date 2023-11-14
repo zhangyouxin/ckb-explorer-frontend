@@ -12,7 +12,7 @@ import { useIsMobile } from '../../utils/hook'
 import { isChainTypeError } from '../../utils/chain'
 import { isAxiosError } from '../../utils/error'
 // TODO: Refactor is needed. Should not directly import anything from the descendants of ExplorerService.
-import { SearchResultType, UdtQueryResult } from '../../services/ExplorerService/fetcher'
+import { SearchResultType, UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './index.module.scss'
 import { SearchByNameResults } from './SearchByNameResults'
 import { cacheService } from '../../services/CacheService'
@@ -118,7 +118,7 @@ const Search: FC<{
   const { t } = useTranslation()
   const searchByType = cacheService.get(SEARCH_TYPE_KEY) || 'id'
   const [isSearchByNames, setIsSearchByNames] = useState(searchByType === 'name')
-  const [searchByNameResults, setSearchByNameResults] = useState<UdtQueryResult[] | null>(null)
+  const [searchByNameResults, setSearchByNameResults] = useState<UDTQueryResult[] | null>(null)
   const history = useHistory()
   const [searchValue, setSearchValue] = useState(content || '')
   const placeholder = isSearchByNames ? t('navbar.search_by_name_placeholder') : t('navbar.search_placeholder')

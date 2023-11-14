@@ -163,7 +163,7 @@ export const apiFetcher = {
     }),
 
   fetchSearchByNameResult: (param: string) =>
-    v1Get<Response.Wrapper<UdtQueryResult, SearchResultType.UDT>[]>('udt_queries', {
+    v1Get<Response.Wrapper<UDTQueryResult, SearchResultType.UDT>[]>('udt_queries', {
       params: {
         q: param,
       },
@@ -910,7 +910,7 @@ export type DASAccount = string
 
 export type DASAccountMap = Record<string, DASAccount | null>
 
-export type UdtQueryResult = {
+export type UDTQueryResult = {
   fullName: string
   symbol: string | null
   typeHash: string

@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { UdtQueryResult } from '../../services/ExplorerService/fetcher'
+import { UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './SearchByNameResults.module.scss'
 import { truncateHash } from '../../utils/string'
 
 type Props = {
-  udtQueryResults: UdtQueryResult[]
+  udtQueryResults: UDTQueryResult[]
   truncateTypeHash?: boolean
 }
 
@@ -28,7 +28,7 @@ const EmptySearchByNameResult = () => {
   return <>{t('search.no_search_result')}</>
 }
 
-const SearchByNameResult = (props: { item: UdtQueryResult; truncateTypeHash?: boolean }) => {
+const SearchByNameResult = (props: { item: UDTQueryResult; truncateTypeHash?: boolean }) => {
   const { t } = useTranslation()
   const { item, truncateTypeHash } = props
   const { typeHash, symbol } = item

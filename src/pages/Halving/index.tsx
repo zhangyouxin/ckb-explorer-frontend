@@ -3,13 +3,13 @@ import BigNumber from 'bignumber.js'
 import classnames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import Content from '../../components/Content'
-import baseIssuance from '../../assets/ckb_base_issuance_trend.png'
-import blockRewards from '../../assets/block-rewards.png'
-import blockRewardsCN from '../../assets/block-rewards-cn.png'
-import halvingBg from '../../assets/halving_bg.png'
-import halvingSuccessBg from '../../assets/halving_success_bg.png'
-import { ReactComponent as CalendarIcon } from '../../assets/calendar.svg'
-import { ReactComponent as XIcon } from '../../assets/X.svg'
+import baseIssuance from './ckb_base_issuance_trend.png'
+import blockRewards from './block-rewards.png'
+import blockRewardsCN from './block-rewards-cn.png'
+import halvingBg from './halving_bg.png'
+import halvingSuccessBg from './halving_success_bg.png'
+import { ReactComponent as CalendarIcon } from './calendar.svg'
+import { ReactComponent as XIcon } from './X.svg'
 import { ReactComponent as WarningCircle } from '../../assets/warning_circle.svg'
 import { HalvingTable } from './HalvingTable'
 import { HalvingInfo } from './HalvingInfo'
@@ -54,7 +54,7 @@ export const HalvingCountdownPage = () => {
     (((currentEpoch % EPOCHS_PER_HALVING) * THEORETICAL_EPOCH_TIME - currentEpochUsedTime) /
       (EPOCHS_PER_HALVING * THEORETICAL_EPOCH_TIME)) *
     100
-  const [days, hours, minutes, seconds, expired] = useCountdown(estimatedDate)
+  const [days, hours, minutes, seconds, isComingSoon] = useCountdown(estimatedDate)
 
   const shortCountdown = () => {
     if (days > 0) {
@@ -132,7 +132,7 @@ export const HalvingCountdownPage = () => {
       )
     }
 
-    if (expired) {
+    if (isComingSoon) {
       return (
         <div className={styles.halvingPanelWrapper}>
           <div className={classnames(styles.halvingPanel, styles.loadingPanel)}>

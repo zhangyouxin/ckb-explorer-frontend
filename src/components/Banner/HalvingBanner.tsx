@@ -1,12 +1,12 @@
 import classnames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import styles from './index.module.scss'
-import halvingBanner from '../../assets/halving_banner.png'
-import halvingBannerSuccess from '../../assets/halving_banner_success.png'
-import halvingBannerSuccessMobile from '../../assets/halving_banner_success_mobile.png'
-import { ReactComponent as MoveIcon } from '../../assets/move.svg'
+import halvingBanner from './halving_banner.png'
+import halvingBannerSuccess from './halving_banner_success.png'
+import halvingBannerSuccessMobile from './halving_banner_success_mobile.png'
+import { ReactComponent as MoveIcon } from './move.svg'
 import LoadingWhiteImage from '../../assets/loading_white.gif'
-import halvingSuccessAni from '../../assets/halving_success_ani.gif'
+import halvingSuccessAni from './halving_success_ani.gif'
 import SimpleButton from '../SimpleButton'
 import { useCountdown, useHalving, useIsMobile } from '../../utils/hook'
 
@@ -34,7 +34,7 @@ function numberToOrdinal(number: number) {
 
 export const HalvingBanner = () => {
   const { estimatedDate, halvingCount, inCelebration, isLoading } = useHalving()
-  const [days, hours, minutes, seconds, expired] = useCountdown(estimatedDate)
+  const [days, hours, minutes, seconds, isComingSoon] = useCountdown(estimatedDate)
   const isMobile = useIsMobile()
   const [t, { language }] = useTranslation()
 
@@ -60,7 +60,7 @@ export const HalvingBanner = () => {
       return t('halving.learn_more')
     }
 
-    if (expired) {
+    if (isComingSoon) {
       return t('halving.comming_soon')
     }
 

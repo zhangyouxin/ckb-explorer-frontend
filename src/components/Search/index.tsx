@@ -156,6 +156,13 @@ const Search: FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (!searchValue || !isSearchByNames) {
+      return
+    }
+    debouncedSearchByName()
+  }, [searchValue, isSearchByNames, debouncedSearchByName])
+
   const clearSearchAction = (isClear?: boolean) => {
     if (isClear) {
       setSearchValue('')
@@ -174,19 +181,12 @@ const Search: FC<{
   const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
     setSearchValue(inputValue)
-
-    if (isSearchByNames && inputValue) {
-      debouncedSearchByName()
-    }
-
     if (!inputValue) onEditEnd?.()
   }
 
   const handleSearch = () => {
     if (!isSearchByNames) {
       handleSearchResult(searchValue, inputElement, setSearchValue, history, t)
-    } else {
-      debouncedSearchByName()
     }
     onEditEnd?.()
   }

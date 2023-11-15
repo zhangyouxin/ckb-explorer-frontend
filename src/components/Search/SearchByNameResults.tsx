@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './SearchByNameResults.module.scss'
-import { truncateHash } from '../../utils/string'
+import EllipsisMiddle from '../EllipsisMiddle'
 
 type Props = {
   udtQueryResults: UDTQueryResult[]
@@ -32,12 +32,15 @@ const SearchByNameResult = (props: { item: UDTQueryResult; truncateTypeHash?: bo
   const { t } = useTranslation()
   const { item, truncateTypeHash } = props
   const { typeHash, symbol } = item
-  const displayTypeHash = truncateTypeHash ? truncateHash(typeHash) : typeHash
   return (
     <>
       <a className={styles.searchResult} href={`${window.origin}/sudt/${typeHash}`}>
         {symbol ?? t('udt.unknown_token')}
-        <span className={styles.typeHash}>{displayTypeHash}</span>
+        {truncateTypeHash ? (
+          <EllipsisMiddle className={styles.typeHash}>{typeHash}</EllipsisMiddle>
+        ) : (
+          <span className={styles.typeHash}>{typeHash}</span>
+        )}
       </a>
       <div className={styles.divider} />
     </>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent, useMemo 
 import { useHistory } from 'react-router'
 import { TFunction, useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
+import { useQuery } from '@tanstack/react-query'
 import { SearchImage, SearchInputPanel, SearchPanel, SearchButton, SearchContainer } from './styled'
 import { explorerService, Response } from '../../services/ExplorerService'
 import SearchLogo from '../../assets/search_black.png'
@@ -15,9 +16,7 @@ import { isAxiosError } from '../../utils/error'
 import { SearchResultType, UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './index.module.scss'
 import { SearchByNameResults } from './SearchByNameResults'
-import { cacheService } from '../../services/CacheService'
-
-const SEARCH_TYPE_KEY = '__CKB_EXPLORER_SEARCH_TYPE__'
+import { useSearchType } from '../../services/AppSettings/hooks'
 
 const clearSearchInput = (inputElement: RefObject<HTMLInputElement>) => {
   const input = inputElement.current
@@ -116,7 +115,7 @@ const Search: FC<{
 }> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
-  const searchByType = cacheService.get(SEARCH_TYPE_KEY) || 'id'
+  const [searchByType, setSearchByType] = useSearchType()
   const [isSearchByNames, setIsSearchByNames] = useState(searchByType === 'name')
   const [searchByNameResults, setSearchByNameResults] = useState<UDTQueryResult[] | null>(null)
   const history = useHistory()
@@ -127,24 +126,26 @@ const Search: FC<{
   const toggleSearchType = () => {
     const newIsSearchByNames = !isSearchByNames
     const searchTypePersistValue = newIsSearchByNames ? 'name' : 'id'
-    cacheService.set(SEARCH_TYPE_KEY, searchTypePersistValue)
+    setSearchByType(searchTypePersistValue)
     setIsSearchByNames(newIsSearchByNames)
     setSearchByNameResults(null)
   }
 
-  const debouncedSearchByName = useMemo(
+  const { refetch: refetchSearchByName } = useQuery(
+    ['searchByName', searchValue],
     () =>
-      debounce(
-        (queryString: string) => {
-          explorerService.api.fetchSearchByNameResult(queryString).then(searchResult => {
-            const data = searchResult?.data
-            setSearchByNameResults(data ? data.map(item => item.attributes) : [])
-          })
-        },
-        1000,
-        { trailing: true },
-      ),
-    [],
+      explorerService.api.fetchSearchByNameResult(searchValue).then(searchResult => {
+        setSearchByNameResults(searchResult ? searchResult.data.map(item => item.attributes) : [])
+      }),
+    {
+      // we need to control the fetch timing manually
+      enabled: false,
+    },
+  )
+
+  const debouncedSearchByName = useMemo(
+    () => debounce(refetchSearchByName, 1000, { trailing: true }),
+    [refetchSearchByName],
   )
 
   useEffect(() => {
@@ -164,27 +165,28 @@ const Search: FC<{
     }
   }
 
-  const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value
-    setSearchValue(inputValue)
-
-    if (isSearchByNames && inputValue) {
-      debouncedSearchByName(inputValue)
-    }
-
-    if (!inputValue) onEditEnd?.()
-  }
-
   const searchKeyAction = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
       handleSearch()
     }
   }
+
+  const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value
+    setSearchValue(inputValue)
+
+    if (isSearchByNames && inputValue) {
+      debouncedSearchByName()
+    }
+
+    if (!inputValue) onEditEnd?.()
+  }
+
   const handleSearch = () => {
     if (!isSearchByNames) {
       handleSearchResult(searchValue, inputElement, setSearchValue, history, t)
     } else {
-      debouncedSearchByName(searchValue)
+      debouncedSearchByName()
     }
     onEditEnd?.()
   }

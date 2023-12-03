@@ -9,8 +9,3 @@
   font-family:digital-clock-font;
   src: url('./digital-7.ttf');
 }
-
-@font-face {
-  font-family: 'JetBrains Mono NL';
-  src: url('./JetBrainsMono.ttf');
-}

@@ -163,7 +163,7 @@ export const apiFetcher = {
     }),
 
   fetchSearchByNameResult: (param: string) =>
-    v1Get<Response.Wrapper<UDTQueryResult, SearchResultType.UDT>[]>('udt_queries', {
+    v1GetUnwrappedList<UDTQueryResult>('udt_queries', {
       params: {
         q: param,
       },

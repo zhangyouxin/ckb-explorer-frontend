@@ -113,6 +113,7 @@ const Search: FC<{
   truncateTypeHash?: boolean
   onEditEnd?: () => void
 }> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
+  // display only ten records for search by name
   const DISPLAY_COUNT = 10
   const isMobile = useIsMobile()
   const { t } = useTranslation()

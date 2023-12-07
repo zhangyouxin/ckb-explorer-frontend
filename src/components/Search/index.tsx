@@ -112,7 +112,9 @@ const Search: FC<{
   hasButton?: boolean
   onEditEnd?: () => void
 }> = memo(({ content, hasButton, onEditEnd }) => {
-  // truncate the list returned when search by name, to avoid the list too long
+  // Currently, the API returns all search results, which could be extremely large in quantity.
+  // Since the rendering component does not implement virtual scrolling, this leads to a significant decrease in page performance.
+  // Therefore, here we are implementing a frontend-level limitation on the number of displayed results.
   const DISPLAY_COUNT = 10
   const isMobile = useIsMobile()
   const { t } = useTranslation()
@@ -185,9 +187,7 @@ const Search: FC<{
   }
 
   const searchById = () => {
-    if (!isSearchByName) {
-      handleSearchById(searchValue, inputElement, setSearchValue, history, t)
-    }
+    handleSearchById(searchValue, inputElement, setSearchValue, history, t)
     onEditEnd?.()
   }
 

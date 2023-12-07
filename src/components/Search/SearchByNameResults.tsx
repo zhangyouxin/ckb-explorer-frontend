@@ -34,15 +34,13 @@ const SearchByNameResult = (props: { item: UDTQueryResult; truncateTypeHash?: bo
   const { item, truncateTypeHash } = props
   const { typeHash, symbol } = item
   return (
-    <>
-      <a className={styles.searchResult} href={`${window.origin}/sudt/${typeHash}`}>
-        <span className={styles.tokenSymbol}>{symbol ?? t('udt.unknown_token')}</span>
-        {truncateTypeHash ? (
-          <EllipsisMiddle className={classNames(styles.typeHash, 'monospace')}>{typeHash}</EllipsisMiddle>
-        ) : (
-          <span className={classNames(styles.typeHash, 'monospace')}>{typeHash}</span>
-        )}
-      </a>
-    </>
+    <a className={styles.searchResult} href={`${window.origin}/sudt/${typeHash}`}>
+      <span className={styles.tokenSymbol}>{symbol ?? t('udt.unknown_token')}</span>
+      {truncateTypeHash ? (
+        <EllipsisMiddle className={classNames(styles.typeHash, 'monospace')}>{typeHash}</EllipsisMiddle>
+      ) : (
+        <span className={classNames(styles.typeHash, 'monospace')}>{typeHash}</span>
+      )}
+    </a>
   )
 }

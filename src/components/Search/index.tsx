@@ -113,7 +113,7 @@ const Search: FC<{
   truncateTypeHash?: boolean
   onEditEnd?: () => void
 }> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
-  const SEARCH_COUNT = 10
+  const DISPLAY_COUNT = 10
   const isMobile = useIsMobile()
   const { t } = useTranslation()
   const [searchByType, setSearchByType] = useSearchType()
@@ -135,7 +135,7 @@ const Search: FC<{
     ['searchByName', searchValue],
     () =>
       explorerService.api.fetchSearchByNameResult(searchValue).then(searchResult => {
-        setSearchByNameResults(searchResult ? searchResult.slice(0, SEARCH_COUNT) : [])
+        setSearchByNameResults(searchResult ? searchResult.slice(0, DISPLAY_COUNT) : [])
       }),
     {
       // we need to control the fetch timing manually

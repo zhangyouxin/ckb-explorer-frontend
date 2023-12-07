@@ -110,9 +110,8 @@ const handleSearchById = async (
 const Search: FC<{
   content?: string
   hasButton?: boolean
-  truncateTypeHash?: boolean
   onEditEnd?: () => void
-}> = memo(({ content, hasButton, onEditEnd, truncateTypeHash }) => {
+}> = memo(({ content, hasButton, onEditEnd }) => {
   // truncate the list returned when search by name, to avoid the list too long
   const DISPLAY_COUNT = 10
   const isMobile = useIsMobile()
@@ -213,9 +212,7 @@ const Search: FC<{
           {isSearchByName ? t('search.by_name') : t('search.by_id')}
         </button>
         {searchValue && <ImageIcon isClear />}
-        {searchByNameResults && (
-          <SearchByNameResults truncateTypeHash={truncateTypeHash} udtQueryResults={searchByNameResults} />
-        )}
+        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults} />}
       </SearchPanel>
       {hasButton && <SearchButton onClick={searchById}>{t('search.search')}</SearchButton>}
     </SearchContainer>

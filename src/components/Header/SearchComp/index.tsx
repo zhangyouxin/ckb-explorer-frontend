@@ -30,7 +30,7 @@ export const SearchComp: FC<{
 
   return (
     <HeaderSearchPanel>
-      <Search onEditEnd={onEditEnd} truncateTypeHash />
+      <Search onEditEnd={onEditEnd} />
     </HeaderSearchPanel>
   )
 })

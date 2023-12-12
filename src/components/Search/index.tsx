@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent, useMemo 
 import { useHistory } from 'react-router'
 import { TFunction, useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { SearchImage, SearchInputPanel, SearchPanel, SearchButton, SearchContainer } from './styled'
 import { explorerService, Response } from '../../services/ExplorerService'
 import SearchLogo from '../../assets/search_black.png'
@@ -13,7 +13,7 @@ import { useIsMobile } from '../../hooks'
 import { isChainTypeError } from '../../utils/chain'
 import { isAxiosError } from '../../utils/error'
 // TODO: Refactor is needed. Should not directly import anything from the descendants of ExplorerService.
-import { SearchResultType, UDTQueryResult } from '../../services/ExplorerService/fetcher'
+import { SearchResultType } from '../../services/ExplorerService/fetcher'
 import styles from './index.module.scss'
 import { SearchByNameResults } from './SearchByNameResults'
 import { useSearchType } from '../../services/AppSettings/hooks'
@@ -117,10 +117,10 @@ const Search: FC<{
   // Therefore, here we are implementing a frontend-level limitation on the number of displayed results.
   const DISPLAY_COUNT = 10
   const isMobile = useIsMobile()
+  const queryClient = useQueryClient()
   const { t } = useTranslation()
   const [searchByType, setSearchByType] = useSearchType()
   const [isSearchByName, setIsSearchByName] = useState(searchByType === 'name')
-  const [searchByNameResults, setSearchByNameResults] = useState<UDTQueryResult[] | null>(null)
   const history = useHistory()
   const [searchValue, setSearchValue] = useState(content || '')
   const inputElement = useRef<HTMLInputElement>(null)
@@ -130,20 +130,21 @@ const Search: FC<{
     const searchTypePersistValue = newIsSearchByNames ? 'name' : 'id'
     setSearchByType(searchTypePersistValue)
     setIsSearchByName(newIsSearchByNames)
-    setSearchByNameResults(null)
+    queryClient.resetQueries(['searchByName', searchValue])
   }
 
-  const { refetch: refetchSearchByName } = useQuery(
-    ['searchByName', searchValue],
-    () =>
-      explorerService.api.fetchSearchByNameResult(searchValue).then(searchResult => {
-        setSearchByNameResults(searchResult ? searchResult.slice(0, DISPLAY_COUNT) : [])
-      }),
-    {
-      // we need to control the fetch timing manually
-      enabled: false,
-    },
-  )
+  const {
+    refetch: refetchSearchByName,
+    data: searchByNameResults,
+    isSuccess,
+    isLoading,
+  } = useQuery(['searchByName', searchValue], () => explorerService.api.fetchSearchByNameResult(searchValue), {
+    // we need to control the fetch timing manually
+    enabled: false,
+  })
+
+  // eslint-disable-next-line no-console
+  console.log('searchByNameResults', isSuccess, isLoading, searchByNameResults)
 
   const debouncedSearchByName = useMemo(
     () => debounce(refetchSearchByName, 1000, { trailing: true }),
@@ -169,7 +170,7 @@ const Search: FC<{
     if (isClear) {
       setSearchValue('')
       clearSearchInput(inputElement)
-      setSearchByNameResults(null)
+      queryClient.resetQueries(['searchByName', searchValue])
       onEditEnd?.()
     }
   }
@@ -212,7 +213,7 @@ const Search: FC<{
           {isSearchByName ? t('search.by_name') : t('search.by_id')}
         </button>
         {searchValue && <ImageIcon isClear />}
-        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults} />}
+        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults.slice(0, DISPLAY_COUNT)} />}
       </SearchPanel>
       {hasButton && <SearchButton onClick={searchById}>{t('search.search')}</SearchButton>}
     </SearchContainer>

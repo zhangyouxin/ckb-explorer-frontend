@@ -9,7 +9,7 @@ import TransactionItem from '../../components/TransactionItem/index'
 import { explorerService } from '../../services/ExplorerService'
 import { parseSporeCellData } from '../../utils/spore'
 import { localeNumberString, parseUDTAmount } from '../../utils/number'
-import { shannonToCkb, deprecatedAddrToNewAddr, handleNftImgError, patchMibaoImg } from '../../utils/util'
+import { shannonToCkb, handleNftImgError, patchMibaoImg } from '../../utils/util'
 import {
   AddressLockScriptController,
   AddressLockScriptPanel,
@@ -335,14 +335,6 @@ export const AddressTransactions = ({
   const txList = isNewAddr
     ? transactions.map(tx => ({
         ...tx,
-        displayInputs: tx.displayInputs.map(i => ({
-          ...i,
-          addressHash: deprecatedAddrToNewAddr(i.addressHash),
-        })),
-        displayOutputs: tx.displayOutputs.map(o => ({
-          ...o,
-          addressHash: deprecatedAddrToNewAddr(o.addressHash),
-        })),
       }))
     : transactions
 

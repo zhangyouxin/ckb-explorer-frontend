@@ -41,6 +41,15 @@ const v1GetUnwrappedPagedList = <T>(...args: Parameters<typeof v1GetWrapped>) =>
     }
   })
 
+const v1GetPagedList = <T>(...args: Parameters<typeof v1GetWrapped>) =>
+  v1Get<T[]>(...args).then(res => {
+    assert(res.meta, 'Unexpected paged list response')
+    return {
+      data: res.data,
+      ...res.meta,
+    }
+  })
+
 export enum SearchResultType {
   Block = 'block',
   Transaction = 'ckb_transaction',
@@ -82,6 +91,20 @@ export const apiFetcher = {
   fetchTransactionRaw: (hash: string) => requesterV2.get<unknown>(`transactions/${hash}/raw`).then(res => res.data),
 
   fetchTransactionByHash: (hash: string) => v1GetUnwrapped<Transaction>(`transactions/${hash}`),
+  fetchTransactionInputsByHash: (hash: string, page: number, size: number) =>
+    v1GetPagedList<Cell>(`transactions/${hash}/display_inputs`, {
+      params: {
+        page,
+        page_size: size,
+      },
+    }),
+  fetchTransactionOutputsByHash: (hash: string, page: number, size: number) =>
+    v1GetPagedList<Cell>(`transactions/${hash}/display_outputs`, {
+      params: {
+        page,
+        page_size: size,
+      },
+    }),
 
   fetchTransactionLiteDetailsByHash: (hash: string) =>
     requesterV2

@@ -10,8 +10,6 @@ export const transformToTransaction = (tx: CKBTransactionInScript): Transaction 
     blockTimestamp: tx.blockTimestamp,
     transactionFee: String(tx.transactionFee),
     isCellbase: tx.isCellbase,
-    displayInputs: tx.displayInputs,
-    displayOutputs: tx.displayOutputs,
     txStatus: tx.txStatus,
 
     // defaults

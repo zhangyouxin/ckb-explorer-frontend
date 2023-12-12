@@ -3,7 +3,6 @@ import TransactionItem from '../../../components/TransactionItem'
 import { TransactionsPagination, DAONoResultPanel } from './styled'
 import Pagination from '../../../components/Pagination'
 import { PageParams } from '../../../constants/common'
-import { deprecatedAddrToNewAddr } from '../../../utils/util'
 import { Transaction } from '../../../models/Transaction'
 
 export default ({
@@ -31,28 +30,17 @@ export default ({
       </DAONoResultPanel>
     )
   }
-  const txList = transactions.map(tx => ({
-    ...tx,
-    displayInputs: tx.displayInputs.map(i => ({
-      ...i,
-      addressHash: deprecatedAddrToNewAddr(i.addressHash),
-    })),
-    displayOutputs: tx.displayOutputs.map(o => ({
-      ...o,
-      addressHash: deprecatedAddrToNewAddr(o.addressHash),
-    })),
-  }))
 
   return (
     <>
-      {txList.map(
+      {transactions.map(
         (transaction: Transaction, index: number) =>
           transaction && (
             <TransactionItem
               key={transaction.transactionHash}
               transaction={transaction}
               circleCorner={{
-                bottom: index === txList.length - 1 && totalPages === 1,
+                bottom: index === transactions.length - 1 && totalPages === 1,
               }}
             />
           ),

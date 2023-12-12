@@ -1,5 +1,6 @@
-import { ReactNode, useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import RightArrowIcon from './input_arrow_output.png'
 import DownArrowIcon from './input_arrow_output_down.png'
 import { localeNumberString } from '../../utils/number'
@@ -11,6 +12,8 @@ import { CellType } from '../../constants/common'
 import AddressText from '../AddressText'
 import { useIsLGScreen, useParsedDate } from '../../hooks'
 import { Transaction } from '../../models/Transaction'
+import { explorerService } from '../../services/ExplorerService'
+import Pagination from '../Pagination'
 
 export interface CircleCorner {
   top?: boolean
@@ -38,6 +41,19 @@ const TransactionItem = ({
   const isLG = useIsLGScreen()
   const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
+  const txHash = transaction.transactionHash
+  // refactor to configurable
+  const PAGE_SIZE = 10
+  const [inputCellsPage, setInputCellsPage] = useState(1)
+  const txInputsQuery = useQuery(['transactionInputs', txHash, inputCellsPage], async () => {
+    const result = await explorerService.api.fetchTransactionInputsByHash(txHash, inputCellsPage, PAGE_SIZE)
+    return result
+  })
+  const [outputCellsPage, setOutputCellsPage] = useState(1)
+  const txOutputsQuery = useQuery(['transactionOutputs', txHash, outputCellsPage], async () => {
+    const result = await explorerService.api.fetchTransactionOutputsByHash(txHash, outputCellsPage, PAGE_SIZE)
+    return result
+  })
 
   useEffect(() => {
     const el = ref.current
@@ -77,16 +93,23 @@ const TransactionItem = ({
       <TransactionCellPanel>
         <div className="transactionItemInput">
           <TransactionCellList
-            cells={transaction.displayInputs}
+            cells={txInputsQuery.isSuccess ? txInputsQuery.data.data : []}
             transaction={transaction}
             render={cell => <TransactionCell cell={cell} address={address} cellType={CellType.Input} key={cell.id} />}
           />
+          {txInputsQuery.isSuccess && txInputsQuery.data.total > PAGE_SIZE && (
+            <Pagination
+              currentPage={inputCellsPage}
+              totalPages={txInputsQuery.isSuccess ? Math.ceil(txInputsQuery.data.total / PAGE_SIZE) : 1}
+              onChange={setInputCellsPage}
+            />
+          )}
         </div>
         <img src={isLG ? DownArrowIcon : RightArrowIcon} alt="input and output" />
         <div className="transactionItemOutput">
-          {transaction.displayOutputs && transaction.displayOutputs.length !== 0 ? (
+          {txOutputsQuery.isSuccess && txOutputsQuery.data.total > 0 ? (
             <TransactionCellList
-              cells={transaction.displayOutputs}
+              cells={txOutputsQuery.data.data}
               transaction={transaction}
               render={cell => (
                 <FullPanel key={cell.id}>
@@ -96,6 +119,13 @@ const TransactionItem = ({
             />
           ) : (
             <div className="transactionItemOutputEmpty">{t('transaction.empty_output')}</div>
+          )}
+          {txOutputsQuery.isSuccess && txOutputsQuery.data.total > PAGE_SIZE && (
+            <Pagination
+              currentPage={outputCellsPage}
+              totalPages={txOutputsQuery.isSuccess ? Math.ceil(txOutputsQuery.data.total / PAGE_SIZE) : 1}
+              onChange={setOutputCellsPage}
+            />
           )}
         </div>
       </TransactionCellPanel>

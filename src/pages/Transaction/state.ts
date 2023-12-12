@@ -10,8 +10,6 @@ export const defaultTransactionInfo: Transaction = {
   isCellbase: false,
   targetBlockNumber: 0,
   version: 0,
-  displayInputs: [],
-  displayOutputs: [],
   cellDeps: [],
   headerDeps: [],
   witnesses: [],

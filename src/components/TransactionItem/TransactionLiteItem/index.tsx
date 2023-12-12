@@ -1,16 +1,31 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import { localeNumberString } from '../../../utils/number'
 import AddressText from '../../AddressText'
 import styles from './index.module.scss'
 import TransactionLiteIncome from '../TransactionLiteIncome'
 import { useIsMobile, useParsedDate } from '../../../hooks'
 import { Transaction } from '../../../models/Transaction'
+import { explorerService } from '../../../services/ExplorerService'
 
 const TransactionLiteItem = ({ transaction, address }: { transaction: Transaction; address?: string }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
   const parsedBlockCreateAt = useParsedDate(transaction.blockTimestamp)
+
+  // refactor to configurable
+  const PAGE_SIZE = 10
+  const txHash = transaction.transactionHash
+  const txInputsQuery = useQuery(['transactionInputs', txHash, 1], async () => {
+    const result = await explorerService.api.fetchTransactionInputsByHash(txHash, 1, PAGE_SIZE)
+    return result
+  })
+  const txOutputsQuery = useQuery(['transactionOutputs', txHash, 1], async () => {
+    const result = await explorerService.api.fetchTransactionOutputsByHash(txHash, 1, PAGE_SIZE)
+    return result
+  })
+
   return (
     <div className={styles.transactionLitePanel}>
       <div className={styles.transactionLiteRow}>
@@ -38,10 +53,8 @@ const TransactionLiteItem = ({ transaction, address }: { transaction: Transactio
         </div>
         <div>
           {isMobile && <div>{`${t('transaction.input')} & ${t('transaction.output')}`}</div>}
-          <span>{transaction.displayInputs && `${t('transaction.input')}: ${transaction.displayInputs.length}`}</span>
-          <span>
-            {transaction.displayOutputs && `${t('transaction.output')}: ${transaction.displayOutputs.length}`}
-          </span>
+          <span>{txInputsQuery.isSuccess && `${t('transaction.input')}: ${txInputsQuery.data.total}`}</span>
+          <span>{txOutputsQuery.isSuccess && `${t('transaction.output')}: ${txOutputsQuery.data.total}`}</span>
         </div>
         <div>
           {isMobile && <div>{t('transaction.capacity_change')}</div>}

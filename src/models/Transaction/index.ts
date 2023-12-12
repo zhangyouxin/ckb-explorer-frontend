@@ -1,5 +1,3 @@
-import { Cell } from '../Cell'
-
 export interface CellDep {
   depType: string
   outPoint: {
@@ -17,8 +15,6 @@ export interface Transaction {
   isCellbase: boolean
   targetBlockNumber: number
   version: number
-  displayInputs: Cell[]
-  displayOutputs: Cell[]
   cellDeps: CellDep[]
   headerDeps: string[]
   witnesses: string[]

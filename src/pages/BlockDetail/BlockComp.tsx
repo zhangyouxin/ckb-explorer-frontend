@@ -9,7 +9,7 @@ import { parseSimpleDate } from '../../utils/date'
 import { localeNumberString, handleDifficulty } from '../../utils/number'
 import { useIsMobile, useSearchParams } from '../../hooks'
 import { hexToUtf8 } from '../../utils/string'
-import { deprecatedAddrToNewAddr, shannonToCkb } from '../../utils/util'
+import { shannonToCkb } from '../../utils/util'
 import { BlockLinkPanel, BlockMinerRewardPanel, BlockMinerMessagePanel, BlockTransactionsPagination } from './styled'
 import HelpIcon from '../../assets/qa_help.png'
 import MoreIcon from '../../assets/more.png'
@@ -323,17 +323,7 @@ export const BlockComp = ({
             <TransactionItem
               key={transaction.transactionHash}
               scrollIntoViewOnMount={transaction.isCellbase && hash === `#${CELL_BASE_ANCHOR}`}
-              transaction={{
-                ...transaction,
-                displayInputs: transaction.displayInputs.map(input => ({
-                  ...input,
-                  addressHash: deprecatedAddrToNewAddr(input.addressHash),
-                })),
-                displayOutputs: transaction.displayOutputs.map(output => ({
-                  ...output,
-                  addressHash: deprecatedAddrToNewAddr(output.addressHash),
-                })),
-              }}
+              transaction={transaction}
               circleCorner={{
                 bottom: index === transactions.length - 1 && totalPages === 1,
               }}

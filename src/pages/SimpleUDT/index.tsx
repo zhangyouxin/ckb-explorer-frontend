@@ -9,13 +9,11 @@ import { useIsMobile, usePaginationParamsInPage } from '../../hooks'
 import Filter from '../../components/Search/Filter'
 import { localeNumberString } from '../../utils/number'
 import { explorerService } from '../../services/ExplorerService'
-import { deprecatedAddrToNewAddr } from '../../utils/util'
 import { QueryResult } from '../../components/QueryResult'
 import { defaultUDTInfo } from './state'
 import { ReactComponent as FilterIcon } from '../../assets/filter_icon.svg'
 import { ReactComponent as SelectedCheckIcon } from '../../assets/selected_check_icon.svg'
 import styles from './styles.module.scss'
-import { Cell } from '../../models/Cell'
 
 enum TransactionType {
   Mint = 'mint',
@@ -53,16 +51,9 @@ export const SimpleUDT = () => {
         type,
       })
 
-      const ensureCellAddrIsNewFormat = (cell: Cell) => ({
-        ...cell,
-        addressHash: deprecatedAddrToNewAddr(cell.addressHash),
-      })
-
       return {
         transactions: transactions.map(tx => ({
           ...tx,
-          displayInputs: tx.displayInputs.map(ensureCellAddrIsNewFormat),
-          displayOutputs: tx.displayOutputs.map(ensureCellAddrIsNewFormat),
         })),
         total,
         pageSize: resPageSize,

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent, useMemo } from 'react'
+import { useState, useRef, useEffect, FC, memo, RefObject, ChangeEvent, useMemo, useCallback } from 'react'
 import { useHistory } from 'react-router'
 import { TFunction, useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
@@ -111,7 +111,7 @@ const Search: FC<{
   content?: string
   hasButton?: boolean
   onEditEnd?: () => void
-}> = memo(({ content, hasButton, onEditEnd }) => {
+}> = memo(({ content, hasButton, onEditEnd: handleEditEnd }) => {
   // Currently, the API returns all search results, which could be extremely large in quantity.
   // Since the rendering component does not implement virtual scrolling, this leads to a significant decrease in page performance.
   // Therefore, here we are implementing a frontend-level limitation on the number of displayed results.
@@ -167,25 +167,27 @@ const Search: FC<{
       setSearchValue('')
       clearSearchInput(inputElement)
       queryClient.resetQueries(['searchByName', searchValue])
-      onEditEnd?.()
+      handleEditEnd?.()
     }
   }
 
+  const onEditEnd = useCallback(() => {
+    if (!isSearchByName) {
+      handleSearchById(searchValue, inputElement, setSearchValue, history, t)
+    }
+    handleEditEnd?.()
+  }, [history, isSearchByName, handleEditEnd, searchValue, t])
+
   const searchKeyAction = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
-      searchById()
+      onEditEnd()
     }
   }
 
   const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
     setSearchValue(inputValue)
-    if (!inputValue) onEditEnd?.()
-  }
-
-  const searchById = () => {
-    handleSearchById(searchValue, inputElement, setSearchValue, history, t)
-    onEditEnd?.()
+    if (!inputValue) onEditEnd()
   }
 
   const ImageIcon = ({ isClear }: { isClear?: boolean }) => (
@@ -214,7 +216,7 @@ const Search: FC<{
           loading={isFetching}
         />
       </SearchPanel>
-      {hasButton && <SearchButton onClick={searchById}>{t('search.search')}</SearchButton>}
+      {hasButton && <SearchButton onClick={onEditEnd}>{t('search.search')}</SearchButton>}
     </SearchContainer>
   )
 })

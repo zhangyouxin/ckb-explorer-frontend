@@ -3,24 +3,36 @@ import classNames from 'classnames'
 import { UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './SearchByNameResults.module.scss'
 import EllipsisMiddle from '../EllipsisMiddle'
+import Loading from '../Loading'
 
 type Props = {
-  udtQueryResults: UDTQueryResult[]
+  loading?: boolean
+  udtQueryResults: UDTQueryResult[] | null
 }
 
 export const SearchByNameResults = (props: Props) => {
-  const { udtQueryResults } = props
-  return (
-    <div className={styles.searchResultsPanelWrapper}>
-      {udtQueryResults.length === 0 ? (
-        <EmptySearchByNameResult />
-      ) : (
-        udtQueryResults.map(item => {
-          return <SearchByNameResult key={item.typeHash} item={item} />
-        })
-      )}
-    </div>
-  )
+  const { udtQueryResults, loading } = props
+  if (loading) {
+    return (
+      <div className={styles.searchResultsPanelWrapper}>
+        <Loading show />
+      </div>
+    )
+  }
+  if (udtQueryResults) {
+    return (
+      <div className={styles.searchResultsPanelWrapper}>
+        {udtQueryResults.length === 0 ? (
+          <EmptySearchByNameResult />
+        ) : (
+          udtQueryResults.map(item => {
+            return <SearchByNameResult key={item.typeHash} item={item} />
+          })
+        )}
+      </div>
+    )
+  }
+  return null
 }
 
 const EmptySearchByNameResult = () => {

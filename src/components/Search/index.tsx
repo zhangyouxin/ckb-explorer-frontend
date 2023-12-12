@@ -136,15 +136,11 @@ const Search: FC<{
   const {
     refetch: refetchSearchByName,
     data: searchByNameResults,
-    isSuccess,
-    isLoading,
+    isFetching,
   } = useQuery(['searchByName', searchValue], () => explorerService.api.fetchSearchByNameResult(searchValue), {
     // we need to control the fetch timing manually
     enabled: false,
   })
-
-  // eslint-disable-next-line no-console
-  console.log('searchByNameResults', isSuccess, isLoading, searchByNameResults)
 
   const debouncedSearchByName = useMemo(
     () => debounce(refetchSearchByName, 1000, { trailing: true }),
@@ -213,7 +209,10 @@ const Search: FC<{
           {isSearchByName ? t('search.by_name') : t('search.by_id')}
         </button>
         {searchValue && <ImageIcon isClear />}
-        {searchByNameResults && <SearchByNameResults udtQueryResults={searchByNameResults.slice(0, DISPLAY_COUNT)} />}
+        <SearchByNameResults
+          udtQueryResults={searchByNameResults ? searchByNameResults.slice(0, DISPLAY_COUNT) : null}
+          loading={isFetching}
+        />
       </SearchPanel>
       {hasButton && <SearchButton onClick={searchById}>{t('search.search')}</SearchButton>}
     </SearchContainer>

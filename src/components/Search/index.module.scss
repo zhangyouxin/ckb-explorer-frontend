@@ -12,5 +12,7 @@
   user-select: none;
   border-radius: 2px;
   background: #f0f0f0;
-  text-wrap: nowrap;
+
+  // text-wrap: nowrap doesn't work in preview page, try add !important
+  text-wrap: nowrap !important;
 }

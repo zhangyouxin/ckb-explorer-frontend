@@ -15,7 +15,7 @@ export const SearchByNameResults = (props: Props) => {
   if (loading) {
     return (
       <div className={styles.searchResultsPanelWrapper}>
-        <Loading show />
+        <Loading show={loading} className={styles.loadingWrapper} />
       </div>
     )
   }
@@ -43,10 +43,10 @@ const EmptySearchByNameResult = () => {
 const SearchByNameResult = (props: { item: UDTQueryResult }) => {
   const { t } = useTranslation()
   const { item } = props
-  const { typeHash, symbol } = item
+  const { typeHash, fullName } = item
   return (
     <a className={styles.searchResult} href={`${window.origin}/sudt/${typeHash}`}>
-      <span className={styles.tokenSymbol}>{symbol ?? t('udt.unknown_token')}</span>
+      <EllipsisMiddle className={styles.tokenSymbol}>{fullName ?? t('udt.unknown_token')}</EllipsisMiddle>
       <EllipsisMiddle className={classNames(styles.typeHash, 'monospace')}>{typeHash}</EllipsisMiddle>
     </a>
   )

@@ -122,7 +122,8 @@ const Search: FC<{
   const [searchByType, setSearchByType] = useSearchType()
   const [isSearchByName, setIsSearchByName] = useState(searchByType === 'name')
   const history = useHistory()
-  const [searchValue, setSearchValue] = useState(content || '')
+  const [originalSearchValue, setOriginalSearchValue] = useState(content || '')
+  const searchValue = originalSearchValue.trim()
   const inputElement = useRef<HTMLInputElement>(null)
 
   const toggleSearchType = () => {
@@ -164,7 +165,7 @@ const Search: FC<{
 
   const clearSearchAction = (isClear?: boolean) => {
     if (isClear) {
-      setSearchValue('')
+      setOriginalSearchValue('')
       clearSearchInput(inputElement)
       queryClient.resetQueries(['searchByName', searchValue])
       handleEditEnd?.()
@@ -173,7 +174,7 @@ const Search: FC<{
 
   const onEditEnd = useCallback(() => {
     if (!isSearchByName) {
-      handleSearchById(searchValue, inputElement, setSearchValue, history, t)
+      handleSearchById(searchValue, inputElement, setOriginalSearchValue, history, t)
     }
     handleEditEnd?.()
   }, [history, isSearchByName, handleEditEnd, searchValue, t])
@@ -186,7 +187,7 @@ const Search: FC<{
 
   const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
-    setSearchValue(inputValue)
+    setOriginalSearchValue(inputValue)
     if (!inputValue) onEditEnd()
   }
 

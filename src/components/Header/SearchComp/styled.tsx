@@ -19,8 +19,8 @@ export const HeaderSearchPanel = styled.div`
   }
 
   @media (max-width: 1480px) {
-    width: 320px;
-    margin-right: 16px;
+    width: auto;
+    margin: 0 41px;
   }
 `
 

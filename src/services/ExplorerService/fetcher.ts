@@ -47,6 +47,7 @@ export enum SearchResultType {
   Address = 'address',
   LockHash = 'lock_hash',
   UDT = 'udt',
+  TypeScript = 'type_script',
 }
 
 export const apiFetcher = {
@@ -71,6 +72,22 @@ export const apiFetcher = {
 
   fetchTransactionsByAddress: (address: string, page: number, size: number, sort?: string, txTypeFilter?: string) =>
     v1GetUnwrappedPagedList<Transaction>(`address_transactions/${address}`, {
+      params: {
+        page,
+        page_size: size,
+        sort,
+        tx_type: txTypeFilter,
+      },
+    }),
+
+  fetchPendingTransactionsByAddress: (
+    address: string,
+    page: number,
+    size: number,
+    sort?: string,
+    txTypeFilter?: string,
+  ) =>
+    v1GetUnwrappedPagedList<Transaction>(`address_pending_transactions/${address}`, {
       params: {
         page,
         page_size: size,
@@ -156,6 +173,7 @@ export const apiFetcher = {
       | Response.Wrapper<Address, SearchResultType.Address>
       | Response.Wrapper<Address, SearchResultType.LockHash>
       | Response.Wrapper<unknown, SearchResultType.UDT>
+      | Response.Wrapper<Script & { scriptHash: string }, SearchResultType.TypeScript>
     >('suggest_queries', {
       params: {
         q: param,

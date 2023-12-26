@@ -15,7 +15,7 @@ export const SearchByNameResults = (props: Props) => {
   if (loading) {
     return (
       <div className={styles.searchResultsPanelWrapper}>
-        <Loading show={loading} className={styles.loadingWrapper} />
+        <Loading show className={styles.loadingWrapper} />
       </div>
     )
   }

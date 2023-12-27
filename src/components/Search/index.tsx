@@ -193,7 +193,7 @@ const Search: FC<{
   const inputChangeAction = async (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value
     setOriginalSearchValue(inputValue)
-    if (!inputValue) onEditEnd()
+    if (!inputValue && handleEditEnd) handleEditEnd()
   }
 
   const ImageIcon = ({ isClear }: { isClear?: boolean }) => (

@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { UDTQueryResult } from '../../services/ExplorerService/fetcher'
 import styles from './SearchByNameResults.module.scss'
 import EllipsisMiddle from '../EllipsisMiddle'
-import Loading from '../Loading'
+import SmallLoading from '../Loading/SmallLoading'
 
 type Props = {
   loading?: boolean
@@ -15,7 +15,7 @@ export const SearchByNameResults = (props: Props) => {
   if (loading) {
     return (
       <div className={styles.searchResultsPanelWrapper}>
-        <Loading show className={styles.loadingWrapper} />
+        <SmallLoading className={styles.loadingWrapper} />
       </div>
     )
   }

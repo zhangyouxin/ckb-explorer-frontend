@@ -43,10 +43,11 @@ const EmptySearchByNameResult = () => {
 const SearchByNameResult = (props: { item: UDTQueryResult }) => {
   const { t } = useTranslation()
   const { item } = props
-  const { typeHash, fullName } = item
+  const { typeHash, fullName, symbol } = item
+  const displayName = fullName ?? symbol
   return (
     <a className={styles.searchResult} href={`${window.origin}/sudt/${typeHash}`}>
-      <EllipsisMiddle className={styles.tokenSymbol}>{fullName ?? t('udt.unknown_token')}</EllipsisMiddle>
+      <EllipsisMiddle className={styles.tokenSymbol}>{displayName ?? t('udt.unknown_token')}</EllipsisMiddle>
       <EllipsisMiddle className={classNames(styles.typeHash, 'monospace')}>{typeHash}</EllipsisMiddle>
     </a>
   )

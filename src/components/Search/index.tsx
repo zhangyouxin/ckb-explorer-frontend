@@ -182,6 +182,7 @@ const Search: FC<{
           value={inputLoading ? t('search.loading') : keyword}
           onChange={event => setKeyword(event.target.value)}
           onEditEndedChange={setEditEnded}
+          placeholder={isSearchByName ? t('navbar.search_by_name_placeholder') : t('navbar.search_placeholder')}
         />
         <button type="button" className={styles.byNameOrId} onClick={toggleSearchType}>
           {isSearchByName ? t('search.by_name') : t('search.by_id')}

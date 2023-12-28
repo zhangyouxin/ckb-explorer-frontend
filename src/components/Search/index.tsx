@@ -144,7 +144,6 @@ const Search: FC<{
     setKeyword('')
     debouncedSearchByName.cancel()
     queryClient.resetQueries(['searchByName'])
-    // TODO: must need this?
     setEditEnded(true)
   }, [debouncedSearchByName, queryClient])
 
@@ -205,7 +204,6 @@ const Search: FC<{
 const SearchInput: FC<
   ComponentPropsWithoutRef<'input'> & {
     onEditEndedChange?: (editEnded: boolean) => void
-    // loading?: boolean
   }
 > = ({ onEditEndedChange, value: propsValue, onChange: propsOnChange, onKeyUp: propsOnKeyUp, ...elprops }) => {
   const [value, setValue] = useForkedState(propsValue)

@@ -13,7 +13,7 @@ import { useHistory } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import debounce from 'lodash.debounce'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { SearchImage, SearchInputPanel, SearchPanel, SearchButton, SearchContainer } from './styled'
+import { ImageButton, SearchInputPanel, SearchPanel, SearchButton, SearchContainer } from './styled'
 import { explorerService, Response } from '../../services/ExplorerService'
 import SearchLogo from '../../assets/search_black.png'
 import ClearLogo from '../../assets/clear.png'
@@ -174,9 +174,9 @@ const Search: FC<{
   return (
     <SearchContainer>
       <SearchPanel moreHeight={hasButton} hasButton={hasButton}>
-        <SearchImage>
+        <ImageButton>
           <img src={SearchLogo} alt="search logo" />
-        </SearchImage>
+        </ImageButton>
         <SearchInput
           autoFocus={!isMobile}
           value={inputLoading ? t('search.loading') : keyword}
@@ -187,9 +187,9 @@ const Search: FC<{
           {isSearchByName ? t('search.by_name') : t('search.by_id')}
         </button>
         {searchValue && (
-          <SearchImage onClick={onClear}>
+          <ImageButton onClick={onClear} isClear>
             <img src={ClearLogo} alt="clearButton" />
-          </SearchImage>
+          </ImageButton>
         )}
         <SearchByNameResults
           udtQueryResults={searchByNameResults ? searchByNameResults.slice(0, DISPLAY_COUNT) : null}

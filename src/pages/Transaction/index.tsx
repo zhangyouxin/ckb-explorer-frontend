@@ -17,10 +17,6 @@ export default () => {
 
   const query = useQuery(['transaction', txHash], async () => {
     const transaction = await explorerService.api.fetchTransactionByHash(txHash)
-    // TODO: When will displayOutputs be empty? Its type description indicates that it will not be empty.
-    if (transaction.displayOutputs && transaction.displayOutputs.length > 0) {
-      transaction.displayOutputs[0].isGenesisOutput = transaction.blockNumber === 0
-    }
     return transaction
   })
 

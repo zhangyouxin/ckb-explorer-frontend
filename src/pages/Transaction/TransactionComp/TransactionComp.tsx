@@ -78,7 +78,14 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
     <>
       <div className="transactionInputs">
         {txInputsQuery.isFetching && <Loading show />}
-        {inputs && <TransactionCellList inputs={inputs} showReward={Number(blockNumber) > 0 && isCellbase} />}
+        {inputs && (
+          <TransactionCellList
+            total={txInputsQuery.isSuccess ? txInputsQuery.data.total : 0}
+            inputs={inputs}
+            showReward={Number(blockNumber) > 0 && isCellbase}
+            indiceOffset={(inputCellsPage - 1) * inputCellsPageLimit}
+          />
+        )}
         <Pagination
           currentPage={inputCellsPage}
           totalPages={txInputsQuery.isSuccess ? Math.ceil(txInputsQuery.data.total / inputCellsPageLimit) : 1}
@@ -88,7 +95,12 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
       <div className="transactionOutputs">
         {txOutputsQuery.isFetching && <Loading show />}
         {txOutputsQuery.isSuccess && (
-          <TransactionCellList outputs={txOutputsQuery.data.data} txHash={transactionHash} />
+          <TransactionCellList
+            total={txOutputsQuery.isSuccess ? txOutputsQuery.data.total : 0}
+            outputs={txOutputsQuery.data.data}
+            txHash={transactionHash}
+            indiceOffset={(outputCellsPage - 1) * outputCellsPageLimit}
+          />
         )}
         <Pagination
           currentPage={outputCellsPage}

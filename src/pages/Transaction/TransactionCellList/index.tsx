@@ -20,11 +20,15 @@ export default ({
   outputs,
   txHash,
   showReward,
+  total,
+  indiceOffset,
 }: {
   inputs?: Cell[]
   outputs?: Cell[]
   txHash?: string
   showReward?: boolean
+  total?: number
+  indiceOffset?: number
 }) => {
   const { t } = useTranslation()
   const [offset, setOffset] = useState(PAGE_CELL_COUNT)
@@ -54,6 +58,9 @@ export default ({
   const toggleDeprecatedAddressesDisplayed = () => setIsDeprecatedAddressesDisplayed(value => !value)
 
   const cellsCount = () => {
+    if (total) {
+      return total
+    }
     if (inputs) {
       return inputs.length
     }
@@ -99,7 +106,7 @@ export default ({
                   key={cell.id}
                   cell={cell}
                   cellType={inputs ? CellType.Input : CellType.Output}
-                  index={index}
+                  index={index + (indiceOffset || 0)}
                   txHash={txHash}
                   showReward={showReward}
                   isAddrNew={!isDeprecatedAddressesDisplayed}

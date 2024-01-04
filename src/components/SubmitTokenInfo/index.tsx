@@ -21,7 +21,7 @@ type Props = {
   onClose: () => void
 }
 
-const LableTooltip = ({ title, icon }: { title: string; icon?: string }) => (
+const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
   <Tooltip placement="bottom" title={title}>
     <img src={icon ?? HelpIcon} alt="tooltip" className={styles.tooltipIcon} />
   </Tooltip>
@@ -149,7 +149,7 @@ export const SubmitTokenInfo = (prop: Props) => {
             <div className={styles.section}>
               <LabeledInput
                 isRequired
-                labelRightAddon={<LableTooltip title={t('Args')} />}
+                labelRightAddon={<LabelTooltip title={t('Args')} />}
                 label={t('Token Type')}
                 className={styles.labeledInput}
               >
@@ -165,7 +165,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={args}
                 onChange={setArgs}
-                labelRightAddon={<LableTooltip title={t('Args')} />}
+                labelRightAddon={<LabelTooltip title={t('Args')} />}
                 label={t('Args')}
                 placeholder={t('Enter args')}
                 className={styles.labeledInput}
@@ -176,7 +176,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={symbol}
                 onChange={setSymbol}
-                labelRightAddon={<LableTooltip title={t('Symbol')} />}
+                labelRightAddon={<LabelTooltip title={t('Symbol')} />}
                 label={t('Symbol')}
                 placeholder={t('Enter symbol')}
                 className={styles.labeledInput}
@@ -184,7 +184,7 @@ export const SubmitTokenInfo = (prop: Props) => {
               <LabeledInput
                 value={name}
                 onChange={setName}
-                labelRightAddon={<LableTooltip title={t('Name')} />}
+                labelRightAddon={<LabelTooltip title={t('Name')} />}
                 label={t('Name')}
                 placeholder={t('Enter name')}
                 className={styles.labeledInput}
@@ -193,7 +193,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={decimal}
                 onChange={setDecimal}
-                labelRightAddon={<LableTooltip title={t('Decimal')} />}
+                labelRightAddon={<LabelTooltip title={t('Decimal')} />}
                 label={t('Decimal')}
                 placeholder={t('Enter decimal')}
                 className={styles.labeledInput}
@@ -201,7 +201,7 @@ export const SubmitTokenInfo = (prop: Props) => {
               <LabeledInput
                 value={description}
                 onChange={setDescription}
-                labelRightAddon={<LableTooltip title={t('Description')} />}
+                labelRightAddon={<LabelTooltip title={t('Description')} />}
                 label={t('Description')}
                 placeholder={t('Enter description')}
                 className={styles.labeledInput}
@@ -210,7 +210,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={website}
                 onChange={setWebsite}
-                labelRightAddon={<LableTooltip title={t('Website')} />}
+                labelRightAddon={<LabelTooltip title={t('Website')} />}
                 label={t('Website')}
                 placeholder={t('Enter website')}
                 className={styles.labeledInput}
@@ -219,7 +219,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={creatorEmail}
                 onChange={setCreatorEmail}
-                labelRightAddon={<LableTooltip title={t('Creator Email')} icon={AlertIcon} />}
+                labelRightAddon={<LabelTooltip title={t('Creator Email')} icon={AlertIcon} />}
                 label={t('Creator Email')}
                 placeholder={t('Enter creator email')}
                 className={styles.labeledInput}
@@ -228,7 +228,7 @@ export const SubmitTokenInfo = (prop: Props) => {
                 value={logo}
                 onClear={() => setLogo(null)}
                 onChange={handleImgChange}
-                labelRightAddon={<LableTooltip title={t('Logo')} />}
+                labelRightAddon={<LabelTooltip title={t('Logo')} />}
                 label={t('Logo')}
                 placeholder={t('Upload')}
                 className={styles.labeledInput}

@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useRef } from 'react'
 import UploadIcon from '../../assets/arrow_up_circle.png'
-import DeleteIcon from '../../assets/delelte.png'
+import DeleteIcon from '../../assets/delete.png'
 import styles from './ImgUpload.module.scss'
 
 type Props = {

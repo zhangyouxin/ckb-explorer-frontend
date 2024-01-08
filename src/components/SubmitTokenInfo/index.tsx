@@ -138,19 +138,19 @@ export const SubmitTokenInfo = (prop: Props) => {
       <div className={styles.modalWrapper}>
         <div className={styles.contentWrapper}>
           <div className={styles.modalTitle}>
-            <div className={styles.title}>Submit Token Info</div>
+            <div className={styles.title}>{t('submit_token_info.title')}</div>
             <button type="button" onClick={handleClose} className={styles.closeBtn}>
               <img src={CloseIcon} alt="close icon" />
             </button>
           </div>
           <div className={styles.divider} />
           <div className={styles.modalContent}>
-            <div className={styles.sectionTitle}>Token Type Scripts</div>
+            <div className={styles.sectionTitle}>{t('submit_token_info.token_type_scripts')}</div>
             <div className={styles.section}>
               <LabeledInput
                 isRequired
-                labelRightAddon={<LabelTooltip title={t('Args')} />}
-                label={t('Token Type')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.token_type_tip')} />}
+                label={t('submit_token_info.token_type')}
                 className={styles.labeledInput}
               >
                 <CommonSelect
@@ -165,9 +165,9 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={args}
                 onChange={setArgs}
-                labelRightAddon={<LabelTooltip title={t('Args')} />}
-                label={t('Args')}
-                placeholder={t('Enter args')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
+                label={t('submit_token_info.args')}
+                placeholder={t('submit_token_info.args_placeholder')}
                 className={styles.labeledInput}
               />
             </div>
@@ -176,61 +176,61 @@ export const SubmitTokenInfo = (prop: Props) => {
                 isRequired
                 value={symbol}
                 onChange={setSymbol}
-                labelRightAddon={<LabelTooltip title={t('Symbol')} />}
-                label={t('Symbol')}
-                placeholder={t('Enter symbol')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.symbol_tip')} />}
+                label={t('submit_token_info.symbol')}
+                placeholder={t('submit_token_info.symbol_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
                 value={name}
                 onChange={setName}
-                labelRightAddon={<LabelTooltip title={t('Name')} />}
-                label={t('Name')}
-                placeholder={t('Enter name')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.name_tip')} />}
+                label={t('submit_token_info.name')}
+                placeholder={t('submit_token_info.name_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
                 isRequired
                 value={decimal}
                 onChange={setDecimal}
-                labelRightAddon={<LabelTooltip title={t('Decimal')} />}
-                label={t('Decimal')}
-                placeholder={t('Enter decimal')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.decimal_tip')} />}
+                label={t('submit_token_info.decimal')}
+                placeholder={t('submit_token_info.decimal_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
                 value={description}
                 onChange={setDescription}
-                labelRightAddon={<LabelTooltip title={t('Description')} />}
-                label={t('Description')}
-                placeholder={t('Enter description')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.description_tip')} />}
+                label={t('submit_token_info.description')}
+                placeholder={t('submit_token_info.description_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
                 isRequired
                 value={website}
                 onChange={setWebsite}
-                labelRightAddon={<LabelTooltip title={t('Website')} />}
-                label={t('Website')}
-                placeholder={t('Enter website')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.website_tip')} />}
+                label={t('submit_token_info.website')}
+                placeholder={t('submit_token_info.website_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
                 isRequired
                 value={creatorEmail}
                 onChange={setCreatorEmail}
-                labelRightAddon={<LabelTooltip title={t('Creator Email')} icon={AlertIcon} />}
-                label={t('Creator Email')}
-                placeholder={t('Enter creator email')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.creator_email_tip')} icon={AlertIcon} />}
+                label={t('submit_token_info.creator_email')}
+                placeholder={t('submit_token_info.creator_email_placeholder')}
                 className={styles.labeledInput}
               />
               <ImgUpload
                 value={logo}
                 onClear={() => setLogo(null)}
                 onChange={handleImgChange}
-                labelRightAddon={<LabelTooltip title={t('Logo')} />}
-                label={t('Logo')}
-                placeholder={t('Upload')}
+                labelRightAddon={<LabelTooltip title={t('submit_token_info.logo_tip')} />}
+                label={t('submit_token_info.logo')}
+                placeholder={t('submit_token_info.logo_placeholder')}
                 className={styles.labeledInput}
               />
             </div>
@@ -239,7 +239,7 @@ export const SubmitTokenInfo = (prop: Props) => {
             <CommonButton
               className={styles.submitBtn}
               onClick={handleConfirm}
-              name="Confirm"
+              name={t('submit_token_info.confirm')}
               disabled={!validateFields()}
             />
           </div>

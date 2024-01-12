@@ -49,6 +49,7 @@
   right: 0;
   border: none;
   cursor: pointer;
+  background: rgb(0 0 0 / 50%);
 
   img {
     width: 16px;
@@ -59,6 +60,7 @@
 .uploadedIcon {
   width: 112px;
   height: 112px;
+  object-fit: scale-down;
 }
 
 .placeholder {

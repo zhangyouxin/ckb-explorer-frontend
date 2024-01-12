@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'antd/lib/tooltip'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { utils } from '@ckb-lumos/base'
 import CloseIcon from '../../assets/modal_close.png'
 import HelpIcon from '../../assets/qa_help.png'
@@ -15,6 +14,7 @@ import { submitTokenInfo } from '../../services/ExplorerService/fetcher'
 import CommonSelect from '../CommonSelect'
 import { isMainnet } from '../../utils/chain'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
+import { isValidPositiveInteger } from '../../utils/number'
 
 type Props = {
   isOpen: boolean
@@ -27,9 +27,8 @@ const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
   </Tooltip>
 )
 
-export const SubmitTokenInfo = (prop: Props) => {
+export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const { t } = useTranslation()
-  const { onClose, isOpen } = prop
   const [args, setArgs] = useState('')
 
   const [symbol, setSymbol] = useState('')
@@ -43,7 +42,7 @@ export const SubmitTokenInfo = (prop: Props) => {
   const scriptDataList = isMainnet() ? MainnetContractHashTags : TestnetContractHashTags
   const tokenTypeOptions = scriptDataList
     .filter(scriptData => scriptData.tag.includes('sudt'))
-    .reverse() // sUDT should come first, then sUDT(deprecated)
+    .sort((a, b) => a.tag.localeCompare(b.tag))
     .map(scriptData => ({
       value: scriptData.codeHashes[0],
       label: scriptData.tag,
@@ -73,7 +72,7 @@ export const SubmitTokenInfo = (prop: Props) => {
     }
   }
 
-  const handleClose = () => {
+  const clearForm = () => {
     onClose()
     setArgs('')
     setSymbol('')
@@ -83,31 +82,14 @@ export const SubmitTokenInfo = (prop: Props) => {
     setWebsite('')
     setCreatorEmail('')
     setLogo(null)
+  }
+
+  const handleClose = () => {
     onClose()
   }
-  const parsedDecimal = parseInt(decimal, 10)
 
-  const validateFields = () => {
-    if (Number.isNaN(parsedDecimal)) {
-      return false
-    }
-    if (!codeHash) {
-      return false
-    }
-    if (!symbol) {
-      return false
-    }
-    if (!args) {
-      return false
-    }
-    if (!website) {
-      return false
-    }
-    if (!creatorEmail) {
-      return false
-    }
-    return true
-  }
+  const validateFields = () =>
+    isValidPositiveInteger(decimal) && !codeHash && !symbol && !args && !website && !creatorEmail
 
   const handleConfirm = async () => {
     if (!validateFields()) {
@@ -125,16 +107,17 @@ export const SubmitTokenInfo = (prop: Props) => {
       symbol,
       email: creatorEmail,
       operator_website: website,
-      decimal: parsedDecimal,
-
+      decimal: Number(decimal),
       full_name: name,
       icon_file: logo ?? '',
       typeHash: '',
+    }).then(() => {
+      clearForm()
     })
   }
 
   return (
-    <CommonModal isOpen={isOpen}>
+    <CommonModal isOpen={isOpen} onClose={handleClose}>
       <div className={styles.modalWrapper}>
         <div className={styles.contentWrapper}>
           <div className={styles.modalTitle}>

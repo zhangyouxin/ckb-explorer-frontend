@@ -1,3 +1,5 @@
+@import '../../styles/variables.module';
+
 .container {
   font-size: 14px;
 }
@@ -27,5 +29,5 @@
 }
 
 .requiredIcon {
-  color: red;
+  color: var(--accent-color);
 }

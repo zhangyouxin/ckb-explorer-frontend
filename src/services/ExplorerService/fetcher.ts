@@ -952,5 +952,5 @@ type SubmitTokenInfoParams = {
 }
 
 export const submitTokenInfo = (typeHash: string, params: SubmitTokenInfoParams) => {
-  requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
+  return requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
 }

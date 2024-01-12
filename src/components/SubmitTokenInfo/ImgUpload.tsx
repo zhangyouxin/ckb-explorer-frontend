@@ -24,24 +24,27 @@ export const ImgUpload = (prop: Props) => {
   }
   // clear ref value on click to trigger onChange event event if choose the same file of last choice
   const clearValue = () => {
-    inputRef.current!.value = ''
+    if (inputRef.current) {
+      inputRef.current.value = ''
+    }
   }
   return (
     <div className={classNames(styles.container, className)}>
-      <div className={styles.label}>
+      <label htmlFor="image-upload" className={styles.label}>
         {label} {isRequired && <span className={styles.requiredIcon}>*</span>}
         {labelRightAddon && <span className={styles.labelRightAddon}>{labelRightAddon}</span>}
-      </div>
+      </label>
 
       <input
         type="file"
+        name="image-upload"
         onChange={onChange}
         className={styles.input}
         ref={inputRef}
         accept="image/*"
         onClick={clearValue}
       />
-      <button type="button" className={styles.inputWrapper} onClick={value ? undefined : handleClick}>
+      <button type="button" className={styles.inputWrapper} onClick={handleClick}>
         {value ? (
           <>
             <img src={value} className={styles.uploadedIcon} alt="upload" />

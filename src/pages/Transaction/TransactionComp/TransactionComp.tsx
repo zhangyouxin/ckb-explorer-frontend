@@ -77,6 +77,8 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
     txOutputsQuery.isSuccess ? txOutputsQuery.data.data : [],
   )
 
+  const totalInputsCount = txInputsQuery.data?.meta?.total ?? 0
+  const totalOutputsCount = txOutputsQuery.data?.meta?.total ?? 0
   /// [0, 11] block doesn't show block reward and only cellbase show block reward
   return (
     <>
@@ -84,7 +86,7 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         {txInputsQuery.isFetching && <Loading show />}
         {inputs && (
           <TransactionCellList
-            total={txInputsQuery.isSuccess ? txInputsQuery.data.total : 0}
+            total={totalInputsCount}
             inputs={inputs}
             showReward={Number(blockNumber) > 0 && isCellbase}
             indiceOffset={(Number(inputCellsPageNumber) - 1) * Number(inputCellsPageSize)}
@@ -92,7 +94,7 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         )}
         <Pagination
           currentPage={Number(inputCellsPageNumber)}
-          totalPages={txInputsQuery.isSuccess ? Math.ceil(txInputsQuery.data.total / Number(inputCellsPageSize)) : 1}
+          totalPages={txInputsQuery.isSuccess ? Math.ceil(totalInputsCount / Number(inputCellsPageSize)) : 1}
           onChange={handleInputCellsPageChange}
         />
       </div>
@@ -100,7 +102,7 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         {txOutputsQuery.isFetching && <Loading show />}
         {txOutputsQuery.isSuccess && (
           <TransactionCellList
-            total={txOutputsQuery.isSuccess ? txOutputsQuery.data.total : 0}
+            total={totalOutputsCount}
             outputs={txOutputsQuery.data.data}
             txHash={transactionHash}
             indiceOffset={(Number(outputCellsPageNumber) - 1) * Number(outputCellsPageSize)}
@@ -108,7 +110,7 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         )}
         <Pagination
           currentPage={Number(outputCellsPageNumber)}
-          totalPages={txOutputsQuery.isSuccess ? Math.ceil(txOutputsQuery.data.total / Number(outputCellsPageSize)) : 1}
+          totalPages={txOutputsQuery.isSuccess ? Math.ceil(totalOutputsCount / Number(outputCellsPageSize)) : 1}
           onChange={handleOutputCellsPageChange}
         />
       </div>

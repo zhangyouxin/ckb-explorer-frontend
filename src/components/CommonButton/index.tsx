@@ -14,7 +14,7 @@ export default (props: Props) => {
     <button
       type="button"
       className={classNames(styles.container, disabled && styles.isDisabled, className)}
-      onKeyDown={() => {}}
+      onKeyDown={disabled ? undefined : onClick}
       onClick={disabled ? undefined : onClick}
     >
       {name}

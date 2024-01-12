@@ -2,10 +2,6 @@
 import classNames from 'classnames'
 import { useState } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
-import ArrowDownIcon from '../../assets/arrow_down.png'
-import ArrowDownIconTestnet from '../../assets/arrow_down_blue.png'
-import ArrowUpIcon from '../../assets/arrow_up.png'
-import ArrowUpIconTestnet from '../../assets/arrow_up_blue.png'
 import styles from './index.module.scss'
 import { isMainnet } from '../../utils/chain'
 
@@ -27,16 +23,6 @@ export default (props: Props) => {
   const defaultLabel = options.find(option => option.value === defaultValue)?.label
   const [value, setValue] = useState(defaultLabel)
   const [isExpanded, setIsExpanded] = useState(false)
-  const icons = isMainnet()
-    ? {
-        arrowUp: ArrowUpIcon,
-        arrowDown: ArrowDownIcon,
-      }
-    : {
-        arrowUp: ArrowUpIconTestnet,
-        arrowDown: ArrowDownIconTestnet,
-      }
-  const arrowIcon = isExpanded ? icons.arrowUp : icons.arrowDown
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
@@ -50,7 +36,7 @@ export default (props: Props) => {
       <div className={classNames(styles.select, className)}>
         <div onClick={toggleExpand} className={styles.value}>
           {value ?? placeholder}
-          <img src={arrowIcon} alt="arrow" />
+          <div className={classNames(isMainnet() ? styles.arrow : styles.arrowTestnet, isExpanded && styles.flip)} />
         </div>
         {isExpanded && (
           <div className={styles.options}>

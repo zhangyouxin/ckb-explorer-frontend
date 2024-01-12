@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import classNames from 'classnames'
+import OutsideClickHandler from 'react-outside-click-handler'
 import styles from './index.module.scss'
 
 type Props = {
@@ -31,7 +32,9 @@ export default (props: Props) => {
   return (
     <>
       <div className={styles.overlay} />
-      <div className={classNames(styles.container, className)}>{children}</div>
+      <OutsideClickHandler onOutsideClick={onClose}>
+        <div className={classNames(styles.container, className)}>{children}</div>
+      </OutsideClickHandler>
     </>
   )
 }

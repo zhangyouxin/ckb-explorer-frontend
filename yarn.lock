@@ -2548,6 +2548,13 @@
   dependencies:
     jsbi "^4.1.0"
 
+"@ckb-lumos/bi@0.21.0-next.1":
+  version "0.21.0-next.1"
+  resolved "https://registry.npmmirror.com/@ckb-lumos/bi/-/bi-0.21.0-next.1.tgz#357b8da31882ab5e3e3f8aca54c30dd576e4544d"
+  integrity sha512-FaMKBbtr826upcEVYt9/K/hutxHySD21t7ut5yv8lfj6LYcg6hWjtrbCM2INVV6/8HatfAf8YV2KsNRaluyt3A==
+  dependencies:
+    jsbi "^4.1.0"
+
 "@ckb-lumos/bi@0.21.1":
   version "0.21.1"
   resolved "https://registry.yarnpkg.com/@ckb-lumos/bi/-/bi-0.21.1.tgz#dfaa0968a9ffd990c1c4fcfc0711f20f09eb0485"
@@ -2574,6 +2581,13 @@
   integrity sha512-L8q5HW5VEq3IjgNDDlpK1JMZ2tA8IOF0KOXDhErC0PlBv63fFrl6mbKHWDzI1llNp0iDl7S9ZdWBjytZQrg38A==
   dependencies:
     "@ckb-lumos/bi" "0.21.0-next.0"
+
+"@ckb-lumos/codec@0.21.0-next.1":
+  version "0.21.0-next.1"
+  resolved "https://registry.npmmirror.com/@ckb-lumos/codec/-/codec-0.21.0-next.1.tgz#a75f5331026039799afb4f3419bea388e220d26c"
+  integrity sha512-b1w4wbIAbuYngNTKtu6np93EYgnmM4tb6NGdaYN0vZ3kyunlODkLWyRHyMo+FGeBdWQjBwBbmxGNyXwDxtTEGQ==
+  dependencies:
+    "@ckb-lumos/bi" "0.21.0-next.1"
 
 "@ckb-lumos/codec@0.21.1", "@ckb-lumos/codec@^0.21.0-next.0":
   version "0.21.1"
@@ -2711,6 +2725,13 @@
   version "0.21.0-next.0"
   resolved "https://registry.npmmirror.com/@ckb-lumos/toolkit/-/toolkit-0.21.0-next.0.tgz#e7f6a4d65e406fc20e6c4c6d996a8aad9d51ed65"
   integrity sha512-UADzUphlL5jKWRgkE3MBNtxgZ/TgS4Z4cSjKrx8XAa1Ijblkms6vHF3bsA+J+QAxLuZD5uKtP0s1y8aIrbc9iQ==
+
+"@ckb-lumos/toolkit@0.21.0-next.1":
+  version "0.21.0-next.1"
+  resolved "https://registry.npmmirror.com/@ckb-lumos/toolkit/-/toolkit-0.21.0-next.1.tgz#f8ce7b5fa5b388f1870efd309a114f3df2e74c61"
+  integrity sha512-CBnRM8Y0P6TV0FjACmaAz2YcPiIlcwJlU1tXDtcpzp4fcGL4uSMTcrJwFqWB8OE2s12EfN4+d0Ie4bn8/uq1Fg==
+  dependencies:
+    "@ckb-lumos/bi" "0.21.0-next.1"
 
 "@ckb-lumos/toolkit@0.21.1":
   version "0.21.1"
@@ -7023,7 +7044,7 @@ axios@0.27.2:
   dependencies:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
-    
+
 axios@1.6.5:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.5.tgz#2c090da14aeeab3770ad30c3a1461bc970fb0cd8"
@@ -10107,6 +10128,11 @@ follow-redirects@^1.0.0:
   version "1.15.3"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
   integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
+
+follow-redirects@^1.14.9:
+  version "1.15.5"
+  resolved "https://registry.npmmirror.com/follow-redirects/-/follow-redirects-1.15.5.tgz#54d4d6d062c0fa7d9d17feb008461550e3ba8020"
+  integrity sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==
 
 follow-redirects@^1.15.4:
   version "1.15.4"

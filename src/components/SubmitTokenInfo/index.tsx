@@ -103,7 +103,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
       args,
     })
 
-    submitTokenInfo(typeHash, {
+    submitTokenInfo(typeHash.toLowerCase(), {
       symbol,
       email: creatorEmail,
       operator_website: website,

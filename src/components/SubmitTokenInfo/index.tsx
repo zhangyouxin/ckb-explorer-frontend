@@ -64,6 +64,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     if (file) {
       const reader = new FileReader()
       let baseString: string | null = null
+      // eslint-disable-next-line func-names
       reader.onloadend = function () {
         baseString = reader.result as string
         setLogo(baseString)

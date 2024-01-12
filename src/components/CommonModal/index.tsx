@@ -12,19 +12,19 @@ type Props = {
 
 export default (props: Props) => {
   const { isOpen, children, onClose, className } = props
-  const handleKeyDown = (event: KeyboardEvent) => {
-    // close modal when press ESC
-    if (event.keyCode === 27) {
-      onClose()
-    }
-  }
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // close modal when press ESC
+      if (event.keyCode === 27) {
+        onClose()
+      }
+    }
     window.addEventListener('keydown', handleKeyDown)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [onClose])
 
   if (!isOpen) {
     return null

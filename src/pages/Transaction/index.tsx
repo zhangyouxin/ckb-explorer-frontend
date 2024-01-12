@@ -15,10 +15,7 @@ export default () => {
   const { Professional, Lite } = LayoutLiteProfessional
   const { hash: txHash } = useParams<{ hash: string }>()
 
-  const query = useQuery(['transaction', txHash], async () => {
-    const transaction = await explorerService.api.fetchTransactionByHash(txHash)
-    return transaction
-  })
+  const query = useQuery(['transaction', txHash], async () => explorerService.api.fetchTransactionByHash(txHash))
 
   const transaction = query.data ?? defaultTransactionInfo
   const searchParams = useSearchParams('layout')

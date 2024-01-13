@@ -12,8 +12,8 @@ type Props = {
   children?: React.ReactNode
 }
 
-export const LabeledInput = (prop: Props) => {
-  const { value, label, onChange, labelRightAddon, placeholder, isRequired, children, className } = prop
+export const LabeledInput = (props: Props) => {
+  const { value, label, onChange, labelRightAddon, placeholder, isRequired, children, className } = props
   return (
     <div className={classNames(styles.container, className)}>
       <label htmlFor={label} className={styles.label}>

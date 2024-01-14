@@ -9,11 +9,12 @@ type Props = {
   placeholder?: string
   isRequired?: boolean
   className?: string
+  isError?: boolean
   children?: React.ReactNode
 }
 
 export const LabeledInput = (props: Props) => {
-  const { value, label, onChange, labelRightAddon, placeholder, isRequired, children, className } = props
+  const { value, label, isError, onChange, labelRightAddon, placeholder, isRequired, children, className } = props
   return (
     <div className={classNames(styles.container, className)}>
       <label htmlFor={label} className={styles.label}>
@@ -25,7 +26,7 @@ export const LabeledInput = (props: Props) => {
         <input
           name={label}
           type="text"
-          className={styles.input}
+          className={classNames(styles.input, isError && styles.error)}
           placeholder={placeholder}
           value={value}
           onChange={onChange ? e => onChange(e.target.value) : undefined}

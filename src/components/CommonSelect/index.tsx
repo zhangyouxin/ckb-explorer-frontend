@@ -26,6 +26,7 @@ export default (props: Props) => {
   const toggleExpand = () => {
     setIsExpanded(!isExpanded)
   }
+
   const handleOptionClick = (option: OptionType) => {
     onChange(option.value)
     setValue(option.label)
@@ -73,7 +74,8 @@ export default (props: Props) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [currentIndex, handleOptionClick, isExpanded, options, options.length, toggleExpand])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, isExpanded, options, options.length])
 
   return (
     <OutsideClickHandler onOutsideClick={() => setIsExpanded(false)}>

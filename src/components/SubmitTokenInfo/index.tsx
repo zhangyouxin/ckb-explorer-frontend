@@ -15,6 +15,7 @@ import CommonSelect from '../CommonSelect'
 import { isMainnet } from '../../utils/chain'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
 import { isValidPositiveInteger } from '../../utils/number'
+import { useSetToast } from '../Toast'
 
 type Props = {
   isOpen: boolean
@@ -29,6 +30,9 @@ const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
 
 export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const { t } = useTranslation()
+  const setToast = useSetToast()
+  const [isDirty, setIsDirty] = useState(false)
+  const [submiting, setSubmiting] = useState(false)
   const [args, setArgs] = useState('')
 
   const [symbol, setSymbol] = useState('')
@@ -49,6 +53,9 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     }))
   const [codeHash, setCodeHash] = useState<string>(tokenTypeOptions[0].value)
   const handleTokenTypesChange = (value: string) => {
+    // eslint-disable-next-line
+    console.log('handleTokenTypesChange', value)
+
     setCodeHash(value)
   }
 
@@ -74,6 +81,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   }
 
   const clearForm = () => {
+    setIsDirty(false)
     onClose()
     setArgs('')
     setSymbol('')
@@ -86,16 +94,37 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   }
 
   const handleClose = () => {
+    setIsDirty(false)
     onClose()
   }
 
-  const validateFields = () =>
-    isValidPositiveInteger(decimal) && !codeHash && !symbol && !args && !website && !creatorEmail
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+  const validateEmail = (email: string) => emailRegex.test(email)
+  const isInputEmailValid = validateEmail(creatorEmail)
+
+  const hexRegex = /^0x[0-9A-Fa-f]+$/
+  const validateHex = (str: string) => hexRegex.test(str) && str.length % 2 === 0
+  const isInputHexValid = validateHex(args)
+
+  const websiteRegex =
+    /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
+  const validateWebsite = (str: string) => websiteRegex.test(str)
+  const isInputWebsiteValid = validateWebsite(website)
+
+  const isInputDecimalValid = isValidPositiveInteger(decimal)
+
+  const validateBasicFields = () => !!codeHash && !!args && !!symbol && !!decimal && !!website && !!creatorEmail
+  const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid
+
+  const validateFields = () => validateBasicFields() && isInputRulesValid
 
   const handleConfirm = async () => {
+    setIsDirty(true)
     if (!validateFields()) {
       return
     }
+
+    setSubmiting(true)
     const typeHash = utils.computeScriptHash({
       // code hash should be fixed for sUDT
       codeHash,
@@ -110,11 +139,17 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
       operator_website: website,
       decimal: Number(decimal),
       full_name: name,
+      total_amount: 0,
       icon_file: logo ?? '',
-      typeHash: '',
-    }).then(() => {
-      clearForm()
     })
+      .then(() => {
+        clearForm()
+        setSubmiting(false)
+      })
+      .catch(() => {
+        setToast({ message: t('error.page_crashed_tip') })
+        setSubmiting(false)
+      })
   }
 
   return (
@@ -147,6 +182,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
 
               <LabeledInput
                 isRequired
+                isError={isDirty && !isInputHexValid}
                 value={args}
                 onChange={setArgs}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
@@ -175,6 +211,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
+                isError={isDirty && !isInputDecimalValid}
                 value={decimal}
                 onChange={setDecimal}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.decimal_tip')} />}
@@ -192,6 +229,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
+                isError={isDirty && !isInputWebsiteValid}
                 value={website}
                 onChange={setWebsite}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.website_tip')} />}
@@ -201,6 +239,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
+                isError={isDirty && !isInputEmailValid}
                 value={creatorEmail}
                 onChange={setCreatorEmail}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.creator_email_tip')} icon={AlertIcon} />}
@@ -221,10 +260,11 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
           </div>
           <div className={styles.modalFooter}>
             <CommonButton
+              loading={submiting}
               className={styles.submitBtn}
               onClick={handleConfirm}
               name={t('submit_token_info.confirm')}
-              disabled={!validateFields()}
+              disabled={!validateBasicFields()}
             />
           </div>
         </div>

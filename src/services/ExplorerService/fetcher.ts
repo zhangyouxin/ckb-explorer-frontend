@@ -936,14 +936,13 @@ export type UDTQueryResult = {
 }
 
 type SubmitTokenInfoParams = {
-  typeHash: string
   symbol: string
   email: string
   operator_website: string
+  total_amount: number
 
   full_name?: string
   decimal?: number
-  total_amount?: number
   description?: string
   icon_file?: string
   display_name?: string

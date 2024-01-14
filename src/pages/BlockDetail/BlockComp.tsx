@@ -354,7 +354,7 @@ export const BlockComp = ({
       )}
       {totalPages > 1 && (
         <BlockTransactionsPagination>
-          <Pagination currentPage={currentPage} totalPages={totalPages} onChange={onPageChange} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageNumberChange={onPageChange} />
         </BlockTransactionsPagination>
       )}
     </>

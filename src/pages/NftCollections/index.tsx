@@ -62,7 +62,7 @@ const NftCollections = () => {
         <Pagination
           currentPage={data?.pagination.page ?? 1}
           totalPages={data?.pagination.last ?? 1}
-          onChange={handlePageChange}
+          onPageNumberChange={handlePageChange}
         />
       </div>
     </Content>

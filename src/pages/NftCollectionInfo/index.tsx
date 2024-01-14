@@ -206,14 +206,14 @@ const NftCollectionInfo = () => {
             <Pagination
               currentPage={+page}
               totalPages={Math.ceil((holderList?.length ?? 0) / PAGE_SIZE) ?? 1}
-              onChange={handlePageChange}
+              onPageNumberChange={handlePageChange}
             />
           </>
         ) : null}
         {tab === tabs[2] ? (
           <>
             <NftCollectionInventory collection={id} list={inventoryList?.data ?? []} isLoading={isInventoryLoading} />
-            <Pagination {...pages} onChange={handlePageChange} />
+            <Pagination {...pages} onPageNumberChange={handlePageChange} />
           </>
         ) : null}
       </div>

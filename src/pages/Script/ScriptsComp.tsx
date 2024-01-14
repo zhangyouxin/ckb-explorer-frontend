@@ -81,7 +81,7 @@ export const ScriptTransactions = ({ page, size }: { page: number; size: number 
       </div>
       {totalPages > 1 && (
         <div className={styles.scriptPagination}>
-          <Pagination currentPage={page} totalPages={totalPages} onChange={onChange} />
+          <Pagination currentPage={page} totalPages={totalPages} onPageNumberChange={onChange} />
         </div>
       )}
     </>
@@ -217,7 +217,7 @@ export const ScriptCells = ({
       </div>
       {totalPages > 1 && (
         <div className={styles.scriptPagination}>
-          <Pagination currentPage={page} totalPages={totalPages} onChange={onChange} />
+          <Pagination currentPage={page} totalPages={totalPages} onPageNumberChange={onChange} />
         </div>
       )}
     </>

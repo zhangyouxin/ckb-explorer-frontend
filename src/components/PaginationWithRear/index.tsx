@@ -8,11 +8,15 @@ const PaginationWithRear = ({
   totalPages,
   onChange,
   paginationClassName,
+  onPageSizeChange,
+  pageSize,
   rear,
 }: {
   currentPage: number
   totalPages: number
+  pageSize?: number
   onChange: (page: number) => void
+  onPageSizeChange?: (pageSize: number) => void
   paginationClassName?: string
   rear: ReactNode
 }) => {
@@ -22,7 +26,9 @@ const PaginationWithRear = ({
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onChange={onChange}
+          pageSize={pageSize}
+          onPageSizeChange={onPageSizeChange}
+          onPageNumberChange={onChange}
           className={classNames(styles.pagination, paginationClassName)}
         />
       )}

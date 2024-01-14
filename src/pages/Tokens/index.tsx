@@ -161,7 +161,7 @@ export default () => {
           )}
         </QueryResult>
 
-        <Pagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageNumberChange={setPage} />
       </TokensPanel>
     </Content>
   )

@@ -140,7 +140,7 @@ const NftInfo = () => {
         <Pagination
           currentPage={transferListRes?.pagination.page ?? 1}
           totalPages={transferListRes?.pagination.last ?? 1}
-          onChange={handlePageChange}
+          onPageNumberChange={handlePageChange}
         />
       </div>
     </div>

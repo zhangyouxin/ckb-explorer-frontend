@@ -59,7 +59,7 @@ export default ({
       )}
       {totalPages > 1 && (
         <TransactionsPagination>
-          <Pagination currentPage={currentPage} totalPages={totalPages} onChange={onPageChange} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageNumberChange={onPageChange} />
         </TransactionsPagination>
       )}
     </>

@@ -300,7 +300,7 @@ const TransactionsPanel: FC<{ type: TxStatus }> = ({ type }) => {
               className={styles.pagination}
               currentPage={currentPage}
               totalPages={totalPages}
-              onChange={setPage}
+              onPageNumberChange={setPage}
               annotation={
                 totalPages === MAX_PAGE_NUMBER
                   ? t('pagination.only_first_pages_visible', { pages: MAX_PAGE_NUMBER })

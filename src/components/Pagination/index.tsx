@@ -8,25 +8,31 @@ import RightGrey from './pagination_grey_right.png'
 import { useIsMobile } from '../../hooks'
 import SimpleButton from '../SimpleButton'
 import { HelpTip } from '../HelpTip'
+import styles from './index.module.scss'
 
 const Pagination = ({
   currentPage,
   totalPages,
   gotoPage = currentPage === totalPages ? totalPages : currentPage + 1,
-  onChange,
+  onPageNumberChange: onChange,
+  onPageSizeChange,
+  pageSize = 10,
   className,
   annotation,
 }: {
   currentPage: number
+  pageSize?: number
   totalPages: number
   gotoPage?: number
-  onChange: (page: number) => void
+  onPageNumberChange: (pageNumber: number) => void
+  onPageSizeChange?: (pageSize: number) => void
   className?: string
   annotation?: string
 }) => {
   const isMobile = useIsMobile()
   const { t } = useTranslation()
   const [inputPage, setInputPage] = useState(gotoPage)
+  const [inputPageSize, setInputPageSize] = useState(pageSize)
 
   const total = Math.max(totalPages, 1)
   const current = Math.min(Math.max(currentPage, 1), totalPages)
@@ -43,6 +49,13 @@ const Pagination = ({
       onChange(page)
       setInputPage(Math.min(page + 1, total))
     }
+  }
+
+  const changePageSize = (pageSize: number) => {
+    if (onPageSizeChange) {
+      onPageSizeChange(pageSize)
+    }
+    setInputPageSize(pageSize)
   }
 
   return (
@@ -74,6 +87,28 @@ const Pagination = ({
         <SimpleButton className="paginationLastButton" onClick={() => changePage(total)}>
           {t('pagination.last')}
         </SimpleButton>
+        {!isMobile && (
+          <>
+            <span className={styles.pageSize}>{t('pagination.page_size')}</span>
+            <input
+              type="text"
+              pattern="[0-9]*"
+              className={styles.pageSizeInput}
+              value={inputPageSize}
+              onChange={event => {
+                const value = parseInt(event.target.value, 10)
+                if (!Number.isNaN(value)) {
+                  setInputPageSize(value)
+                }
+              }}
+              onKeyUp={event => {
+                if (event.keyCode === 13) {
+                  changePageSize(inputPageSize)
+                }
+              }}
+            />
+          </>
+        )}
       </PaginationLeftItem>
       <PaginationRightItem>
         <span className="paginationPageLabel">{t('pagination.page')}</span>

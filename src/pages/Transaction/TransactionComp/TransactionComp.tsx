@@ -41,6 +41,11 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
     queryParams.set('inputCellsPageNumber', page.toString())
     history.replace(`${location.pathname}?${queryParams.toString()}`)
   }
+  const handleInputCellsPageSizeChange = (pageSize: number) => {
+    queryParams.set('inputCellsPageSize', pageSize.toString())
+    history.replace(`${location.pathname}?${queryParams.toString()}`)
+  }
+
   const txInputsQuery = useQuery(['transactionInputs', txHash, inputCellsPageNumber, inputCellsPageSize], async () => {
     const result = await explorerService.api.fetchTransactionInputsByHash(
       txHash,
@@ -51,6 +56,10 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
   })
   const handleOutputCellsPageChange = (page: number) => {
     queryParams.set('outputCellsPageNumber', page.toString())
+    history.replace(`${location.pathname}?${queryParams.toString()}`)
+  }
+  const handleOutputCellsPageSizeChange = (pageSize: number) => {
+    queryParams.set('outputCellsPageSize', pageSize.toString())
     history.replace(`${location.pathname}?${queryParams.toString()}`)
   }
 
@@ -94,8 +103,10 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         )}
         <Pagination
           currentPage={Number(inputCellsPageNumber)}
+          pageSize={Number(inputCellsPageSize)}
           totalPages={txInputsQuery.isSuccess ? Math.ceil(totalInputsCount / Number(inputCellsPageSize)) : 1}
-          onChange={handleInputCellsPageChange}
+          onPageNumberChange={handleInputCellsPageChange}
+          onPageSizeChange={handleInputCellsPageSizeChange}
         />
       </div>
       <div className="transactionOutputs">
@@ -110,8 +121,10 @@ export const TransactionComp = ({ transaction }: { transaction: Transaction }) =
         )}
         <Pagination
           currentPage={Number(outputCellsPageNumber)}
+          pageSize={Number(outputCellsPageSize)}
           totalPages={txOutputsQuery.isSuccess ? Math.ceil(totalOutputsCount / Number(outputCellsPageSize)) : 1}
-          onChange={handleOutputCellsPageChange}
+          onPageNumberChange={handleOutputCellsPageChange}
+          onPageSizeChange={handleOutputCellsPageSizeChange}
         />
       </div>
     </>

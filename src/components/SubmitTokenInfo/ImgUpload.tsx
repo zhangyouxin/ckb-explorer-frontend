@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useRef } from 'react'
+import { MouseEventHandler, useRef } from 'react'
 import UploadIcon from '../../assets/arrow_up_circle.png'
 import DeleteIcon from '../../assets/delete.png'
 import styles from './ImgUpload.module.scss'
@@ -19,6 +19,10 @@ export const ImgUpload = (prop: Props) => {
   const { value, label, onChange, labelRightAddon, placeholder, isRequired, className, onClear } = prop
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const handleClearUploadedImage: MouseEventHandler<HTMLButtonElement> = e => {
+    onClear()
+    e.stopPropagation()
+  }
   const handleClick = () => {
     inputRef.current?.click()
   }
@@ -48,7 +52,7 @@ export const ImgUpload = (prop: Props) => {
         {value ? (
           <>
             <img src={value} className={styles.uploadedIcon} alt="upload" />
-            <button type="button" onClick={onClear} className={styles.deleteIcon}>
+            <button type="button" onClick={handleClearUploadedImage} className={styles.deleteIcon}>
               <img src={DeleteIcon} alt="upload" />
             </button>
           </>

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
 import classNames from 'classnames'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
 import styles from './index.module.scss'
 import { isMainnet } from '../../utils/chain'
@@ -31,6 +31,50 @@ export default (props: Props) => {
     setValue(option.label)
     toggleExpand()
   }
+
+  const [currentIndex, setCurrentIndex] = useState(-1)
+
+  useEffect(() => {
+    if (!isExpanded) {
+      // keyboard selection is enabled only when the dropdown is expanded
+      return
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const { keyCode } = event
+      event.preventDefault()
+
+      switch (keyCode) {
+        case 38:
+          // up
+          setCurrentIndex(currentIndex > 0 ? currentIndex - 1 : currentIndex)
+          break
+        case 40:
+          // down
+          setCurrentIndex(currentIndex < options.length - 1 ? currentIndex + 1 : currentIndex)
+          break
+        case 27:
+          // esc
+          setCurrentIndex(-1)
+          toggleExpand()
+          break
+        case 13:
+          // enter
+          if (currentIndex !== -1) {
+            handleOptionClick(options[currentIndex])
+          }
+          toggleExpand()
+          break
+        default:
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [currentIndex, handleOptionClick, isExpanded, options, options.length, toggleExpand])
+
   return (
     <OutsideClickHandler onOutsideClick={() => setIsExpanded(false)}>
       <div className={classNames(styles.select, className)}>
@@ -40,8 +84,12 @@ export default (props: Props) => {
         </div>
         {isExpanded && (
           <div className={styles.options}>
-            {options.map(option => (
-              <div key={option.value} className={styles.option} onClick={() => handleOptionClick(option)}>
+            {options.map((option, index) => (
+              <div
+                key={option.value}
+                className={classNames(styles.option, index === currentIndex && styles.selected)}
+                onClick={() => handleOptionClick(option)}
+              >
                 {option.label}
               </div>
             ))}

@@ -32,7 +32,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const { t } = useTranslation()
   const setToast = useSetToast()
   const [isDirty, setIsDirty] = useState(false)
-  const [submiting, setSubmiting] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [args, setArgs] = useState('')
 
   const [symbol, setSymbol] = useState('')
@@ -124,7 +124,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
       return
     }
 
-    setSubmiting(true)
+    setSubmitting(true)
     const typeHash = utils.computeScriptHash({
       // code hash should be fixed for sUDT
       codeHash,
@@ -144,11 +144,11 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     })
       .then(() => {
         clearForm()
-        setSubmiting(false)
+        setSubmitting(false)
       })
       .catch(() => {
         setToast({ message: t('error.page_crashed_tip') })
-        setSubmiting(false)
+        setSubmitting(false)
       })
   }
 
@@ -260,7 +260,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
           </div>
           <div className={styles.modalFooter}>
             <CommonButton
-              loading={submiting}
+              loading={submitting}
               className={styles.submitBtn}
               onClick={handleConfirm}
               name={t('submit_token_info.confirm')}

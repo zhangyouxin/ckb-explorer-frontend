@@ -16,6 +16,7 @@ import { isMainnet } from '../../utils/chain'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
 import { isValidNoNegativeInteger } from '../../utils/number'
 import { useSetToast } from '../Toast'
+import { assertIsHashType } from '../../utils/util'
 
 type Props = {
   isOpen: boolean
@@ -48,15 +49,15 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     .filter(scriptData => scriptData.tag.includes('sudt'))
     .sort((a, b) => a.tag.localeCompare(b.tag))
     .map(scriptData => ({
-      value: scriptData.codeHashes[0],
+      value: {
+        codeHash: scriptData.codeHashes[0],
+        hashType: scriptData.hashType,
+      },
       label: scriptData.tag,
     }))
-  const [codeHash, setCodeHash] = useState<string>(tokenTypeOptions[0].value)
-  const handleTokenTypesChange = (value: string) => {
-    // eslint-disable-next-line
-    console.log('handleTokenTypesChange', value)
-
-    setCodeHash(value)
+  const [tokenType, setTokenType] = useState<{ codeHash: string; hashType: string }>(tokenTypeOptions[0].value)
+  const handleTokenTypesChange = (value: { codeHash: string; hashType: string }) => {
+    setTokenType(value)
   }
 
   useEffect(() => {
@@ -113,7 +114,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
 
   const isInputDecimalValid = isValidNoNegativeInteger(decimal)
 
-  const validateBasicFields = () => !!codeHash && !!args && !!symbol && !!decimal && !!website && !!creatorEmail
+  const validateBasicFields = () => !!tokenType && !!args && !!symbol && !!decimal && !!website && !!creatorEmail
   const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid
 
   const validateFields = () => validateBasicFields() && isInputRulesValid
@@ -125,11 +126,10 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     }
 
     setSubmitting(true)
+    assertIsHashType(tokenType.hashType)
     const typeHash = utils.computeScriptHash({
-      // code hash should be fixed for sUDT
-      codeHash,
-      // hash type should be fixed for sUDT
-      hashType: 'data',
+      codeHash: tokenType.codeHash,
+      hashType: tokenType.hashType,
       args,
     })
 
@@ -176,7 +176,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
                   className={styles.codeHashSelect}
                   options={tokenTypeOptions}
                   onChange={handleTokenTypesChange}
-                  defaultValue={codeHash}
+                  defaultValue={tokenType}
                 />
               </LabeledInput>
 

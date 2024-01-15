@@ -5,20 +5,20 @@ import OutsideClickHandler from 'react-outside-click-handler'
 import styles from './index.module.scss'
 import { isMainnet } from '../../utils/chain'
 
-type OptionType = {
-  value: string
+type OptionType<T> = {
+  value: T
   label: string
 }
 
-type Props = {
-  options: OptionType[]
-  onChange: (value: string) => void
-  defaultValue?: string
+type Props<T> = {
+  options: OptionType<T>[]
+  onChange: (value: T) => void
+  defaultValue?: T
   placeholder?: string
   className?: string
 }
 
-export default (props: Props) => {
+function CommonSelect<T>(props: Props<T>) {
   const { options, onChange, defaultValue, placeholder, className } = props
   const defaultLabel = options.find(option => option.value === defaultValue)?.label
   const [value, setValue] = useState(defaultLabel)
@@ -27,7 +27,7 @@ export default (props: Props) => {
     setIsExpanded(!isExpanded)
   }
 
-  const handleOptionClick = (option: OptionType) => {
+  const handleOptionClick = (option: OptionType<T>) => {
     onChange(option.value)
     setValue(option.label)
     toggleExpand()
@@ -88,7 +88,7 @@ export default (props: Props) => {
           <div className={styles.options}>
             {options.map((option, index) => (
               <div
-                key={option.value}
+                key={option.label}
                 className={classNames(styles.option, index === currentIndex && styles.selected)}
                 onClick={() => handleOptionClick(option)}
               >
@@ -101,3 +101,5 @@ export default (props: Props) => {
     </OutsideClickHandler>
   )
 }
+
+export default CommonSelect

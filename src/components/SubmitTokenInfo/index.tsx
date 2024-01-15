@@ -47,7 +47,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const tokenTypeOptions = scriptDataList
     .filter(scriptData => scriptData.tag.includes('sudt'))
     .sort((a, b) => a.tag.localeCompare(b.tag))
-    .map(scriptData => ({ label: scripts.get(scriptData.tag)?.name ?? '-', value: scriptData.tag }))
+    .map(scriptData => ({ label: scripts.get(scriptData.tag)?.name ?? scriptData.tag, value: scriptData.tag }))
 
   const [tokenType, setTokenType] = useState<string>(tokenTypeOptions[0].value)
 

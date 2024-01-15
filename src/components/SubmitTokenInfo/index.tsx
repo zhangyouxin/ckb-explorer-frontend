@@ -13,10 +13,10 @@ import CommonModal from '../CommonModal'
 import { submitTokenInfo } from '../../services/ExplorerService/fetcher'
 import CommonSelect from '../CommonSelect'
 import { isMainnet } from '../../utils/chain'
+import { scripts } from '../../pages/ScriptList'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
 import { isValidNoNegativeInteger } from '../../utils/number'
 import { useSetToast } from '../Toast'
-import { assertIsHashType } from '../../utils/util'
 
 type Props = {
   isOpen: boolean
@@ -48,15 +48,11 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const tokenTypeOptions = scriptDataList
     .filter(scriptData => scriptData.tag.includes('sudt'))
     .sort((a, b) => a.tag.localeCompare(b.tag))
-    .map(scriptData => ({
-      value: {
-        codeHash: scriptData.codeHashes[0],
-        hashType: scriptData.hashType,
-      },
-      label: scriptData.tag,
-    }))
-  const [tokenType, setTokenType] = useState<{ codeHash: string; hashType: string }>(tokenTypeOptions[0].value)
-  const handleTokenTypesChange = (value: { codeHash: string; hashType: string }) => {
+    .map(scriptData => ({ label: scripts.get(scriptData.tag)?.name ?? '-', value: scriptData.tag }))
+
+  const [tokenType, setTokenType] = useState<string>(tokenTypeOptions[0].value)
+
+  const handleTokenTypesChange = (value: string) => {
     setTokenType(value)
   }
 
@@ -126,10 +122,13 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     }
 
     setSubmitting(true)
-    assertIsHashType(tokenType.hashType)
+    const token = scriptDataList.find(scriptData => scriptData.tag === tokenType)
+    if (!token) {
+      throw new Error(`tokenType ${tokenType} is not found`)
+    }
     const typeHash = utils.computeScriptHash({
-      codeHash: tokenType.codeHash,
-      hashType: tokenType.hashType,
+      codeHash: token.codeHashes[0],
+      hashType: token.hashType,
       args,
     })
 

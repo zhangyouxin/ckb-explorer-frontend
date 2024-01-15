@@ -95,7 +95,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   }
 
   const handleClose = () => {
-    setIsDirty(false)
+    clearForm()
     onClose()
   }
 

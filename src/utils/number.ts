@@ -89,8 +89,8 @@ export const parseUDTAmount = (amount: string, decimal: string | number) => {
   }
 }
 
-export function isValidPositiveInteger(input: string | number | undefined) {
+export function isValidNoNegativeInteger(input: string | number | undefined) {
   if (!input) return false
   const number = Number(input)
-  return !Number.isNaN(number) && Number.isInteger(number) && number > 0
+  return !Number.isNaN(number) && Number.isInteger(number) && number >= 0
 }

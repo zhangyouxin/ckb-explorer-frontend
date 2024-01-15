@@ -14,7 +14,7 @@ import { submitTokenInfo } from '../../services/ExplorerService/fetcher'
 import CommonSelect from '../CommonSelect'
 import { isMainnet } from '../../utils/chain'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
-import { isValidPositiveInteger } from '../../utils/number'
+import { isValidNoNegativeInteger } from '../../utils/number'
 import { useSetToast } from '../Toast'
 
 type Props = {
@@ -111,7 +111,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const validateWebsite = (str: string) => websiteRegex.test(str)
   const isInputWebsiteValid = validateWebsite(website)
 
-  const isInputDecimalValid = isValidPositiveInteger(decimal)
+  const isInputDecimalValid = isValidNoNegativeInteger(decimal)
 
   const validateBasicFields = () => !!codeHash && !!args && !!symbol && !!decimal && !!website && !!creatorEmail
   const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid

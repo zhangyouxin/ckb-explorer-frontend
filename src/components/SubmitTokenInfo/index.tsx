@@ -32,7 +32,6 @@ const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
 export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const { t } = useTranslation()
   const setToast = useSetToast()
-  const [isDirty, setIsDirty] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [args, setArgs] = useState('')
 
@@ -78,7 +77,6 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   }
 
   const clearForm = () => {
-    setIsDirty(false)
     onClose()
     setArgs('')
     setSymbol('')
@@ -116,7 +114,6 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
   const validateFields = () => validateBasicFields() && isInputRulesValid
 
   const handleConfirm = async () => {
-    setIsDirty(true)
     if (!validateFields()) {
       return
     }
@@ -181,7 +178,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
 
               <LabeledInput
                 isRequired
-                isError={isDirty && !isInputHexValid}
+                isError={!!args && !isInputHexValid}
                 value={args}
                 onChange={setArgs}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
@@ -210,7 +207,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={isDirty && !isInputDecimalValid}
+                isError={!!decimal && !isInputDecimalValid}
                 value={decimal}
                 onChange={setDecimal}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.decimal_tip')} />}
@@ -228,7 +225,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={isDirty && !isInputWebsiteValid}
+                isError={!!website && !isInputWebsiteValid}
                 value={website}
                 onChange={setWebsite}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.website_tip')} />}
@@ -238,7 +235,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={isDirty && !isInputEmailValid}
+                isError={!!creatorEmail && !isInputEmailValid}
                 value={creatorEmail}
                 onChange={setCreatorEmail}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.creator_email_tip')} icon={AlertIcon} />}

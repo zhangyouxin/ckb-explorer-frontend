@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
 import styles from './index.module.scss'
-import { isMainnet } from '../../utils/chain'
+import Arrow from '../../assets/arrow_down_black.png'
 
 type Option = Record<'label' | 'value', string>
 type Props = {
@@ -77,7 +77,7 @@ function CommonSelect({ options, onChange, defaultValue, placeholder, className 
       <div className={classNames(styles.select, className)}>
         <div onClick={toggleExpand} className={styles.value}>
           {value ?? placeholder}
-          <div className={classNames(isMainnet() ? styles.arrow : styles.arrowTestnet, isExpanded && styles.flip)} />
+          <img src={Arrow} alt="arrow" className={styles.arrow} data-is-flipped={isExpanded} />
         </div>
         {isExpanded && (
           <div className={styles.options}>

@@ -82,7 +82,7 @@ const TokenItem = ({ token, isLast }: { token: UDT | OmigaInscriptionCollection;
     localeNumberString(token.addressesCount)
   )
 
-  const isKnown = (Boolean(name) && token.published) || isOmigaInscriptionCollection(token)
+  const isKnown = (Boolean(name || symbol) && token.published) || isOmigaInscriptionCollection(token)
 
   return (
     <TokensTableItem>

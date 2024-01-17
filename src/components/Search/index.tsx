@@ -49,6 +49,7 @@ const handleSearchById = async (
 
   try {
     const { data } = await explorerService.api.fetchSearchByIdResult(addPrefixForHash(query))
+    setInputLoading(false)
     onClear()
 
     const { type, attributes } = data

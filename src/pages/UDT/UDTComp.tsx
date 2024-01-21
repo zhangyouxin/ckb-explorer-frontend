@@ -15,6 +15,7 @@ import { CsvExport } from '../../components/CsvExport'
 import { Transaction } from '../../models/Transaction'
 import { OmigaInscriptionCollection, UDT, isOmigaInscriptionCollection } from '../../models/UDT'
 import { Card, CardCellInfo, CardCellsLayout, HashCardHeader } from '../../components/Card'
+import { SubmitTokenInfo, TokenInfo } from '../../components/SubmitTokenInfo'
 import { useIsMobile } from '../../hooks'
 import SUDTTokenIcon from '../../assets/sudt_token.png'
 import { isMainnet } from '../../utils/chain'
@@ -77,6 +78,7 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
     typeScript,
   } = udt
   const [showType, setShowType] = useState(false)
+  const [isModifyTokenInfoModalOpen, setIsModifyTokenInfoModalOpen] = useState<boolean>(false)
 
   const items: CardCellInfo<'left' | 'right'>[] = !isOmigaInscriptionCollection(udt)
     ? [
@@ -144,8 +146,25 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
         },
       ]
 
-  // TODO: To be implemented.
-  const modifyTokenInfo = false && <div>Modify Token Info</div>
+  const tokenInfo: TokenInfo = {
+    tokenType: udt.udtType,
+    args: udt.typeScript.args,
+    typeHash,
+    symbol: udt.symbol,
+    name: udt.displayName || udt.fullName,
+    decimal: udt.decimal,
+    description: udt.description,
+    website: '', // FIXME: where to get the website
+    creatorEmail: '', // FIXME: where to get the creatorEmail
+    logo: iconFile,
+  }
+
+  const modifyTokenInfo =
+    udt.udtType === 'sudt' ? (
+      <button type="button" className={styles.modify} onClick={() => setIsModifyTokenInfoModalOpen(true)}>
+        {t('udt.modify_token_info')}
+      </button>
+    ) : null
 
   const cardTitle = (
     <div className={styles.cardTitle}>
@@ -158,25 +177,30 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
   )
 
   return (
-    <Card className={styles.udtOverviewCard} style={{ marginBottom: 16 }}>
-      {/* When encountering more complex requirements, consider extracting the components within HashCardHeader
+    <>
+      <Card className={styles.udtOverviewCard} style={{ marginBottom: 16 }}>
+        {/* When encountering more complex requirements, consider extracting the components within HashCardHeader
       into smaller components. Then, implement a completely new variant or freely assemble them externally. */}
-      {isMobile && cardTitle}
-      <HashCardHeader
-        className={styles.cardHeader}
-        title={!isMobile && cardTitle}
-        hash={typeHash}
-        rightContent={!isMobile && modifyTokenInfo}
-      />
+        {isMobile && cardTitle}
+        <HashCardHeader
+          className={styles.cardHeader}
+          title={!isMobile && cardTitle}
+          hash={typeHash}
+          rightContent={!isMobile && modifyTokenInfo}
+        />
 
-      <CardCellsLayout type="left-right" cells={items} borderTop />
+        <CardCellsLayout type="left-right" cells={items} borderTop />
 
-      <TypeScriptController onClick={() => setShowType(!showType)}>
-        <div>{t('udt.type_script')}</div>
-        <img alt="type script" src={typeScriptIcon(showType)} />
-      </TypeScriptController>
-      {showType && typeScript && <Script script={typeScript} />}
-    </Card>
+        <TypeScriptController onClick={() => setShowType(!showType)}>
+          <div>{t('udt.type_script')}</div>
+          <img alt="type script" src={typeScriptIcon(showType)} />
+        </TypeScriptController>
+        {showType && typeScript && <Script script={typeScript} />}
+      </Card>
+      {tokenInfo && isModifyTokenInfoModalOpen ? (
+        <SubmitTokenInfo isOpen onClose={() => setIsModifyTokenInfoModalOpen(false)} initialInfo={tokenInfo} />
+      ) : null}
+    </>
   )
 }
 

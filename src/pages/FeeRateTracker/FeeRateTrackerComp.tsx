@@ -53,27 +53,37 @@ export const FeeRateCards = ({ transactionFeeRates }: { transactionFeeRates: Fee
   const highFrs = allFrs.filter(r => r.confirmationTime <= avgConfirmationTime)
   const highConfirmationTime = getWeightedMedian(highFrs)
 
-  const feeRateList = [lowFrs, allFrs, highFrs].map(calcFeeRate).sort()
+  const list = [lowFrs, allFrs, highFrs].map(calcFeeRate)
+  let low = list[0]
+  let medium = list[1]
+  const high = list[2]
+
+  if (+medium.replace(/,/g, '') > +high.replace(/,/g, '')) {
+    medium = high
+  }
+  if (+low.replace(/,/g, '') > +medium.replace(/,/g, '')) {
+    low = medium
+  }
 
   const feeRateCards: FeeRateTracker.FeeRateCard[] = [
     {
       priority: t('fee_rate_tracker.low'),
       icon: <BikeIcon />,
-      feeRate: feeRateList[0],
+      feeRate: low,
       priorityClass: styles.low,
       confirmationTime: lowConfirmationTime,
     },
     {
       priority: t('fee_rate_tracker.average'),
       icon: <CarIcon />,
-      feeRate: feeRateList[1],
+      feeRate: medium,
       priorityClass: styles.average,
       confirmationTime: avgConfirmationTime,
     },
     {
       priority: t('fee_rate_tracker.high'),
       icon: <RocketIcon />,
-      feeRate: feeRateList[2],
+      feeRate: high,
       priorityClass: styles.high,
       confirmationTime: highConfirmationTime,
     },
@@ -129,6 +139,7 @@ export const ConfirmationTimeFeeRateChart = ({
           formatter(params) {
             const feeRate: echarts.EChartOption.Tooltip.Format = Array.isArray(params) ? params[0] : params
             const count: echarts.EChartOption.Tooltip.Format = Array.isArray(params) ? params[1] : params
+            if (!feeRate.value) return ''
             return `${t('fee_rate_tracker.fee_rate')}: ${feeRate.value?.toLocaleString('en')} shannons/kB<br />${t(
               'fee_rate_tracker.confirmation_time',
             )}: ${feeRate.name}<br />${t('fee_rate_tracker.count')}: ${count.value}`

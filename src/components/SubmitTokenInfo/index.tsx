@@ -18,10 +18,20 @@ import { MainnetContractHashTags, TestnetContractHashTags } from '../../constant
 import { isValidNoNegativeInteger } from '../../utils/number'
 import { useSetToast } from '../Toast'
 
-type Props = {
-  isOpen: boolean
-  onClose: () => void
+const emptyTokenInfo = {
+  tokenType: '',
+  args: '',
+  typeHash: '',
+  symbol: '',
+  name: '',
+  decimal: '',
+  description: '',
+  website: '',
+  creatorEmail: '',
+  logo: '',
 }
+
+export type TokenInfo = typeof emptyTokenInfo
 
 const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
   <Tooltip placement="bottom" title={title}>
@@ -29,19 +39,18 @@ const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
   </Tooltip>
 )
 
-export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
+export const SubmitTokenInfo = ({
+  onClose,
+  isOpen,
+  initialInfo,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  initialInfo?: TokenInfo
+}) => {
   const { t } = useTranslation()
   const setToast = useSetToast()
   const [submitting, setSubmitting] = useState(false)
-  const [args, setArgs] = useState('')
-
-  const [symbol, setSymbol] = useState('')
-  const [name, setName] = useState('')
-  const [decimal, setDecimal] = useState('')
-  const [description, setDescription] = useState('')
-  const [website, setWebsite] = useState('')
-  const [creatorEmail, setCreatorEmail] = useState('')
-  const [logo, setLogo] = useState<string | null>(null)
 
   const scriptDataList = isMainnet() ? MainnetContractHashTags : TestnetContractHashTags
   const tokenTypeOptions = scriptDataList
@@ -49,10 +58,19 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     .sort((a, b) => a.tag.localeCompare(b.tag))
     .map(scriptData => ({ label: scripts.get(scriptData.tag)?.name ?? scriptData.tag, value: scriptData.tag }))
 
-  const [tokenType, setTokenType] = useState<string>(tokenTypeOptions[0].value)
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo>(
+    initialInfo ?? { ...emptyTokenInfo, tokenType: tokenTypeOptions[0].value },
+  )
 
   const handleTokenTypesChange = (value: string) => {
-    setTokenType(value)
+    setTokenInfo(info => ({ ...info, tokenType: value }))
+  }
+
+  const handleFieldChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    const { name, value } = e.currentTarget
+    setTokenInfo(info => ({ ...info, [name]: value }))
   }
 
   useEffect(() => {
@@ -70,7 +88,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
       // eslint-disable-next-line func-names
       reader.onloadend = function () {
         baseString = reader.result as string
-        setLogo(baseString)
+        setTokenInfo(info => ({ ...info, logo: baseString ?? info.logo }))
       }
       reader.readAsDataURL(file)
     }
@@ -78,14 +96,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
 
   const clearForm = () => {
     onClose()
-    setArgs('')
-    setSymbol('')
-    setName('')
-    setDecimal('')
-    setDescription('')
-    setWebsite('')
-    setCreatorEmail('')
-    setLogo(null)
+    setTokenInfo(emptyTokenInfo)
   }
 
   const handleClose = () => {
@@ -95,20 +106,26 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
 
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
   const validateEmail = (email: string) => emailRegex.test(email)
-  const isInputEmailValid = validateEmail(creatorEmail)
+  const isInputEmailValid = validateEmail(tokenInfo.creatorEmail)
 
   const hexRegex = /^0x[0-9A-Fa-f]+$/
   const validateHex = (str: string) => hexRegex.test(str) && str.length % 2 === 0
-  const isInputHexValid = validateHex(args)
+  const isInputHexValid = validateHex(tokenInfo.args)
 
   const websiteRegex =
     /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
   const validateWebsite = (str: string) => websiteRegex.test(str)
-  const isInputWebsiteValid = validateWebsite(website)
+  const isInputWebsiteValid = validateWebsite(tokenInfo.website)
 
-  const isInputDecimalValid = isValidNoNegativeInteger(decimal)
+  const isInputDecimalValid = isValidNoNegativeInteger(tokenInfo.decimal)
 
-  const validateBasicFields = () => !!tokenType && !!args && !!symbol && !!decimal && !!website && !!creatorEmail
+  const validateBasicFields = () =>
+    !!tokenInfo.tokenType &&
+    !!tokenInfo.args &&
+    !!tokenInfo.symbol &&
+    !!tokenInfo.decimal &&
+    !!tokenInfo.website &&
+    !!tokenInfo.creatorEmail
   const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid
 
   const validateFields = () => validateBasicFields() && isInputRulesValid
@@ -119,24 +136,24 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
     }
 
     setSubmitting(true)
-    const token = scriptDataList.find(scriptData => scriptData.tag === tokenType)
+    const token = scriptDataList.find(scriptData => scriptData.tag === tokenInfo.tokenType)
     if (!token) {
-      throw new Error(`tokenType ${tokenType} is not found`)
+      throw new Error(`tokenType ${tokenInfo.tokenType} is not found`)
     }
     const typeHash = utils.computeScriptHash({
       codeHash: token.codeHashes[0],
       hashType: token.hashType,
-      args,
+      args: tokenInfo.args,
     })
 
     submitTokenInfo(typeHash.toLowerCase(), {
-      symbol,
-      email: creatorEmail,
-      operator_website: website,
-      decimal: Number(decimal),
-      full_name: name,
+      symbol: tokenInfo.symbol,
+      email: tokenInfo.creatorEmail,
+      operator_website: tokenInfo.website,
+      decimal: Number(tokenInfo.decimal),
+      full_name: tokenInfo.name,
       total_amount: 0,
-      icon_file: logo ?? '',
+      icon_file: tokenInfo.logo ?? '',
     })
       .then(() => {
         clearForm()
@@ -148,12 +165,14 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
       })
   }
 
+  const isModification = !!initialInfo
+
   return (
     <CommonModal isOpen={isOpen} onClose={handleClose}>
       <div className={styles.modalWrapper}>
         <div className={styles.contentWrapper}>
           <div className={styles.modalTitle}>
-            <div className={styles.title}>{t('submit_token_info.title')}</div>
+            <div className={styles.title}>{t(isModification ? 'udt.modify_token_info' : 'udt.submit_token_info')}</div>
             <button type="button" onClick={handleClose} className={styles.closeBtn}>
               <img src={CloseIcon} alt="close icon" />
             </button>
@@ -163,6 +182,7 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
             <div className={styles.sectionTitle}>{t('submit_token_info.token_type_scripts')}</div>
             <div className={styles.section}>
               <LabeledInput
+                name="tokenType"
                 isRequired
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.token_type_tip')} />}
                 label={t('submit_token_info.token_type')}
@@ -172,15 +192,16 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
                   className={styles.codeHashSelect}
                   options={tokenTypeOptions}
                   onChange={handleTokenTypesChange}
-                  defaultValue={tokenType}
+                  defaultValue={tokenInfo.tokenType}
                 />
               </LabeledInput>
 
               <LabeledInput
                 isRequired
-                isError={!!args && !isInputHexValid}
-                value={args}
-                onChange={setArgs}
+                isError={!!tokenInfo.args && !isInputHexValid}
+                value={tokenInfo.args}
+                name="args"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
                 label={t('submit_token_info.args')}
                 placeholder={t('submit_token_info.args_placeholder')}
@@ -190,16 +211,18 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
             <div className={styles.section}>
               <LabeledInput
                 isRequired
-                value={symbol}
-                onChange={setSymbol}
+                value={tokenInfo.symbol}
+                name="symbol"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.symbol_tip')} />}
                 label={t('submit_token_info.symbol')}
                 placeholder={t('submit_token_info.symbol_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
-                value={name}
-                onChange={setName}
+                value={tokenInfo.name}
+                name="name"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.name_tip')} />}
                 label={t('submit_token_info.name')}
                 placeholder={t('submit_token_info.name_placeholder')}
@@ -207,17 +230,19 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={!!decimal && !isInputDecimalValid}
-                value={decimal}
-                onChange={setDecimal}
+                isError={!!tokenInfo.decimal && !isInputDecimalValid}
+                value={tokenInfo.decimal}
+                name="decimal"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.decimal_tip')} />}
                 label={t('submit_token_info.decimal')}
                 placeholder={t('submit_token_info.decimal_placeholder')}
                 className={styles.labeledInput}
               />
               <LabeledInput
-                value={description}
-                onChange={setDescription}
+                value={tokenInfo.description}
+                name="description"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.description_tip')} />}
                 label={t('submit_token_info.description')}
                 placeholder={t('submit_token_info.description_placeholder')}
@@ -225,9 +250,10 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={!!website && !isInputWebsiteValid}
-                value={website}
-                onChange={setWebsite}
+                isError={!!tokenInfo.website && !isInputWebsiteValid}
+                value={tokenInfo.website}
+                name="website"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.website_tip')} />}
                 label={t('submit_token_info.website')}
                 placeholder={t('submit_token_info.website_placeholder')}
@@ -235,17 +261,18 @@ export const SubmitTokenInfo = ({ onClose, isOpen }: Props) => {
               />
               <LabeledInput
                 isRequired
-                isError={!!creatorEmail && !isInputEmailValid}
-                value={creatorEmail}
-                onChange={setCreatorEmail}
+                isError={!!tokenInfo.creatorEmail && !isInputEmailValid}
+                value={tokenInfo.creatorEmail}
+                name="creatorEmail"
+                onChange={handleFieldChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.creator_email_tip')} icon={AlertIcon} />}
                 label={t('submit_token_info.creator_email')}
                 placeholder={t('submit_token_info.creator_email_placeholder')}
                 className={styles.labeledInput}
               />
               <ImgUpload
-                value={logo}
-                onClear={() => setLogo(null)}
+                value={tokenInfo.logo}
+                onClear={() => setTokenInfo(info => ({ ...info, logo: '' }))}
                 onChange={handleImgChange}
                 labelRightAddon={<LabelTooltip title={t('submit_token_info.logo_tip')} />}
                 label={t('submit_token_info.logo')}

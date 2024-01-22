@@ -593,7 +593,11 @@
       "mint_limit": "Mint Limit",
       "mint_status_minting": "Minting",
       "mint_status_closed": "Closed",
-      "mint_status_rebase_start": "Rebase Start"
+      "mint_status_rebase_start": "Rebase Start",
+      "email_vericode": "Email-Verification Code",
+      "report": "Report",
+      "vericode": "Verification Code",
+      "get_code": "Get Code"
     },
     "nft": {
       "nft_collection": "NFT Collection",

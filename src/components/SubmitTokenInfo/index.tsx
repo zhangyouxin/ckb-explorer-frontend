@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'antd/lib/tooltip'
 import { utils } from '@ckb-lumos/base'
+import { AxiosError } from 'axios'
 import CloseIcon from '../../assets/modal_close.png'
 import HelpIcon from '../../assets/qa_help.png'
 import AlertIcon from '../../assets/alert.png'
@@ -10,13 +11,19 @@ import styles from './styles.module.scss'
 import { ImgUpload } from './ImgUpload'
 import CommonButton from '../CommonButton'
 import CommonModal from '../CommonModal'
-import { submitTokenInfo } from '../../services/ExplorerService/fetcher'
 import CommonSelect from '../CommonSelect'
 import { isMainnet } from '../../utils/chain'
 import { scripts } from '../../pages/ScriptList'
 import { MainnetContractHashTags, TestnetContractHashTags } from '../../constants/scripts'
 import { isValidNoNegativeInteger } from '../../utils/number'
 import { useSetToast } from '../Toast'
+import { explorerService } from '../../services/ExplorerService'
+import {
+  REPORT_EMAIL_ADDRESS,
+  REPORT_EMAIL_SUBJECT,
+  REPORT_EMAIL_BODY_EN,
+  REPORT_EMAIL_BODY_ZH,
+} from '../../constants/common'
 
 const emptyTokenInfo = {
   tokenType: '',
@@ -39,6 +46,58 @@ const LabelTooltip = ({ title, icon }: { title: string; icon?: string }) => (
   </Tooltip>
 )
 
+const useCountdown = () => {
+  const [target, setTarget] = useState<number | null>(null)
+  const [seconds, setSeconds] = useState(0)
+  const timer = useRef<NodeJS.Timer | null>(null)
+  const isCounting = target !== null
+
+  useEffect(() => {
+    if (!target) return
+
+    timer.current = setInterval(() => {
+      setSeconds(Math.ceil((target - Date.now()) / 1000))
+    }, 1000)
+    setSeconds(Math.ceil((target - Date.now()) / 1000))
+    return () => {
+      if (timer.current) {
+        clearInterval(timer.current)
+      }
+    }
+  }, [target])
+
+  useEffect(() => {
+    if (seconds <= 0) {
+      if (timer.current) {
+        clearInterval(timer.current)
+      }
+      setSeconds(0)
+      setTarget(null)
+    }
+  }, [seconds])
+
+  const start = (remain: number) => {
+    if (timer.current) {
+      clearInterval(timer.current)
+    }
+    setTarget(Date.now() + remain * 1000)
+  }
+
+  const clear = () => {
+    if (timer.current) {
+      clearInterval(timer.current)
+    }
+    setTarget(null)
+  }
+
+  return {
+    isCounting,
+    seconds,
+    start,
+    clear,
+  }
+}
+
 export const SubmitTokenInfo = ({
   onClose,
   isOpen,
@@ -48,9 +107,10 @@ export const SubmitTokenInfo = ({
   onClose: () => void
   initialInfo?: TokenInfo
 }) => {
-  const { t } = useTranslation()
+  const [t, { language }] = useTranslation()
   const setToast = useSetToast()
   const [submitting, setSubmitting] = useState(false)
+  const countdown = useCountdown()
 
   const scriptDataList = isMainnet() ? MainnetContractHashTags : TestnetContractHashTags
   const tokenTypeOptions = scriptDataList
@@ -61,6 +121,7 @@ export const SubmitTokenInfo = ({
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>(
     initialInfo ?? { ...emptyTokenInfo, tokenType: tokenTypeOptions[0].value },
   )
+  const [vericode, setVericode] = useState('')
 
   const handleTokenTypesChange = (value: string) => {
     setTokenInfo(info => ({ ...info, tokenType: value }))
@@ -71,6 +132,39 @@ export const SubmitTokenInfo = ({
     e.preventDefault()
     const { name, value } = e.currentTarget
     setTokenInfo(info => ({ ...info, [name]: value }))
+  }
+
+  const handleVericodeChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    setVericode(e.currentTarget.value)
+  }
+
+  const handleGetCodeClick = async (e: React.SyntheticEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (countdown.isCounting) {
+      return
+    }
+    try {
+      countdown.start(60)
+      const res = await explorerService.api.getVericodeForTokenInfo(tokenInfo.typeHash)
+      if (res.status === 200) {
+        return
+      }
+      throw new Error('Fail to get code')
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        if (e.response?.status === 400) {
+          setToast({
+            message: e.response?.data[0]?.title,
+          })
+        } else {
+          setToast({ message: e.message })
+        }
+      }
+      countdown.clear()
+    }
   }
 
   useEffect(() => {
@@ -125,7 +219,9 @@ export const SubmitTokenInfo = ({
     !!tokenInfo.symbol &&
     !!tokenInfo.decimal &&
     !!tokenInfo.website &&
-    !!tokenInfo.creatorEmail
+    !!tokenInfo.creatorEmail &&
+    (!isModification ? true : !!vericode)
+
   const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid
 
   const validateFields = () => validateBasicFields() && isInputRulesValid
@@ -146,15 +242,17 @@ export const SubmitTokenInfo = ({
       args: tokenInfo.args,
     })
 
-    submitTokenInfo(typeHash.toLowerCase(), {
-      symbol: tokenInfo.symbol,
-      email: tokenInfo.creatorEmail,
-      operator_website: tokenInfo.website,
-      decimal: Number(tokenInfo.decimal),
-      full_name: tokenInfo.name,
-      total_amount: 0,
-      icon_file: tokenInfo.logo ?? '',
-    })
+    explorerService.api
+      .submitTokenInfo(typeHash.toLowerCase(), {
+        symbol: tokenInfo.symbol,
+        email: tokenInfo.creatorEmail,
+        operator_website: tokenInfo.website,
+        decimal: Number(tokenInfo.decimal),
+        full_name: tokenInfo.name,
+        total_amount: 0,
+        icon_file: tokenInfo.logo ?? '',
+        token: vericode,
+      })
       .then(() => {
         clearForm()
         setSubmitting(false)
@@ -180,34 +278,36 @@ export const SubmitTokenInfo = ({
           <div className={styles.divider} />
           <div className={styles.modalContent}>
             <div className={styles.sectionTitle}>{t('submit_token_info.token_type_scripts')}</div>
-            <div className={styles.section}>
-              <LabeledInput
-                name="tokenType"
-                isRequired
-                labelRightAddon={<LabelTooltip title={t('submit_token_info.token_type_tip')} />}
-                label={t('submit_token_info.token_type')}
-                className={styles.labeledInput}
-              >
-                <CommonSelect
-                  className={styles.codeHashSelect}
-                  options={tokenTypeOptions}
-                  onChange={handleTokenTypesChange}
-                  defaultValue={tokenInfo.tokenType}
-                />
-              </LabeledInput>
+            {isModification ? null : (
+              <div className={styles.section}>
+                <LabeledInput
+                  name="tokenType"
+                  isRequired
+                  labelRightAddon={<LabelTooltip title={t('submit_token_info.token_type_tip')} />}
+                  label={t('submit_token_info.token_type')}
+                  className={styles.labeledInput}
+                >
+                  <CommonSelect
+                    className={styles.codeHashSelect}
+                    options={tokenTypeOptions}
+                    onChange={handleTokenTypesChange}
+                    defaultValue={tokenInfo.tokenType}
+                  />
+                </LabeledInput>
 
-              <LabeledInput
-                isRequired
-                isError={!!tokenInfo.args && !isInputHexValid}
-                value={tokenInfo.args}
-                name="args"
-                onChange={handleFieldChange}
-                labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
-                label={t('submit_token_info.args')}
-                placeholder={t('submit_token_info.args_placeholder')}
-                className={styles.labeledInput}
-              />
-            </div>
+                <LabeledInput
+                  isRequired
+                  isError={!!tokenInfo.args && !isInputHexValid}
+                  value={tokenInfo.args}
+                  name="args"
+                  onChange={handleFieldChange}
+                  labelRightAddon={<LabelTooltip title={t('submit_token_info.args_tip')} />}
+                  label={t('submit_token_info.args')}
+                  placeholder={t('submit_token_info.args_placeholder')}
+                  className={styles.labeledInput}
+                />
+              </div>
+            )}
             <div className={styles.section}>
               <LabeledInput
                 isRequired
@@ -279,6 +379,25 @@ export const SubmitTokenInfo = ({
                 placeholder={t('submit_token_info.logo_placeholder')}
                 className={styles.labeledInput}
               />
+            </div>
+            <div>
+              <div className={styles.report}>
+                {t('udt.email_vericode')}
+                <a
+                  href={`mailto:${REPORT_EMAIL_ADDRESS}?subject=${REPORT_EMAIL_SUBJECT}&body=${
+                    language === 'zh' ? REPORT_EMAIL_BODY_ZH : REPORT_EMAIL_BODY_EN
+                  }`}
+                >
+                  {t('udt.report')}
+                </a>
+              </div>
+              <div className={styles.vericodeEmail}>Mock email address</div>
+              <div className={styles.vericode}>
+                <input value={vericode} onChange={handleVericodeChange} placeholder={t('udt.vericode')} />
+                <button type="button" onClick={handleGetCodeClick} disabled={countdown.isCounting}>
+                  {countdown.isCounting ? `${countdown.seconds}s` : t('udt.get_code')}
+                </button>
+              </div>
             </div>
           </div>
           <div className={styles.modalFooter}>

@@ -39,6 +39,58 @@ Information:%0a%0d
    Other Info:%0a%0d
 `
 
+export const REPORT_EMAIL_ADDRESS = 'ckb-explorer@nervosnet.com'
+export const REPORT_EMAIL_SUBJECT = 'Submit Token Info'
+export const REPORT_EMAIL_BODY_EN = `
+MagickBase Team,
+
+
+
+I am writing this email to notify you about an issue regarding the contact email address listed on your browser for our organization [incorrect/no longer available]. Here is the correct email address information (* indicates required fields):
+
+
+
+New Email Address*: [Your new email address]
+
+Organization/Company: [Your organization/company name, if applicable]
+
+NFT Issuer Address with Signature Information for "Request to Change Email Address": [If applicable]
+
+
+
+Alternate Email Address: [Your alternate email address, if any]
+
+——————————————————————————————————————————
+
+This template can be adjusted as necessary for your specific requirements. Before sending your email, please ensure to provide all the required information so that the MagickBase team can process your request swiftly and accurately.
+`
+
+export const REPORT_EMAIL_BODY_ZH = `
+MagickBase 团队，
+
+
+
+写此邮件是为了通知您关于我们在您的浏览器上列出的联系邮件地址 [错误/不再可用]。
+
+以下是我们的正确邮件地址信息（“*”为必填项。）：
+
+
+
+新邮件地址*：[新的邮件地址]
+
+组织/公司：[您的组织/公司名称，如果有]
+
+NFT issuer 地址对“请求修改电邮地址”的签名信息：[如果有]
+
+
+
+替代电子邮件地址：[替代电子邮件地址，如果有]
+
+——————————————————————————————————————————
+
+此模板可根据具体情况进行适当调整。在发送邮件时，请确保提供所有必要的信息，以便区块链浏览器的工作人员可以迅速且准确地处理您的请求。
+`
+
 export const HttpErrorCode = {
   NOT_FOUND_ADDRESS: 1010,
 }

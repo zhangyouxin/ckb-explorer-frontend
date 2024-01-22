@@ -787,6 +787,16 @@ export const apiFetcher = {
     )
     return dataWithNormalizeEmptyValue
   },
+  submitTokenInfo: (typeHash: string, params: SubmitTokenInfoParams) => {
+    return requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
+  },
+  getVericodeForTokenInfo: (typeHash: string) =>
+    requesterV1.put(`/udt_verifications/${typeHash}`, {
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json',
+      },
+    }),
 }
 
 // ====================
@@ -961,8 +971,4 @@ type SubmitTokenInfoParams = {
   display_name?: string
   uan?: string
   token?: string
-}
-
-export const submitTokenInfo = (typeHash: string, params: SubmitTokenInfoParams) => {
-  return requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
 }

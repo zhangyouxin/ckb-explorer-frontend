@@ -154,8 +154,8 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
     name: udt.displayName || udt.fullName,
     decimal: udt.decimal,
     description: udt.description,
-    website: '', // FIXME: where to get the website
-    creatorEmail: '', // FIXME: where to get the creatorEmail
+    website: udt.website ?? '',
+    creatorEmail: udt.creatorEmail ?? '',
     logo: iconFile,
   }
 

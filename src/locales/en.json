@@ -597,7 +597,8 @@
       "email_vericode": "Email-Verification Code",
       "report": "Report",
       "vericode": "Verification Code",
-      "get_code": "Get Code"
+      "get_code": "Get Code",
+      "wrong_email": "Wrong Email? Click to report."
     },
     "nft": {
       "nft_collection": "NFT Collection",

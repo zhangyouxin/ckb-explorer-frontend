@@ -26,6 +26,7 @@ import ArrowUpBlueIcon from '../../assets/arrow_up_blue.png'
 import ArrowDownBlueIcon from '../../assets/arrow_down_blue.png'
 import Script from '../../components/Script'
 import Capacity from '../../components/Capacity'
+import { ReactComponent as EditIcon } from './edit.svg'
 
 const typeScriptIcon = (show: boolean) => {
   if (show) {
@@ -62,7 +63,15 @@ const IssuerContent: FC<{ address: string }> = ({ address }) => {
   )
 }
 
-export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT | OmigaInscriptionCollection }) => {
+export const UDTOverviewCard = ({
+  typeHash,
+  udt,
+  refetchUDT,
+}: {
+  typeHash: string
+  udt: UDT | OmigaInscriptionCollection
+  refetchUDT: () => void
+}) => {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const {
@@ -154,8 +163,8 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
     name: udt.displayName || udt.fullName,
     decimal: udt.decimal,
     description: udt.description,
-    website: udt.website ?? '',
-    creatorEmail: udt.creatorEmail ?? '',
+    website: udt.operatorWebsite ?? '',
+    creatorEmail: udt.email ?? '',
     logo: iconFile,
   }
 
@@ -163,6 +172,7 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
     udt.udtType === 'sudt' ? (
       <button type="button" className={styles.modify} onClick={() => setIsModifyTokenInfoModalOpen(true)}>
         {t('udt.modify_token_info')}
+        <EditIcon />
       </button>
     ) : null
 
@@ -198,7 +208,12 @@ export const UDTOverviewCard = ({ typeHash, udt }: { typeHash: string; udt: UDT 
         {showType && typeScript && <Script script={typeScript} />}
       </Card>
       {tokenInfo && isModifyTokenInfoModalOpen ? (
-        <SubmitTokenInfo isOpen onClose={() => setIsModifyTokenInfoModalOpen(false)} initialInfo={tokenInfo} />
+        <SubmitTokenInfo
+          isOpen
+          onClose={() => setIsModifyTokenInfoModalOpen(false)}
+          initialInfo={tokenInfo}
+          onSuccess={refetchUDT}
+        />
       ) : null}
     </>
   )

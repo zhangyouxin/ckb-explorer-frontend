@@ -97,7 +97,7 @@ export const UDT: FC<{ isInscription?: boolean }> = ({ isInscription }) => {
   return (
     <Content>
       <UDTContentPanel className="container">
-        <UDTOverviewCard typeHash={typeHash} udt={udt} />
+        <UDTOverviewCard typeHash={typeHash} udt={udt} refetchUDT={queryUDT.refetch} />
 
         <UDTTransactionTitlePanel>
           <div className="udtTransactionContainer">

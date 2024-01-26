@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useHistory } from 'react-router-dom'
 import Tooltip from 'antd/lib/tooltip'
 import { utils } from '@ckb-lumos/base'
 import { AxiosError } from 'axios'
@@ -102,15 +103,20 @@ export const SubmitTokenInfo = ({
   onClose,
   isOpen,
   initialInfo,
+  onSuccess,
 }: {
   isOpen: boolean
   onClose: () => void
   initialInfo?: TokenInfo
+  onSuccess?: Function
 }) => {
   const [t, { language }] = useTranslation()
+  const history = useHistory()
   const setToast = useSetToast()
   const [submitting, setSubmitting] = useState(false)
   const countdown = useCountdown()
+
+  const isModification = !!initialInfo
 
   const scriptDataList = isMainnet() ? MainnetContractHashTags : TestnetContractHashTags
   const tokenTypeOptions = scriptDataList
@@ -200,11 +206,11 @@ export const SubmitTokenInfo = ({
 
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
   const validateEmail = (email: string) => emailRegex.test(email)
-  const isInputEmailValid = validateEmail(tokenInfo.creatorEmail)
+  const isEmailValid = validateEmail(tokenInfo.creatorEmail)
 
-  const hexRegex = /^0x[0-9A-Fa-f]+$/
-  const validateHex = (str: string) => hexRegex.test(str) && str.length % 2 === 0
-  const isInputHexValid = validateHex(tokenInfo.args)
+  const argsRegex = /^0x[0-9A-Fa-f]+$/
+  const validateArgs = (str: string) => argsRegex.test(str) && str.length % 2 === 0
+  const isArgsValid = validateArgs(tokenInfo.args)
 
   const websiteRegex =
     /^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/
@@ -213,21 +219,21 @@ export const SubmitTokenInfo = ({
 
   const isInputDecimalValid = isValidNoNegativeInteger(tokenInfo.decimal)
 
-  const validateBasicFields = () =>
-    !!tokenInfo.tokenType &&
-    !!tokenInfo.args &&
-    !!tokenInfo.symbol &&
-    !!tokenInfo.decimal &&
-    !!tokenInfo.website &&
-    !!tokenInfo.creatorEmail &&
-    (!isModification ? true : !!vericode)
-
-  const isInputRulesValid = isInputDecimalValid && isInputEmailValid && isInputHexValid && isInputWebsiteValid
-
-  const validateFields = () => validateBasicFields() && isInputRulesValid
+  const isSubmitable =
+    tokenInfo.tokenType &&
+    tokenInfo.args &&
+    isArgsValid &&
+    tokenInfo.symbol &&
+    tokenInfo.decimal &&
+    isInputDecimalValid &&
+    tokenInfo.website &&
+    isInputWebsiteValid &&
+    (isModification || (tokenInfo.creatorEmail && isEmailValid)) &&
+    isModification &&
+    vericode
 
   const handleConfirm = async () => {
-    if (!validateFields()) {
+    if (!isSubmitable) {
       return
     }
 
@@ -242,28 +248,45 @@ export const SubmitTokenInfo = ({
       args: tokenInfo.args,
     })
 
+    const commonInfo = {
+      symbol: tokenInfo.symbol,
+      email: tokenInfo.creatorEmail,
+      description: tokenInfo.description,
+      operator_website: tokenInfo.website,
+      decimal: Number(tokenInfo.decimal),
+      full_name: tokenInfo.name,
+      total_amount: 0,
+      icon_file: tokenInfo.logo ?? '',
+    }
+
+    const extraInfo = isModification
+      ? {
+          token: vericode,
+        }
+      : {}
+
+    const id = typeHash.toLowerCase()
+
     explorerService.api
-      .submitTokenInfo(typeHash.toLowerCase(), {
-        symbol: tokenInfo.symbol,
-        email: tokenInfo.creatorEmail,
-        operator_website: tokenInfo.website,
-        decimal: Number(tokenInfo.decimal),
-        full_name: tokenInfo.name,
-        total_amount: 0,
-        icon_file: tokenInfo.logo ?? '',
-        token: vericode,
-      })
+      .submitTokenInfo(id, { ...commonInfo, ...extraInfo })
       .then(() => {
-        clearForm()
-        setSubmitting(false)
+        handleClose()
+        if (!isModification) {
+          history.push(`/sudt/${id}`)
+        }
+        if (onSuccess) {
+          onSuccess()
+        }
       })
-      .catch(() => {
-        setToast({ message: t('error.page_crashed_tip') })
+      .catch(e => {
+        if (e instanceof AxiosError) {
+          setToast({ message: e.response?.data[0]?.title })
+        } else {
+          setToast({ message: t('error.page_crashed_tip') })
+        }
         setSubmitting(false)
       })
   }
-
-  const isModification = !!initialInfo
 
   return (
     <CommonModal isOpen={isOpen} onClose={handleClose}>
@@ -297,7 +320,7 @@ export const SubmitTokenInfo = ({
 
                 <LabeledInput
                   isRequired
-                  isError={!!tokenInfo.args && !isInputHexValid}
+                  isError={!!tokenInfo.args && !isArgsValid}
                   value={tokenInfo.args}
                   name="args"
                   onChange={handleFieldChange}
@@ -361,7 +384,8 @@ export const SubmitTokenInfo = ({
               />
               <LabeledInput
                 isRequired
-                isError={!!tokenInfo.creatorEmail && !isInputEmailValid}
+                disabled={isModification}
+                isError={!isModification && !!tokenInfo.creatorEmail && !isEmailValid}
                 value={tokenInfo.creatorEmail}
                 name="creatorEmail"
                 onChange={handleFieldChange}
@@ -380,25 +404,30 @@ export const SubmitTokenInfo = ({
                 className={styles.labeledInput}
               />
             </div>
-            <div>
-              <div className={styles.report}>
-                {t('udt.email_vericode')}
-                <a
-                  href={`mailto:${REPORT_EMAIL_ADDRESS}?subject=${REPORT_EMAIL_SUBJECT}&body=${
-                    language === 'zh' ? REPORT_EMAIL_BODY_ZH : REPORT_EMAIL_BODY_EN
-                  }`}
-                >
-                  {t('udt.report')}
-                </a>
+            {initialInfo ? (
+              <div>
+                <div className={styles.report}>
+                  {t('udt.email_vericode')}
+
+                  <Tooltip placement="top" arrowPointAtCenter title={t('udt.wrong_email')}>
+                    <a
+                      href={`mailto:${REPORT_EMAIL_ADDRESS}?subject=${REPORT_EMAIL_SUBJECT}&body=${
+                        language === 'zh' ? REPORT_EMAIL_BODY_ZH : REPORT_EMAIL_BODY_EN
+                      }`}
+                    >
+                      {t('udt.report')}
+                    </a>
+                  </Tooltip>
+                </div>
+                <div className={styles.vericodeEmail}>{initialInfo.creatorEmail}</div>
+                <div className={styles.vericode}>
+                  <input value={vericode} onChange={handleVericodeChange} placeholder={t('udt.vericode')} />
+                  <button type="button" onClick={handleGetCodeClick} disabled={countdown.isCounting}>
+                    {countdown.isCounting ? `${countdown.seconds}s` : t('udt.get_code')}
+                  </button>
+                </div>
               </div>
-              <div className={styles.vericodeEmail}>Mock email address</div>
-              <div className={styles.vericode}>
-                <input value={vericode} onChange={handleVericodeChange} placeholder={t('udt.vericode')} />
-                <button type="button" onClick={handleGetCodeClick} disabled={countdown.isCounting}>
-                  {countdown.isCounting ? `${countdown.seconds}s` : t('udt.get_code')}
-                </button>
-              </div>
-            </div>
+            ) : null}
           </div>
           <div className={styles.modalFooter}>
             <CommonButton
@@ -406,7 +435,7 @@ export const SubmitTokenInfo = ({
               className={styles.submitBtn}
               onClick={handleConfirm}
               name={t('submit_token_info.confirm')}
-              disabled={!validateBasicFields()}
+              disabled={!isSubmitable}
             />
           </div>
         </div>

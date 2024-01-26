@@ -598,7 +598,8 @@
       "email_vericode": "邮件验证码",
       "report": "报告",
       "vericode": "验证码",
-      "get_code": "获取验证码"
+      "get_code": "获取验证码",
+      "wrong_email": "不是这个邮箱? 提交报告"
     },
     "nft": {
       "nft_collection": "NFT 藏品",

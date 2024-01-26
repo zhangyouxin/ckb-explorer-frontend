@@ -12,10 +12,23 @@ type Props = {
   className?: string
   isError?: boolean
   children?: React.ReactNode
+  disabled?: boolean
 }
 
 export const LabeledInput = (props: Props) => {
-  const { value, name, label, isError, onChange, labelRightAddon, placeholder, isRequired, children, className } = props
+  const {
+    value,
+    name,
+    label,
+    isError,
+    onChange,
+    labelRightAddon,
+    placeholder,
+    isRequired,
+    children,
+    className,
+    disabled = false,
+  } = props
   return (
     <div className={classNames(styles.container, className)}>
       <label htmlFor={name} className={styles.label}>
@@ -25,10 +38,11 @@ export const LabeledInput = (props: Props) => {
 
       {children ?? (
         <input
+          disabled={disabled}
           id={name}
           name={name}
           type="text"
-          className={classNames(styles.input, isError && styles.error)}
+          className={classNames(isError && styles.error)}
           placeholder={placeholder}
           value={value}
           onChange={onChange}

@@ -42,7 +42,7 @@ export const LabeledInput = (props: Props) => {
           id={name}
           name={name}
           type="text"
-          className={classNames(isError && styles.error)}
+          data-is-error={isError}
           placeholder={placeholder}
           value={value}
           onChange={onChange}

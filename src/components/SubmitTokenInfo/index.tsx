@@ -220,17 +220,15 @@ export const SubmitTokenInfo = ({
   const isInputDecimalValid = isValidNoNegativeInteger(tokenInfo.decimal)
 
   const isSubmitable =
-    tokenInfo.tokenType &&
-    tokenInfo.args &&
+    !!tokenInfo.tokenType &&
+    !!tokenInfo.args &&
     isArgsValid &&
-    tokenInfo.symbol &&
-    tokenInfo.decimal &&
+    !!tokenInfo.symbol &&
+    !!tokenInfo.decimal &&
     isInputDecimalValid &&
-    tokenInfo.website &&
+    !!tokenInfo.website &&
     isInputWebsiteValid &&
-    (isModification || (tokenInfo.creatorEmail && isEmailValid)) &&
-    isModification &&
-    vericode
+    (isModification ? !!vericode : !!tokenInfo.creatorEmail && isEmailValid)
 
   const handleConfirm = async () => {
     if (!isSubmitable) {

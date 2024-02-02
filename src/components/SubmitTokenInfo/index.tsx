@@ -162,8 +162,9 @@ export const SubmitTokenInfo = ({
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         if (e.response?.status === 400) {
+          const code = e.response?.data[0]?.code
           setToast({
-            message: e.response?.data[0]?.title,
+            message: code ? t(`error.codes.${code}`) : e.response?.data[0]?.title,
           })
         } else {
           setToast({ message: e.message })
@@ -278,7 +279,10 @@ export const SubmitTokenInfo = ({
       })
       .catch(e => {
         if (e instanceof AxiosError) {
-          setToast({ message: e.response?.data[0]?.title })
+          const code = e.response?.data[0]?.code
+          setToast({
+            message: code ? t(`error.codes.${code}`) : e.response?.data[0]?.title,
+          })
         } else {
           setToast({ message: t('error.page_crashed_tip') })
         }

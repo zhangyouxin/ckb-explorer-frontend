@@ -544,7 +544,20 @@
     "error": {
       "maintain": "The tip block number {{tip}}, the current synced block lagging behind by {{lag}} blocks",
       "page_crashed_tip": "Oops! Some errors were encountered.",
-      "back_home": "BACK HOME"
+      "back_home": "BACK HOME",
+      "codes": {
+        "1026": "UDT is not found",
+        "1027": "Script code hash is invalid",
+        "1028": "Script hash type is invalid",
+        "1029": "Script is not found",
+        "1030": "UDT info is invalid",
+        "1031": "UDT verification is failed",
+        "1032": "UDT verification is not found",
+        "1033": "UDT has no contact email",
+        "1034": "Token has expired",
+        "1035": "Token is not matched",
+        "1036": "Token is requested too frequently"
+      }
     },
     "pagination": {
       "first": "First",

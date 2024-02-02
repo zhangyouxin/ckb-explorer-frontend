@@ -43,7 +43,7 @@ Information:%0a%0d
 export const REPORT_EMAIL_ADDRESS = 'ckb-explorer@nervosnet.com'
 export const REPORT_EMAIL_SUBJECT = 'Submit Token Info'
 export const REPORT_EMAIL_BODY_EN = `
-MagickBase Team,%0a%0d
+MagiCKBase Team,%0a%0d
 
 
 
@@ -67,7 +67,7 @@ This template can be adjusted as necessary for your specific requirements. Befor
 `
 
 export const REPORT_EMAIL_BODY_ZH = `
-MagickBase 团队，%0a%0d
+MagiCKBase 团队，%0a%0d
 
 
 

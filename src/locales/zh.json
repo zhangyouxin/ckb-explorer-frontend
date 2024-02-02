@@ -556,7 +556,8 @@
       "end_page": "页",
       "current_page": "第",
       "of_page": "页，共",
-      "only_first_pages_visible": "显示最近 {{pages}} 页"
+      "only_first_pages_visible": "显示最近 {{pages}} 页",
+      "show_rows": "每页显示"
     },
     "udt": {
       "sudt": "sUDT",
@@ -599,7 +600,8 @@
       "report": "报告",
       "vericode": "验证码",
       "get_code": "获取验证码",
-      "wrong_email": "不是这个邮箱? 提交报告"
+      "wrong_email": "不是这个邮箱? 提交报告",
+      "view_original": "查看原铭文"
     },
     "nft": {
       "nft_collection": "NFT 藏品",

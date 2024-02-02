@@ -98,7 +98,18 @@ export const apiFetcher = {
 
   fetchTransactionRaw: (hash: string) => requesterV2.get<unknown>(`transactions/${hash}/raw`).then(res => res.data),
 
-  fetchTransactionByHash: (hash: string) => v1GetUnwrapped<Transaction>(`transactions/${hash}`),
+  fetchTransactionByHash: (hash: string, displayCells: boolean = false) =>
+    v1GetUnwrapped<Transaction>(`transactions/${hash}?display_cells=${displayCells}`),
+
+  fetchCellsByTxHash: (hash: string, type: 'inputs' | 'outputs', page: Record<'no' | 'size', number>) =>
+    requesterV2
+      .get(`ckb_transactions/${hash}/display_${type}`, {
+        params: {
+          page: page.no,
+          page_size: page.size,
+        },
+      })
+      .then(res => toCamelcase<Response.Response<Cell[]>>(res.data)),
 
   fetchTransactionLiteDetailsByHash: (hash: string) =>
     requesterV2
@@ -550,13 +561,11 @@ export const apiFetcher = {
     page,
     size,
     filter,
-    type,
   }: {
     typeHash: string
     page: number
     size: number
     filter?: string | null
-    type?: string | null
   }) =>
     v1GetUnwrappedPagedList<Transaction>(`/udt_transactions/${typeHash}`, {
       params: {
@@ -564,7 +573,6 @@ export const apiFetcher = {
         page_size: size,
         address_hash: filter?.startsWith('0x') ? undefined : filter,
         tx_hash: filter?.startsWith('0x') ? filter : undefined,
-        transfer_action: type,
       },
     }),
 
@@ -577,8 +585,10 @@ export const apiFetcher = {
       },
     }),
 
-  fetchOmigaInscription: (typeHash: string) =>
-    v1GetUnwrapped<OmigaInscriptionCollection>(`/omiga_inscriptions/${typeHash}`),
+  fetchOmigaInscription: (typeHash: string, isViewOriginal: boolean) =>
+    v1GetUnwrapped<OmigaInscriptionCollection>(
+      `/omiga_inscriptions/${typeHash}${isViewOriginal ? '?status=closed' : ''}`,
+    ),
 
   fetchOmigaInscriptions: (page: number, size: number, sort?: string) =>
     v1GetUnwrappedPagedList<OmigaInscriptionCollection>(`/omiga_inscriptions`, {
@@ -594,11 +604,13 @@ export const apiFetcher = {
     id,
     date,
     block,
+    isViewOriginal,
   }: {
     type: SupportedExportTransactionType
     id?: string
     date?: Record<'start' | 'end', Dayjs | undefined>
     block?: Record<'from' | 'to', number>
+    isViewOriginal: boolean
   }) => {
     const rangeParams = {
       start_date: date?.start?.valueOf(),
@@ -612,7 +624,9 @@ export const apiFetcher = {
         .then(res => toCamelcase<string>(res.data))
     }
     return requesterV1
-      .get(`/${type}/download_csv`, { params: { ...rangeParams, id } })
+      .get(`/${type}/download_csv${isViewOriginal ? '?status=closed' : ''}`, {
+        params: { ...rangeParams, id },
+      })
       .then(res => toCamelcase<string>(res.data))
   },
 

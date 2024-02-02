@@ -555,7 +555,8 @@
       "end_page": "",
       "current_page": "Page",
       "of_page": "of",
-      "only_first_pages_visible": "Showing first {{pages}} pages"
+      "only_first_pages_visible": "Showing first {{pages}} pages",
+      "show_rows": "Show Rows"
     },
     "udt": {
       "sudt": "sUDT",
@@ -598,7 +599,8 @@
       "report": "Report",
       "vericode": "Verification Code",
       "get_code": "Get Code",
-      "wrong_email": "Wrong Email? Click to report."
+      "wrong_email": "Wrong Email? Click to report.",
+      "view_original": "View Original"
     },
     "nft": {
       "nft_collection": "NFT Collection",

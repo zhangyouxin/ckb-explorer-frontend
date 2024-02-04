@@ -127,6 +127,7 @@ export const SubmitTokenInfo = ({
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>(
     initialInfo ?? { ...emptyTokenInfo, tokenType: tokenTypeOptions[0].value },
   )
+
   const [vericode, setVericode] = useState('')
 
   const handleTokenTypesChange = (value: string) => {
@@ -316,7 +317,7 @@ export const SubmitTokenInfo = ({
                     className={styles.codeHashSelect}
                     options={tokenTypeOptions}
                     onChange={handleTokenTypesChange}
-                    defaultValue={tokenInfo.tokenType}
+                    defaultValue={tokenTypeOptions[0].value}
                   />
                 </LabeledInput>
 

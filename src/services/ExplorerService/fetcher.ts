@@ -12,7 +12,7 @@ import { Script } from '../../models/Script'
 import { Block } from '../../models/Block'
 import { Transaction } from '../../models/Transaction'
 import { Address } from '../../models/Address'
-import { UDT } from '../../models/UDT'
+import { OmigaInscriptionCollection, UDT } from '../../models/UDT'
 
 async function v1Get<T>(...args: Parameters<typeof requesterV1.get>) {
   return requesterV1.get(...args).then(res => toCamelcase<Response.Response<T>>(res.data))
@@ -98,7 +98,18 @@ export const apiFetcher = {
 
   fetchTransactionRaw: (hash: string) => requesterV2.get<unknown>(`transactions/${hash}/raw`).then(res => res.data),
 
-  fetchTransactionByHash: (hash: string) => v1GetUnwrapped<Transaction>(`transactions/${hash}`),
+  fetchTransactionByHash: (hash: string, displayCells: boolean = false) =>
+    v1GetUnwrapped<Transaction>(`transactions/${hash}?display_cells=${displayCells}`),
+
+  fetchCellsByTxHash: (hash: string, type: 'inputs' | 'outputs', page: Record<'no' | 'size', number>) =>
+    requesterV2
+      .get(`ckb_transactions/${hash}/display_${type}`, {
+        params: {
+          page: page.no,
+          page_size: page.size,
+        },
+      })
+      .then(res => toCamelcase<Response.Response<Cell[]>>(res.data)),
 
   fetchTransactionLiteDetailsByHash: (hash: string) =>
     requesterV2
@@ -172,7 +183,7 @@ export const apiFetcher = {
       | Response.Wrapper<Transaction, SearchResultType.Transaction>
       | Response.Wrapper<Address, SearchResultType.Address>
       | Response.Wrapper<Address, SearchResultType.LockHash>
-      | Response.Wrapper<unknown, SearchResultType.UDT>
+      | Response.Wrapper<UDT, SearchResultType.UDT>
       | Response.Wrapper<Script & { scriptHash: string }, SearchResultType.TypeScript>
     >('suggest_queries', {
       params: {
@@ -545,18 +556,16 @@ export const apiFetcher = {
 
   fetchSimpleUDT: (typeHash: string) => v1GetUnwrapped<UDT>(`/udts/${typeHash}`),
 
-  fetchSimpleUDTTransactions: ({
+  fetchUDTTransactions: ({
     typeHash,
     page,
     size,
     filter,
-    type,
   }: {
     typeHash: string
     page: number
     size: number
     filter?: string | null
-    type?: string | null
   }) =>
     v1GetUnwrappedPagedList<Transaction>(`/udt_transactions/${typeHash}`, {
       params: {
@@ -564,7 +573,6 @@ export const apiFetcher = {
         page_size: size,
         address_hash: filter?.startsWith('0x') ? undefined : filter,
         tx_hash: filter?.startsWith('0x') ? filter : undefined,
-        transfer_action: type,
       },
     }),
 
@@ -577,16 +585,32 @@ export const apiFetcher = {
       },
     }),
 
+  fetchOmigaInscription: (typeHash: string, isViewOriginal: boolean) =>
+    v1GetUnwrapped<OmigaInscriptionCollection>(
+      `/omiga_inscriptions/${typeHash}${isViewOriginal ? '?status=closed' : ''}`,
+    ),
+
+  fetchOmigaInscriptions: (page: number, size: number, sort?: string) =>
+    v1GetUnwrappedPagedList<OmigaInscriptionCollection>(`/omiga_inscriptions`, {
+      params: {
+        page,
+        page_size: size,
+        sort,
+      },
+    }),
+
   exportTransactions: ({
     type,
     id,
     date,
     block,
+    isViewOriginal,
   }: {
     type: SupportedExportTransactionType
     id?: string
     date?: Record<'start' | 'end', Dayjs | undefined>
     block?: Record<'from' | 'to', number>
+    isViewOriginal: boolean
   }) => {
     const rangeParams = {
       start_date: date?.start?.valueOf(),
@@ -600,7 +624,9 @@ export const apiFetcher = {
         .then(res => toCamelcase<string>(res.data))
     }
     return requesterV1
-      .get(`/${type}/download_csv`, { params: { ...rangeParams, id } })
+      .get(`/${type}/download_csv${isViewOriginal ? '?status=closed' : ''}`, {
+        params: { ...rangeParams, id },
+      })
       .then(res => toCamelcase<string>(res.data))
   },
 
@@ -775,6 +801,16 @@ export const apiFetcher = {
     )
     return dataWithNormalizeEmptyValue
   },
+  submitTokenInfo: (typeHash: string, params: SubmitTokenInfoParams) => {
+    return requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
+  },
+  getVericodeForTokenInfo: (typeHash: string) =>
+    requesterV1.put(`/udt_verifications/${typeHash}`, {
+      headers: {
+        'Content-Type': 'application/vnd.api+json',
+        Accept: 'application/vnd.api+json',
+      },
+    }),
 }
 
 // ====================
@@ -933,6 +969,7 @@ export type UDTQueryResult = {
   symbol: string | null
   typeHash: string
   iconFile: string | null
+  udtType: UDT['udtType']
 }
 
 type SubmitTokenInfoParams = {
@@ -948,8 +985,4 @@ type SubmitTokenInfoParams = {
   display_name?: string
   uan?: string
   token?: string
-}
-
-export const submitTokenInfo = (typeHash: string, params: SubmitTokenInfoParams) => {
-  return requesterV1.put(`/udts/${typeHash}`, params).then(res => toCamelcase<string>(res.data))
 }

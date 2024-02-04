@@ -166,6 +166,8 @@
       "nervos_dao": "Nervos DAO",
       "faucet": "水龙头",
       "tokens": "代币",
+      "sUDT": "sUDT",
+      "inscriptions": "铭文",
       "docs": "文档",
       "search_placeholder": "区块/交易/地址/锁定脚本哈希/Type 脚本哈希/参数",
       "search_by_name_placeholder": "代币名称",
@@ -365,7 +367,8 @@
       "args": "Args",
       "hash_type": "Hash Type",
       "overview": "概览",
-      "user_defined_token": "User Defined Token",
+      "user_defined_token": "Simple User Defined Token",
+      "inscription": "铭文",
       "confirmation": "确认区块",
       "confirmations": "确认区块",
       "unable_decode_address": "地址解析失败",
@@ -540,9 +543,22 @@
       "deposit_address_tooltip": "Nervos DAO 锁定余额不为零的地址"
     },
     "error": {
-      "maintain": "网络维护中，请稍后再试",
+      "maintain": "最新区块为 {{tip}}, 当前同步高度落后 {{lag}} 区块",
       "page_crashed_tip": "遇到了一些错误",
-      "back_home": "前往首页"
+      "back_home": "前往首页",
+      "codes": {
+        "1026": "未找到 UDT",
+        "1027": "脚本代码哈希无效",
+        "1028": "脚本哈希类型无效",
+        "1029": "未找到脚本",
+        "1030": "UDT 信息无效",
+        "1031": "UDT 验证失败",
+        "1032": "未找到 UDT 验证",
+        "1033": "UDT 没有联系电子邮件",
+        "1034": "令牌已过期",
+        "1035": "令牌不匹配",
+        "1036": "请求令牌过于频繁"
+      }
     },
     "pagination": {
       "first": "首页",
@@ -553,7 +569,8 @@
       "end_page": "页",
       "current_page": "第",
       "of_page": "页，共",
-      "only_first_pages_visible": "显示最近 {{pages}} 页"
+      "only_first_pages_visible": "显示最近 {{pages}} 页",
+      "show_rows": "每页显示"
     },
     "udt": {
       "sudt": "sUDT",
@@ -569,6 +586,7 @@
       "unknown_token": "未知资产",
       "unknown_amount": "未知数量",
       "submit_token_info": "提交代币信息",
+      "modify_token_info": "修改代币信息",
       "unknown_token_description": "此代币信息暂时不完整，如果你是此代币的拥有者，请提交代币信息",
       "tokens": "代币",
       "uan_name": "UAN & 名称",
@@ -582,7 +600,21 @@
       "view-transfer-txns": "查看转帐交易",
       "view-burn-txns": "查看销毁交易",
       "address-or-hash": "交易哈希 / 地址",
-      "address": "地址"
+      "address": "地址",
+      "inscriptions": "铭文",
+      "status": "状态",
+      "progress": "进度",
+      "expected_supply": "预期供应量",
+      "mint_limit": "铸造限制",
+      "mint_status_minting": "铸造中",
+      "mint_status_closed": "已关闭",
+      "mint_status_rebase_start": "重铸开始",
+      "email_vericode": "邮件验证码",
+      "report": "报告",
+      "vericode": "验证码",
+      "get_code": "获取验证码",
+      "wrong_email": "不是这个邮箱? 提交报告",
+      "view_original": "查看原铭文"
     },
     "nft": {
       "nft_collection": "NFT 藏品",

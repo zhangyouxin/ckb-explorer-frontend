@@ -3,23 +3,18 @@ import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 import OutsideClickHandler from 'react-outside-click-handler'
 import styles from './index.module.scss'
-import { isMainnet } from '../../utils/chain'
+import Arrow from '../../assets/arrow_down_black.png'
 
-type OptionType<T> = {
-  value: T
-  label: string
-}
-
-type Props<T> = {
-  options: OptionType<T>[]
-  onChange: (value: T) => void
-  defaultValue?: T
+type Option = Record<'label' | 'value', string>
+type Props = {
+  options: Option[]
+  onChange: (value: string) => void
+  defaultValue?: string
   placeholder?: string
   className?: string
 }
 
-function CommonSelect<T>(props: Props<T>) {
-  const { options, onChange, defaultValue, placeholder, className } = props
+function CommonSelect({ options, onChange, defaultValue, placeholder, className }: Props) {
   const defaultLabel = options.find(option => option.value === defaultValue)?.label
   const [value, setValue] = useState(defaultLabel)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -27,7 +22,7 @@ function CommonSelect<T>(props: Props<T>) {
     setIsExpanded(!isExpanded)
   }
 
-  const handleOptionClick = (option: OptionType<T>) => {
+  const handleOptionClick = (option: Option) => {
     onChange(option.value)
     setValue(option.label)
     toggleExpand()
@@ -82,7 +77,7 @@ function CommonSelect<T>(props: Props<T>) {
       <div className={classNames(styles.select, className)}>
         <div onClick={toggleExpand} className={styles.value}>
           {value ?? placeholder}
-          <div className={classNames(isMainnet() ? styles.arrow : styles.arrowTestnet, isExpanded && styles.flip)} />
+          <img src={Arrow} alt="arrow" className={styles.arrow} data-is-flipped={isExpanded} />
         </div>
         {isExpanded && (
           <div className={styles.options}>

@@ -28,6 +28,7 @@ import Script from '../../components/Script'
 import Capacity from '../../components/Capacity'
 import { ReactComponent as EditIcon } from './edit.svg'
 import { ReactComponent as ViewOriginalIcon } from './view_original.svg'
+import Loading from '../../components/Loading'
 
 const typeScriptIcon = (show: boolean) => {
   if (show) {
@@ -186,6 +187,14 @@ export const UDTOverviewCard = ({
       {(uan || symbol) ?? t('udt.sudt')}
     </div>
   )
+
+  if (!udt.published) {
+    return (
+      <div className={styles.loading}>
+        <Loading show />
+      </div>
+    )
+  }
 
   return (
     <>
